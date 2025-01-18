@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/panel.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>ARNAUT'S</title>
+  </head>
+  <body>
+    <section class="app">
+      <header>
+        <nav class="navbar navbar-expand-lg navcont">
+          <div class="container-fluid">
+            <h1 class="logo">ARNAUT'S</h1>
+            <span class="buttonsing-1 d-flex flex-row">
+              <div class="dropdown singin">
+                <ul class="dropdown-menu text-small shadow dropdown-menu-start">
+                  <li>
+                    <a class="dropdown-item" href="#" style="color: black"
+                      >Профиль</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" style="color: black"
+                      >Настройки</a
+                    >
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a class="dropdown-item" href="#" style="color: black"
+                      >Выход</a
+                    >
+                  </li>
+                </ul>
+                <a
+                  href="#"
+                  class="d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bx bxs-user-circle singinuser"></i>
+                </a>
+              </div>
+
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarcont"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span><i class="bx bx-menu"></i></span>
+              </button>
+            </span>
+
+            <div class="collapse navbar-collapse" id="navbarcont">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item active">
+                  <a href="index.html#menu">Меню</a>
+                </li>
+                <li class="nav-item"><a href="index.html#about">О нас</a></li>
+                <li class="nav-item"><a href="#">Доставка</a></li>
+                <li class="nav-item"><a href="#">Контакты</a></li>
+              </ul>
+            </div>
+
+            <span class="buttonsing-2 flex-row">
+              <div class="dropdown singin">
+                <ul class="dropdown-menu text-small shadow dropdown-menu-start">
+                  <li>
+                    <a class="dropdown-item" style="color: black" href="#"
+                      >Зарегестрироваться</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" style="color: black" href="#"
+                      >Настройки</a
+                    >
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a class="dropdown-item" href="#" style="color: black"
+                      >Выход</a
+                    >
+                  </li>
+                </ul>
+                <a
+                  href="#"
+                  class="d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bx bxs-user-circle singinuser"></i>
+                </a>
+              </div>
+
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarcont"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span><i class="bx bx-menu"></i></span>
+              </button>
+            </span>
+          </div>
+        </nav>
+      </header>
+      <h1 style="margin-top: 40px !important;">Категории <span class="add-category"><button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#Categorywindow"><i class='bx bx-plus-medical' style='color:#ffffff'  ></i></button></span></h1>
+      <div class="container-fluid categorylist">
+        <!-- Загружаем таблицу с каждой категорией -->
+      </div>
+
+      <!-- Модальное окно для добавления -->
+      <div
+        class="modal fade"
+        id="Modalwindow"
+        tabindex="-1"
+        aria-labelledby="Modalwindow"
+      >
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1>Добавить</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="name" />
+                <label for="name">Название</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="number" class="form-control" id="price" />
+                <label for="price">Цена</label>
+              </div>
+              <div class="form-floating mb-3">
+                <textarea
+                  class="form-control"
+                  placeholder="Leave a comment here"
+                  id="description"
+                ></textarea>
+                <label for="description">Описание</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="time" step="1" class="form-control" id="time" />
+                <label for="time">Время готовки</label>
+              </div>
+              <div class="form-floating">
+                <input
+                  type="file"
+                  id="image"
+                  name="image"
+                  accept="image/jpeg, image/png, image/jpg"
+                  class="form-control"
+                  id="floatingInput m-3"
+                />
+                <label for="image">Изображение</label>
+              </div>
+              <input type="hidden" id="typename" />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                style="font-size: 1.2rem"
+              >
+                Отмена
+              </button>
+              <button
+                type="button"
+                class="btn btn-success confirm"
+                style="font-size: 1.4rem"
+              >
+                Подтвердить
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Модальное окно для категорий -->
+      <div
+      class="modal fade"
+      id="Categorywindow"
+      tabindex="-1"
+      aria-labelledby="Categorywindow"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1>Добавить Категорию</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="category-name" />
+              <label for="category-name">Название</label>
+            </div>
+            <input type="hidden" id="typename" />
+            <input type="hidden" id="ischange" />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              style="font-size: 1.2rem"
+            >
+              Отмена
+            </button>
+            <button
+              type="button"
+              class="btn btn-success category-confirm"
+              style="font-size: 1.4rem"
+            >
+              Подтвердить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="container-fluid foot">
+        <div class="row text-center">
+          <h1 class="col-12" id="about"><b>Arnaut's</b></h1>
+          <h3 class="col-12">Кафе - кондитерская</h3>
+        </div>
+        <div class="row text-center">
+          <div class="col-md-4 part">
+            <h3>Адрес</h3>
+            <h5>Ул. Советская 2</h5>
+            <h5>Copceac. Tighina</h5>
+          </div>
+          <div class="col-md-4 part">
+            <h3>Время работы</h3>
+            <h5>с 8:00 до 00:00</h5>
+            <h5>Кухня работает до 23:00</h5>
+          </div>
+          <div class="col-md-4 part">
+            <h3>Контакты</h3>
+            <h5>тел: 068965098 / 068755980</h5>
+          </div>
+        </div>
+      </div>
+    </footer>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="module" src="js/panel.js"></script>
+  </body>
+</html>

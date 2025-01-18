@@ -1,0 +1,74 @@
+body{
+    background-image: url("../img/flat-lay-composition-mexican-food-with-copyspace.jpg");
+    background-color: #fef9e7;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+.categorylist{
+    margin-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+h3{
+    font-family: "Kurale", serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: clamp(1.4rem, 2.5vw, 2.3rem);
+
+}
+.one-category{
+    background-color: #ffffff;
+    opacity: 0.9;
+    border-radius: 6px;
+    color: black;
+    margin-top: 70px;
+    margin-bottom: 40px;
+    padding: 40px;
+    box-shadow: 3px 10px 10px 4px rgba(0, 0, 0, 0.5);
+    width: 75%;
+    font-family: "Kurale", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(0.4rem, 2.6vw, 1.3rem);
+}
+
+.category-items th, .category-items td {
+    max-width: 150px;  /* ширина ячейки */
+    overflow: hidden; /* Скрытие переполненного содержимого */
+    text-overflow: ellipsis; /* Добавление многоточия при переполнении */
+    white-space: nowrap; /* Запрет переноса текста */
+}
+h1{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-family: "Kurale", serif;
+    font-weight: 800;
+    font-style: normal;
+    font-size: clamp(1.6rem, 2.5vw, 3.8rem);
+}
+.add-category{
+    display: flex;
+    border: solid 3px black;
+    border-radius: 16px;
+    margin-left: 20px;
+    margin-top: 10px;
+    height: 35px;
+    width: 35px;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+
+.category-items .btn {
+    margin: 0 5px; /* Устанавливает отступы между кнопками */
+}
+.allbuttons{
+    display: flex;
+    width: 80%;
+}

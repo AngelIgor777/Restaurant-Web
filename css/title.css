@@ -1,0 +1,411 @@
+
+body{
+  width: 100%;
+  height: 100%;
+}
+.app{
+  width: 100%;
+  height: 100%;
+}
+.aboutmenu {
+  width: 100%;
+  height:auto;
+}
+.aboutmenu header{
+  position: relative !important;
+  padding: 0;
+}
+.aboutmenu .navcont{
+  padding-bottom: 10px;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.aboutmenu .navbar {
+  padding-top: 20px;
+  justify-content: center;
+}
+.aboutmenu .navbar button {
+  margin-left: auto;
+  color: #000000;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.aboutmenu .navbar{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+.aboutmenu .logo {
+  display: none;
+}
+.aboutmenu .navbar-collapse.collapsing {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  width: 100%;
+}
+.aboutmenu .navbar-collapse.collapsing ul li a {
+    margin-left: 0;
+    font-size:clamp(1.3rem, 2.5vw, 1.8rem);
+  }
+.aboutmenu .navbar-collapse.show {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  width: 100%;
+}
+.aboutmenu .navbar-collapse.show li:hover {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+.aboutmenu .navbar-collapse.show ul li a {
+    margin-left: 0;
+    font-size:clamp(1.3rem, 2.5vw, 1.8rem);
+  }
+@media (max-width: 770px) {
+  .aboutmenu .navcont .container-fluid ul {
+    background-color: rgba(0, 0, 0, 0);
+      margin-left: auto;
+      text-align: center;
+      font-size:clamp(1rem, 2.5vw, 1.5rem);
+    }
+}
+.aboutmenu .navcont .navbar-collapse.show .container-fluid ul {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  margin-left: auto;
+  text-align: center;
+
+
+}
+.aboutmenu .navcont .container-fluid ul {
+  padding: 10px;
+  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size:clamp(1rem, 2.5vw, 1.5rem);
+}
+.aboutmenu .navbar-collapse.show ul {
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+}
+.aboutmenu .navbar-collapse.show{
+  width: 100%;
+}
+.bodyc::before {
+  content: ""; /* Псевдоэлемент */
+  position: fixed; /* Наложение поверх */
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.15); /* Черный цвет с прозрачностью */
+  z-index: -1;
+}
+
+.aboutmenu header {
+  background: none;
+  height: 80px;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  
+}
+.aboutmenu .navcont .container-fluid li a {
+  color: #f5f5ca;
+  text-shadow: 3px 3px 5px rgb(0, 0, 0);
+  font-size:clamp(1.1rem, 2.5vw, 1.6rem);
+  margin-left: 30px;
+}
+.aboutmenu .container-fluid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+}
+.aboutmenu .container-fluid .logoimg img {
+  max-width: 150px; /* или конкретная ширина */
+  max-height: 70px; /* или конкретная высота */
+  z-index: 100;
+  object-fit: cover;
+}
+.aboutmenu .container-fluid .logoimg {
+  z-index: 3;
+  text-align: center;
+  margin-left: 20px;
+}
+.aboutmenu .container-fluid .logoimg h3 {
+  font-size:clamp(1.4rem, 2.5vw, 2.6rem);
+  text-shadow: 1px 1px 10px rgb(0, 0, 0);
+  font-family: "Playfair Display SC", serif;
+  font-weight: 900;
+  font-style: italic;
+  color:  #3bfa57;
+}
+
+
+/* Одиночный */
+
+.item-img img {
+  height:55%;
+  min-height: 150px;
+  width:68%;
+  object-fit: cover; 
+  padding: 0 !important;
+  border-radius: 20px;
+  object-fit: cover !important;
+}
+
+.only-item {
+  margin-top: 60px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 60px;
+  overflow: hidden;
+  background-color:  rgba(0, 0, 0, 0.3);
+  padding: 20px;
+}
+
+.plus-min {
+  display: flex;
+  justify-content: center;
+  font-size:clamp(1.2rem, 2.5vw, 1.7rem);
+  position: relative;
+  height: 40px;
+  text-align: center;
+}
+.plus {
+  transition: all 0.15s;
+  margin: 0;
+}
+.plus:hover {
+  transform: scale(1.09);
+}
+.min {
+  transition: all 0.15s;
+  margin: 0;
+}
+.min:hover {
+  transform: scale(1.09);
+}
+.plus-min input {
+  width: 26px;
+  height: auto;
+  border: none;
+  background-color: #e7e7e7a4;
+  margin: 0 20px 0px;
+  text-align: center;
+  align-items: top;
+  font-size:clamp(1rem, 2.5vw, 1.5rem);
+}
+.send-but {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 300px;
+}
+.send-but button {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 0;
+  height: 40px;
+  width: 50px;
+  border: none;
+  background-color: #4bff66;
+  font-size:clamp(1rem, 2.5vw, 1.2rem);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.send-but i {
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease;
+}
+
+/* Скрываем иконку галочки по умолчанию */
+.send-but button .bx-check {
+  display: none;
+  opacity: 0;
+  transform: scale(0);
+}
+
+/* Когда кнопка нажата */
+.send-but button.sold .bx-dish {
+  display: none;
+  opacity: 0;
+  transform: scale(0);
+}
+
+.send-but button.sold .bx-check {
+  display: block;
+  opacity: 1; /* Показываем галочку */
+  transform: scale(1.4); /* Увеличиваем галочку */
+  animation: Check 0.4s forwards;
+}
+@keyframes Check {
+  0% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+.cost {
+  margin-bottom: 30px;
+}
+.item-descr {
+  margin-left: 5%;
+  font-family: "Kurale", serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #fff;
+  margin-top: 30px;
+  margin-left: 60px;
+  padding-right: 0  !important;
+  text-shadow: 1px 1px 5px rgb(0, 0, 0);
+  font-size:clamp(1.1rem, 2.5vw, 120px);
+}
+.item-descr h5{
+  font-size:clamp(1.2rem, 2.5vw, 2.1rem);
+}
+.item-name {
+  font-weight: 500;
+  font-size:clamp(2.5rem, 2.5vw, 3.5rem);
+ 
+}
+.cost-item {
+  
+  font-size:clamp(1.2rem, 2.5vw, 2.4rem);
+}
+.weith span {
+  font-weight: 500;
+  font-size:clamp(1.4rem, 2.5vw, 2.6rem);
+  text-shadow: 2px 2px 5px rgb(0, 0, 0);
+}
+.ingredients span {
+  font-weight: 500;
+  font-size:clamp(1.4rem, 2.5vw, 2.6rem);
+  text-shadow: 2px 2px 5px rgb(0, 0, 0);
+}
+
+/* Описание ресторана */
+.aboutrestoran{
+  margin-top: 120px;
+  color: #fff;
+  margin-left: 30px;
+  width: 50%;
+  text-shadow: 1px 1px 5px rgb(0, 0, 0);
+  font-family: "Kurale", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+}
+.aboutrestoran p{
+background-color: rgba(0, 0, 0, 0.337);
+border-radius: 10px;
+padding: 10px;
+}
+.aboutrestoran button{
+  
+  border-radius: 10px;
+  background-color: #34fe52;
+  margin: 30px 0;
+  border: none;
+  
+  height: 100%;
+}
+.aboutrestoran button a{
+  padding: 20px;
+  text-decoration: none;
+  color: #fff;
+  font-family: "Kurale", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+.aboutourgroup{
+  margin-top: 100px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.commantname{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color:rgba(0, 0, 0, 0.337);
+  color: #fff;
+  width: 100%;
+  height: 100px;
+  margin-bottom: 100px;
+  font-family: "Kurale", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: clamp(1.6rem, 2.5vw, 3.8rem);
+}
+.command-img{
+  width: 34%;
+  height: auto;
+}
+.command-img img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+input{
+  color: #000000;
+}
+@media (min-width: 992px) {
+  .item-name {
+    font-size: clamp(2.1rem, 5.5vw, 7vw);
+    /* font-size: 3.8rem; */
+  }
+  .cost-item {
+    font-size:clamp(1.7rem, 2.5vw, 2.6rem);
+  }
+  .weith {
+    font-size:clamp(1.7rem, 2.5vw, 2.6rem);
+  }
+  .ingredients {
+    font-size:clamp(1.7rem, 2.5vw, 2.6rem);
+  }
+  .weith span {
+    font-weight: 500;
+    font-size:clamp(2.3rem, 2.5vw, 3.2rem);
+    text-shadow: 2px 2px 5px rgb(0, 0, 0);
+  }
+  .ingredients span {
+    font-weight: 500;
+    font-size:clamp(2.3rem, 2.5vw, 3.2rem);
+    text-shadow:2px 2px 5px rgb(0, 0, 0);
+  }
+}
+@media (max-width:768px) {
+  .aboutmenu .navbar button {
+    margin-right: 60px;
+    margin-left: auto;
+    border: solid black ;
+    color: #fff !important;
+  }
+  .aboutrestoran{
+    margin-top: 120px;
+    color: #fff;
+    margin-left: 30px;
+    width: 80% !important;
+    text-shadow: 1px 1px 5px rgb(0, 0, 0);
+    font-family: "Kurale", serif;
+    font-weight: 400;
+    font-style: normal;
+    
+  }
+}
+@media (min-height:1200px) {
+  .aboutmenu {
+    width: 100%;
+    height:1200px;
+  }
+}
