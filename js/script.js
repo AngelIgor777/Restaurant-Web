@@ -215,8 +215,7 @@ const renderTitle = () =>`
           <nav class="navbar navbar-expand-md navcont">
             <div class="container-fluid">
               <div class="logoimg">
-              <img src="./css/coffe.png" alt="" />
-              <h3>COFFEE TIME</h3>
+              <img src="./css/Coffelog.png" alt="" /> 
               </div>
               <button
                 class="navbar-toggler"
