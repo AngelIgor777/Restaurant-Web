@@ -46,7 +46,16 @@ header {
   transform-origin: center; /* Устанавливаем центр поворота */
 }
 /*logo*/
-.logo {
+.logo  a{
+  color: #3bfa57;
+  font-size:clamp(2.5rem, 0.5vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  font-family: "Playfair Display SC", serif;
+  font-weight: 900;
+  font-style: italic;
+}
+.logo{
   color: #3bfa57;
   font-size:clamp(2.5rem, 0.5vw, 3rem);
   display: flex;

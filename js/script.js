@@ -13,7 +13,7 @@ const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
           <div class="container-fluid">
-            <h1 class="logo">COFFEE TIME</h1>
+            <h1 class="logo"><a href="panel.html" style='text-decoration:none'>COFFEE TIME</a></h1>
             <span class="buttonsing-1 d-flex flex-row">
               <div class="dropdown  singin">
                 
