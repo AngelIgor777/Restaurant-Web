@@ -352,52 +352,60 @@ async function fetchProductTypes() {
 async function fetchMenuItems(categoryIds) {
   try {
     const menuContainer = document.querySelector('.menu-container');
-
+    const allitems=[];
+    const ids=[];
     for (const id of categoryIds) {
       const response = await fetch(`http://localhost:9091/api/v1/products?typeId=${id}`);
       const data = await response.json();
-
-      if (data.content && Array.isArray(data.content)) {
-        for (const item of data.content) {
-          // Запрос URL картинки
-          const photoResponse = await fetch(`http://localhost:9091/api/v1/photos/product/${item.id}`);
-          const photoData = await photoResponse.json();
-          console.log(photoResponse);
-          const imageUrl = 'http://localhost:9091/api/v1/photos/resource?photoName=' + (photoData[0]?.url || 'default.jpg'); // Если нет URL, используем картинку по умолчанию
-          
-          // Создаем элемент меню
-          const menuItem = document.createElement('div');
-          menuItem.className = `col-sm-6 col-md-4 col-lg-4 item ${id} `;
-          menuItem.id= `item-${item.id}`;
-          menuItem.innerHTML = `
-          
-            <div class="img-cost">
-            <a href="#item-${item.id}">
-              <div class="description">
-              <h3><b>${item.description}</b></h3>
-                  <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
-                    ? `Примерное время готовки: <b>${formatTime(item.cookingTime)}</b>` 
-                    : "Сразу"}</h5>
-              </div>
-              </a>
-              <img src="${imageUrl}" alt="${item.name}" />
-              <p class="cost">${item.price} MDL</p>
-              
+      if(data.content && Array.isArray(data.content)){
+      allitems.push(data.content);
+      ids.push(id);
+      }
+    }
+    let shet=0;
+    if (allitems && Array.isArray(allitems)) {
+      for (const it of allitems) {  
+        for (const item of it){
+        // Запрос URL картинки
+        const photoResponse = await fetch(`http://localhost:9091/api/v1/photos/product/${item.id}`);
+        const photoData = await photoResponse.json();
+        const imageUrl = 'http://localhost:9091/api/v1/photos/resource?photoName=' + (photoData[0]?.url || 'default.jpg'); // Если нет URL, используем картинку по умолчанию
+        
+        // Создаем элемент меню
+        const menuItem = document.createElement('div');
+        menuItem.className = `col-sm-6 col-md-4 col-lg-4 item ${ids[shet]} `;
+        menuItem.id= `item-${item.id}`;
+        menuItem.innerHTML = `
+        
+          <div class="img-cost">
+          <a href="#item-${item.id}">
+            <div class="description">
+            <h3><b>${item.description}</b></h3>
+                <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
+                  ? `Примерное время готовки: <b>${formatTime(item.cookingTime)}</b>` 
+                  : "Сразу"}</h5>
             </div>
-            <h3 class="name">${item.name}</h3>
-            <div class="send-plus-min">
-              <div class="plus-min">
-                <p class="min"><i class="bx bx-minus-circle"></i></p>
-                <input type="number" value="1" maxlength="2" min="0" disabled/>
-                <p class="plus"><i class="bx bx-plus-circle"></i></p>
-              </div>
-              <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+            </a>
+            <img src="${imageUrl}" alt="${item.name}" />
+            <p class="cost">${item.price} MDL</p>
+            
+          </div>
+          <h3 class="name">${item.name}</h3>
+          <div class="send-plus-min">
+            <div class="plus-min">
+              <p class="min"><i class="bx bx-minus-circle"></i></p>
+              <input type="number" value="1" maxlength="2" min="0" disabled/>
+              <p class="plus"><i class="bx bx-plus-circle"></i></p>
             </div>
-          `;
+            <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+          </div>
+        `;
 
-          // Добавляем элемент в контейнер
-          menuContainer.appendChild(menuItem);
+        // Добавляем элемент в контейнер
+        menuContainer.appendChild(menuItem);
+       
         }
+        shet+=1;
       }
     }
     initializeIsotope();
