@@ -54,6 +54,8 @@ header {
   font-family: "Playfair Display SC", serif;
   font-weight: 900;
   font-style: italic;
+  width: 76px !important;
+  
 }
 .logo{
   color: #3bfa57;
@@ -63,6 +65,11 @@ header {
   font-family: "Playfair Display SC", serif;
   font-weight: 900;
   font-style: italic;
+}
+.logo a img{
+  width:100%;
+  height: 100%;
+  object-fit: cover;
 }
 /* Изображение юзера */
 .singinuser {
@@ -177,13 +184,13 @@ header {
   font-style: normal;
 }
 .category ul li a.active {
-  background-color: #3bfa57;
+  background-color: #252525d9;
   font-weight: lighter;
   width: 100%;
   height: 100%;
 }
 .category ul li a:hover {
-  background-color: #3bfa57;
+  background-color: #252525d9;
 }
 .category-list {
   margin-left: 20px;
@@ -251,7 +258,8 @@ header {
   bottom: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #3bfa57;
+  color: #fff;
+  background-color: #252525c0;
   border-radius: 5px;
   margin: 0;
   padding: 6px;
@@ -266,7 +274,7 @@ header {
   border-radius: 10px;
 
   transform: translateY(-100%);
-  transition: all 0.4s ease-in;
+  transition: all 0.4s ease;
 }
 .menu-container .item .img-cost:hover .description {
   transform: translateY(0);
@@ -339,7 +347,7 @@ input[type="number"]::-webkit-inner-spin-button {
   height: 40px;
   width: 50px;
   border: none;
-  background-color: #4bff66;
+  background-color: #252525d9;
   font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -431,6 +439,7 @@ input[type="number"]::-webkit-inner-spin-button {
 .buttonsend a {
   width: 100%;
   height: 100%;
+  z-index: 200;
 }
 /* Модальное окно */
 .delete {
@@ -557,7 +566,7 @@ input[type="number"]::-webkit-inner-spin-button {
     transition: all 0.1s;
   }
   .category ul li a:hover {
-    background-color: #3bfa57;
+    background-color: #252525d9;
   }
 }
 @media (max-width: 525px) {

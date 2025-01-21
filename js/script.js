@@ -13,7 +13,7 @@ const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
           <div class="container-fluid">
-            <h1 class="logo"><a href="panel.html" style='text-decoration:none'>COFFEE TIME</a></h1>
+            <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Coffelog.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
               <div class="dropdown  singin">
                 
@@ -209,6 +209,7 @@ const renderMenu = () =>`
 `
 // часть О нас
 const renderTitle = () =>`
+
 <section class="aboutmenu">
         
         <header class="title">
@@ -253,13 +254,21 @@ const renderTitle = () =>`
         </p>
         <button class="ourmenu"><a href="#menu">Наше Меню</a></button>
       </div>
+      <section class='menuContainer'>
       <div class="aboutourgroup container-fluid">
         <div class="commantname">Наша Команда</div>
+        <div class="command-imgs">
         <div class="command-img">
           <img src="./img/Наша-команда.jpg" alt="Наша Команда">
         </div>
+        <div class="command-img">
+          <img src="./img/команда.jpg" alt="Наша Команда">
+        </div>
+        </div>
       </div>
       </section>
+      </section>
+      
 `
 const renderItem= (onlyItem=[]) =>`
 <div class="container-fluid only-item justify-content-center align-items-center ">
@@ -353,8 +362,8 @@ async function fetchMenuItems(categoryIds) {
           // Запрос URL картинки
           const photoResponse = await fetch(`http://localhost:9091/api/v1/photos/product/${item.id}`);
           const photoData = await photoResponse.json();
-          console.log('http://localhost:9091/api/v1/photos/resource?photoName='+photoData[0].url);
-          const imageUrl = 'http://localhost:9091/api/v1/photos/resource?photoName='+photoData[0]?.url || 'default.jpg'; // Если нет URL, используем картинку по умолчанию
+          console.log(photoResponse);
+          const imageUrl = 'http://localhost:9091/api/v1/photos/resource?photoName=' + (photoData[0]?.url || 'default.jpg'); // Если нет URL, используем картинку по умолчанию
           
           // Создаем элемент меню
           const menuItem = document.createElement('div');

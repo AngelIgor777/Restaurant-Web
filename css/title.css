@@ -5,14 +5,15 @@ body{
 }
 .app{
   width: 100%;
-  height: 100%;
+  height: 100% !important;
 }
 .aboutmenu {
   width: 100%;
-  height:auto;
+  height:100%;
+  
 }
 .aboutmenu header{
-  position: relative !important;
+  position: sticky !important;
   padding: 0;
 }
 .aboutmenu .navcont{
@@ -332,12 +333,28 @@ padding: 10px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+  width: 90%;
+  margin-left:auto;
+  margin-right:auto;
+  border-radius: 30px;
+  background-image: url('../img/5224386382380787760.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  
 }
+.menuContainer{
+  height: auto;
+  width: auto;
+
+}
+
 .commantname{
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
-  background-color:rgba(0, 0, 0, 0.337);
   color: #fff;
   width: 100%;
   height: 100px;
@@ -347,13 +364,24 @@ padding: 10px;
   font-style: normal;
   font-size: clamp(1.6rem, 2.5vw, 3.8rem);
 }
+.command-imgs{
+  display: flex;
+  justify-content: space-around;
+}
 .command-img{
-  width: 34%;
+  width: 32%;
   height: auto;
+  border: solid 2px #ffffff3d;
+  background-color:rgba(0, 0, 0, 0.479) ;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom:100px;
 }
 .command-img img{
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
+  margin: 30px 0;
   object-fit: cover;
 }
 input{

@@ -35,11 +35,16 @@ h3{
     font-size: clamp(0.4rem, 2.6vw, 1.3rem);
 }
 
+.category-items tr{
+    width: 75%;
+}
+
 .category-items th, .category-items td {
-    max-width: 150px;  /* ширина ячейки */
+    /* max-width: 150px;  ширина ячейки */
     overflow: hidden; /* Скрытие переполненного содержимого */
     text-overflow: ellipsis; /* Добавление многоточия при переполнении */
     white-space: nowrap; /* Запрет переноса текста */
+    
 }
 h1{
     display: flex;
@@ -71,4 +76,9 @@ h1{
 .allbuttons{
     display: flex;
     width: 80%;
+}
+.pagging{
+    text-align: right;
+    color: rgb(97, 97, 97);
+    cursor: pointer;
 }

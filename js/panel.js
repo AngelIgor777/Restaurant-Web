@@ -35,6 +35,9 @@ async function fetchProductTypes() {
   
                     </tbody>
                   </table>
+                  <div class='pagging'>
+                  <p>ещё...</p>
+                  </div>
           `;
           categorytable.appendChild(table);
         });
@@ -290,6 +293,7 @@ async function fetchProductTypes() {
     } catch (error) {
       console.error('Ошибка при запросе данных категорий:', error);
     }
+    
   }
 async function Addtable(categoryIds){
     try{
