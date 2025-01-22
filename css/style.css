@@ -238,7 +238,8 @@ header {
 }
 .menu-container .item h3 {
   margin-top: 10px;
-  font-size: 2.4rem;
+  font-size: clamp(1.6rem, 2.4rem, 2.4rem);
+  overflow: hidden;
 }
 .menu-container .item .img-cost img {
   width: 280px;
@@ -272,7 +273,8 @@ header {
   top: 0;
   color: #fff;
   border-radius: 10px;
-
+  height: 100%;
+  width: 100%;
   transform: translateY(-100%);
   transition: all 0.4s ease;
 }
@@ -387,6 +389,40 @@ input[type="number"]::-webkit-inner-spin-button {
   100% {
     transform: translateY(0px);
   }
+}
+/* контейнер пагинации */
+.pagcontainer{
+  display: flex;
+  justify-content: center;
+}
+.pagul{
+  display: flex;
+  list-style: none;
+  border: solid 3px #0000008e;
+  padding: 20px;
+  justify-content: center;
+}
+.pagul li{
+  width: 50px;
+}
+.pagul li button{
+
+  border: none;text-align: center;
+  color: #fff;
+  width: 50px;
+  height: 100%;
+  right: 0;
+  text-align: center;
+  font-size: 1.3rem;
+  transition: all 0.4s;
+}
+.pagul li button:hover{
+  background-color: #000000c1;
+  color: #fff;
+}
+.pagul li button.active{
+  background-color: #000000c1;
+  color: #fff;
 }
 /* table itog cost */
 .itog-cost{

@@ -138,7 +138,16 @@ const renderMenu = () =>`
             </div>
           </div>
         </div>
-  
+        <!-- Для пагинации -->
+        <div class="pagcontainer">
+          <ul class="pagul">
+            <li><button>1</button></li>
+            <li><button>1</button></li>
+            <li><button>1</button></li>
+            <li><button>1</button></li>
+            <li><button>1</button></li>
+          </ul>
+     </div>
         <!-- Кнопка отправки -->
         <div class="buttonsend">
           <a type="button" data-bs-toggle="modal" data-bs-target="#Modalwindow">
@@ -146,7 +155,7 @@ const renderMenu = () =>`
           </a>
           <p class="colvo">0</p>
         </div>
-  
+
         <!-- Модальное окно -->
         <div
           class="modal fade"
@@ -414,8 +423,7 @@ async function fetchMenuItems(categoryIds) {
   }
 }
 
-
-
+// Обновление модального окна заказа
 function updateModal(order) {
   let tbody = document.querySelector(".ordorlist");
   tbody.innerHTML = ''; // Очищаем таблицу перед вставкой новых данных
@@ -471,9 +479,10 @@ function updateModal(order) {
 }
 
 
-
 function initializeIsotope() {
   var $container = $('.menu-container');
+  var itemsPerPage = 3;
+  var currentPage = 1;
 
   // Инициализация Isotope
   $container.isotope({
@@ -482,63 +491,91 @@ function initializeIsotope() {
     masonry: {
       gutter: 10
     },
-    animationOptions: {
-      duration: 750,
-      easing: 'linear',
-      queue: false
-    }
+    transitionDuration: 0
   });
 
+  // Обработчик завершения `Isotope`
+  $container.on('arrangeComplete', function () {
+    $container.find('.item').css('position', 'static');
+  });
 
+  // Инициализация пагинации
+  function initializePagination(totalPages) {
+    
+    var $pagination = $('.pagul');
+    $pagination.empty();
 
-  // Переключение на position static
-  var checkInterval = setInterval(function() {
-    $container.find('.item').each(function() {
-      var currentPosition = $(this).css('position');
-      if (currentPosition !== 'static') {
-        // Если position не static, то принудительно устанавливаем position: static
-        $(this).css('position', 'static');
+    for (var i = 1; i <= totalPages; i++) {
+      var $li = $('<li>').addClass('page-item');
+      var $button = $('<button>')
+        .text(i)
+        .addClass('page-link pagination-button')
+        .attr('data-page', i)
+        .on('click', function () {
+          var page = parseInt($(this).attr('data-page'));
+          showPage(page);
+        });
+
+      $li.append($button);
+      $pagination.append($li);
+    }
+
+    $pagination.find(`.page-item:first-child .pagination-button`).addClass('active');
+  }
+
+  // Показ страницы
+  function showPage(page) {
+    currentPage = page;
+    var start = (page - 1) * itemsPerPage;
+    var end = start + itemsPerPage;
+  
+    // Получаем текущий фильтр
+    var selector = $('.category-list .active').attr('data-filter') || '*';
+  
+    $container.isotope({
+      filter: function () {
+        if (selector === '*') {
+          // Если фильтр "все", используем индекс без селектора
+          var index = $(this).index();
+          return index >= start && index < end;
+        } else {
+          // Если есть фильтр, учитываем только отфильтрованные элементы
+          var index = $(this).index(selector);
+          return index >= start && index < end;
+        }
       }
     });
-  }, 100);  // Каждые 10 миллисекунд
+  
+    // Обновляем активную кнопку пагинации
+    $('.pagul .pagination-button').removeClass('active');
+    $(`.pagul .pagination-button[data-page="${page}"]`).addClass('active');
+    // поднимаем экран вверх
+    $('html, body').animate({ scrollTop: 0 }, 'fast');
+  }
 
-  // Остановка таймера после того, как Isotope завершит свою работу
-  $container.on('arrangeComplete', function() {
-    // Останавливаем таймер, так как проверка больше не нужна
-    clearInterval(checkInterval);
-  });
-
-  // Обработчик кликов по категориям
-  $('.category-list a').on('click', function() {
+  // Обработчик фильтрации
+  $('.category-list a').on('click', function () {
+    // Убираем активный класс у всех и добавляем на текущий фильтр
     $('.category-list .active').removeClass('active');
     $(this).addClass('active');
-    var selector = $(this).attr('data-filter');
-
-    // Перезапускаем фильтрацию элементов с анимацией
-    $container.isotope({
-      filter: selector,
-      layoutMode: 'masonry',
-      transitionDuration: '0' // Время для анимации расположения
-    });
-
-    // Скрываем элементы перед анимацией
-   
-
-    // После завершения анимации, восстанавливаем opacity
-    $container.on('arrangeComplete', function() {
-      // Делаем элементы видимыми с плавным переходом
-      setTimeout(function() {
-        $container.find('.item').css({
-          'opacity': 1,  // Делаем элементы видимыми
-          'transition': 'opacity 0.9s'  // Плавный переход на 0.9 секунды
-        });
-      }, 10); // Задержка для гарантированной перерисовки
-    });
-
-    return false;
+    
+    // Получаем текущий фильтр
+    var selector = $(this).attr('data-filter') || '*';  
+    // Пересчитываем элементы и страницы
+    var allItems = selector === '*' ? $container.find('.item') : $container.find(selector);
+    var totalPages = Math.ceil(allItems.length / itemsPerPage);
+  
+    // Инициализируем пагинацию и отображаем первую страницу
+    initializePagination(totalPages);
+    showPage(1); // Переходим на первую страницу
+    return false; // Предотвращаем стандартное поведение ссылки
   });
-}
 
+  // Инициализация при загрузке
+  var totalPages = Math.ceil($container.find('.item').length / itemsPerPage);
+  initializePagination(totalPages);
+  showPage(1);
+}
 
 
 
