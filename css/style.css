@@ -621,7 +621,7 @@ input[type="number"]::-webkit-inner-spin-button {
     height: 40px;
     width: 100%;
     border: none;
-    background-color: #3bfa57;
+    background-color: #252525d9;
     font-size: 1.6rem;
     cursor: pointer;
     transition: all 0.2s;

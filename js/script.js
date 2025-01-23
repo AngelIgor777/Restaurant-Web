@@ -455,7 +455,7 @@ function updateModal(order) {
         // Получаем ID товара для удаления
         const itemId = e.target.closest("button").dataset.delete;
         const price = parseFloat(button.dataset.price);
-        
+        console.log(price)
         let totalcost=JSON.parse(localStorage.getItem('totalcost'));
         totalcost-=price;
         localStorage.setItem('totalcost', JSON.stringify(totalcost));
@@ -664,20 +664,23 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         // Добавляем класс sold для анимации
         but.classList.add("sold");
         let order=JSON.parse(localStorage.getItem('order'));
+        let totalcost=JSON.parse(localStorage.getItem('totalcost'));
         console.log(order);
         // Находим поле ввода количества
         const input = but.closest(".send-plus-min").querySelector("input");
         let quantity = parseInt(input.value, 10);
 
-        // Находим название товара
+        // Находим данные товара
         const tovarname = but.closest(".item").querySelector('.name').textContent;
+        const tovarid =parseInt(but.closest(".item").id.replace(/[^0-9]/g,""));
+        console.log(tovarid);
         const price=parseFloat(but.closest(".item").querySelector('.cost').textContent)*quantity;
+        console.log('its a price'+price);
         totalcost+=price;
         quant+=quantity;
         buttosend.innerHTML=order.length+1;
-        console.log(order.length);
         // Добавляем заказ в массив
-        order.push({ id:order.length, tovarname, quantity, price});
+        order.push({ id:tovarid, tovarname, quantity, price});
         console.log(order);
         console.log(totalcost);
         localStorage.setItem('order', JSON.stringify(order));
