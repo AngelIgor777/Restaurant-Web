@@ -3,11 +3,6 @@
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
 
-
-
-
-
-
 // части html для меню
 const renderHeader = () => `
 <header>
@@ -205,7 +200,7 @@ const renderMenu = () =>`
                 </button>
                 <button
                   type="button"
-                  class="btn btn-success"
+                  class="btn btn-success ordersend"
                   style="font-size: 1.4rem"
                 >
                   Подтвердить
@@ -458,11 +453,17 @@ function updateModal(order) {
         console.log(price)
         let totalcost=JSON.parse(localStorage.getItem('totalcost'));
         totalcost-=price;
-        localStorage.setItem('totalcost', JSON.stringify(totalcost));
+        
         // Обновляем заказ, удаляя элемент
         let order = JSON.parse(localStorage.getItem('order'));
-        order = order.filter(item => item.id !== parseInt(itemId));
-        
+        const index = order.findIndex(item => item.id === parseInt(itemId) && item.price===price);
+        if (index !== -1) {
+           order.splice(index, 1); // Удаляет только один элемент по найденному индексу
+        }
+        if(order.length===0){
+          totalcost=0;
+        }
+        localStorage.setItem('totalcost', JSON.stringify(totalcost));
         // Сохраняем обновленный заказ в localStorage
         localStorage.setItem('order', JSON.stringify(order));
         
@@ -477,7 +478,6 @@ function updateModal(order) {
     tbody.insertAdjacentHTML('beforeend', '<tr><td colspan="5">Корзина пуста</td></tr>');
   }
 }
-
 
 function initializeIsotope() {
   var $container = $('.menu-container');
@@ -577,9 +577,6 @@ function initializeIsotope() {
   showPage(1);
 }
 
-
-
-
 if(!localStorage.getItem("order")){
   localStorage.setItem("order", JSON.stringify([]))
 }
@@ -675,7 +672,6 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         const tovarid =parseInt(but.closest(".item").id.replace(/[^0-9]/g,""));
         console.log(tovarid);
         const price=parseFloat(but.closest(".item").querySelector('.cost').textContent)*quantity;
-        console.log('its a price'+price);
         totalcost+=price;
         quant+=quantity;
         buttosend.innerHTML=order.length+1;
@@ -692,6 +688,36 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
       }
     }
   });
+  // Кнопка отправки
+  document.querySelector('.ordersend').addEventListener('click', function(){
+    let payment='';
+    Swal.fire({
+      title: "Выберите способ оплаты",
+      showDenyButton: true,
+      confirmButtonColor: "#2F9262",
+      denyButtonColor: "#2F9262",
+      confirmButtonText: "Кэш",
+      denyButtonText: `Карта`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+       payment='CASH';
+      } else if (result.isDenied) {
+        payment='CARD';
+      }
+    });
+    let book={};
+    let order=JSON.parse(localStorage.getItem('order'));
+    let orderrequest=[];
+    order.forEach(item=>{
+      let todo={
+        productId:item.id,
+        quantity:item.quantity,
+      }
+      orderrequest.push(todo);
+    })
+    console.log(orderrequest);
+  })
   // Модальное окно 
   document.querySelector(".buttonsend").addEventListener("click", function(){
     let order=JSON.parse(localStorage.getItem('order'));
@@ -799,7 +825,6 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
       } else {
         console.log(localStorage.getItem("onlyItem"))
         if(localStorage.getItem("onlyItem")){
-          console.log("Это я")
           let onlyItem=JSON.parse(localStorage.getItem('onlyItem'));
           menusect.innerHTML = renderHeader()+renderItem(onlyItem)+renderFooter();
 
