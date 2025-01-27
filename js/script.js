@@ -8,7 +8,7 @@ const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
           <div class="container-fluid">
-            <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Coffelog.png" alt="" /> </a></h1>
+            <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
               <div class="dropdown  singin">
                 
@@ -82,22 +82,22 @@ const renderFooter = () => `
       <footer>
         <div class="container-fluid foot">
           <div class="row text-center">
-            <h1 class="col-12" id="about"><b>COFFEE TIME</b></h1>
+            <h1 class="col-12" id="about"><b>PARKTOWN COFFEE</b></h1>
           </div>
           <div class="row text-center">
             <div class="col-md-4 part">
               <h3>Адрес</h3>
-              <h5>Ул. ???</h5>
+              <h5>Lenin 81/a</h5>
               <h5>Copceac</h5>
             </div>
             <div class="col-md-4 part">
               <h3>Время работы</h3>
-              <h5>с 7:00 до 23:00</h5>
-              <h5>Работаем без выходных</h5>
+              <h5>с 8:00 до 22:00</h5>
+              <h5>Кухня до 21:00</h5>
             </div>
             <div class="col-md-4 part">
               <h3>Контакты</h3>
-              <h5>тел: 078848459</h5>
+              <h5>тел: 078299844</h5>
             </div>
           </div>
         </div>
@@ -222,7 +222,7 @@ const renderTitle = () =>`
           <nav class="navbar navbar-expand-md navcont">
             <div class="container-fluid">
               <div class="logoimg">
-              <img src="./css/Coffelog.png" alt="" /> 
+              <img src="./css/Park.png" alt="" /> 
               </div>
               <button
                 class="navbar-toggler"
@@ -252,7 +252,7 @@ const renderTitle = () =>`
         <p class="restdescr">
         Ресторан, погружающий в атмосферу гастрономического наслаждения. Мы
         предлагаем авторское меню, сочетая традиции и современные кулинарные
-        тренды. Уютный интерьер и гостеприимная атмосфера делают COFFEE TIME
+        тренды. Уютный интерьер и гостеприимная атмосфера делают PARKTOWN COFFEE
         идеальным местом для особых моментов и встреч. Наши повара используют
         свежие, качественные ингредиенты, создавая вдохновляющие блюда.
         Приходите, чтобы открыть уникальный вкус и незабываемые эмоции.
