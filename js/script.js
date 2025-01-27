@@ -202,6 +202,8 @@ const renderMenu = () =>`
                   type="button"
                   class="btn btn-success ordersend"
                   style="font-size: 1.4rem"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
                 >
                   Подтвердить
                 </button>
@@ -369,6 +371,7 @@ async function fetchMenuItems(categoryIds) {
     let shet=0;
     if (allitems && Array.isArray(allitems)) {
       for (const it of allitems) {  
+        console.log(it);
         for (const item of it){
         // Запрос URL картинки
         const photoResponse = await fetch(`http://localhost:9091/api/v1/photos/product/${item.id}`);
@@ -749,6 +752,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         );
       }
     });
+   
     let book={};
     let order=JSON.parse(localStorage.getItem('order'));
     let orderrequest=[];
@@ -794,21 +798,24 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
     document.querySelector('body').classList.add('bodyc');
       const menuItem = document.querySelector(hash);
       if(!localStorage.getItem("onlyItem")){
-          localStorage.setItem("onlyItem", JSON.stringify([]))
+          localStorage.setItem("onlyItem", JSON.stringify(0));
         }
       if (menuItem) {
         
-        const itemName = menuItem.querySelector('.name').textContent;
-        const itemCost = menuItem.querySelector('.cost').textContent;
-        const itemImg = menuItem.querySelector('img').src;
-        const itemDescription = menuItem.querySelector(".description h3").textContent;
-        const itemTime = menuItem.querySelector(".description h5 b") ? menuItem.querySelector(".description h5 b").textContent :"сразу";
-        
+        const itemid = parseInt(menuItem.closest(".item").id.replace(/[^0-9]/g,""));;
+        console.log(itemid);
       
-        let onlyItem=[];
-        onlyItem.push(itemName, itemCost, itemImg, itemDescription, itemTime);
+        let onlyItem=itemid;
+        let contentfetch= await fetch(`http://localhost:9091/api/v1/products/${onlyItem}`);
+        let contentdat=await contentfetch.json();
+        let contentimg=`http://localhost:9091/api/v1/photos/resource?photoName=${contentdat.photoResponseDTOList[0].url}`;
+        let contentitem=[];
+        contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
+          contentimg, contentdat.productResponseDTO.description,
+           contentdat.productResponseDTO.cookingTime);
+        console.log(contentimg);
         localStorage.setItem("onlyItem", JSON.stringify(onlyItem));
-        menusect.innerHTML = renderHeader()+renderItem(onlyItem)+renderFooter();
+        menusect.innerHTML = renderHeader()+renderItem(contentitem)+renderFooter();
 
         document.querySelector('.only-item').addEventListener("click", function(e) {
           // Находим родительский элемент с классом .plus-min
@@ -841,7 +848,6 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
               but.classList.add("sold");
               let order=JSON.parse(localStorage.getItem('order'));
               console.log(order);
-              console.log(itemCost);
               // Находим поле ввода количества
               const plusmin = but.closest(".send-but"); 
               if(plusmin){
@@ -868,8 +874,15 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
       } else {
         console.log(localStorage.getItem("onlyItem"))
         if(localStorage.getItem("onlyItem")){
-          let onlyItem=JSON.parse(localStorage.getItem('onlyItem'));
-          menusect.innerHTML = renderHeader()+renderItem(onlyItem)+renderFooter();
+          let onlyItem=parseInt(hash.replace(/[^0-9]/g,""));
+          let contentfetch= await fetch(`http://localhost:9091/api/v1/products/${onlyItem}`);
+          let contentdat=await contentfetch.json();
+          let contentimg=`http://localhost:9091/api/v1/photos/resource?photoName=${contentdat.photoResponseDTOList[0].url}`;
+          let contentitem=[];
+          contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
+            contentimg, contentdat.productResponseDTO.description,
+             contentdat.productResponseDTO.cookingTime);
+          menusect.innerHTML = renderHeader()+renderItem(contentitem)+renderFooter();
 
           document.querySelector('.only-item').addEventListener("click", function(e) {
             // Находим родительский элемент с классом .plus-min

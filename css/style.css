@@ -54,11 +54,11 @@ header {
   font-family: "Playfair Display SC", serif;
   font-weight: 900;
   font-style: italic;
-  width: 76px !important;
-  
+  width: 70px !important;
 }
 .logo{
   color: #3bfa57;
+  margin: 0;
   font-size:clamp(2.5rem, 0.5vw, 3rem);
   display: flex;
   flex-direction: column;
@@ -112,17 +112,17 @@ header {
 .navbar-collapse.collapsing {
   background-color: rgba(0, 0, 0, 0.6);
 }
-.navbar-collapse.collapsing ul {
-  gap: 0;
-}
+
 .navbar-collapse.collapsing li {
   padding-top: 30px;
 }
 .navbar-collapse.show {
   background-color: rgba(0, 0, 0, 0.6);
 }
-.navbar-collapse.show ul {
-  gap: 0;
+.navbar-collapse.show ul li{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .navbar-collapse.show li {
   padding-top: 30px;
@@ -445,6 +445,9 @@ input[type="number"]::-webkit-inner-spin-button {
   transition: all 0.15s;
   z-index: 1000;
   display: inline-block;
+}
+.buttonsend a{
+  z-index: 2000;
 }
 .buttonsend button {
   border-radius: none;
