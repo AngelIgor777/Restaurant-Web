@@ -692,18 +692,61 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
   document.querySelector('.ordersend').addEventListener('click', function(){
     let payment='';
     Swal.fire({
-      title: "Выберите способ оплаты",
-      showDenyButton: true,
+      title: "Введите данные",
+      html: `
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="street" placeholder="Улица" />
+          <label for="street">Улица</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="home" placeholder="Дом" />
+          <label for="home">Дом</label>
+        </div>
+        <div class="mb-3">
+          <label>
+            <input type="radio" id="Cash" name="paymentMethod" value="Cash" />
+            Кэш
+          </label>
+          <label style="margin-left: 15px;">
+            <input type="radio" id="Card" name="paymentMethod" value="Card" />
+            Карта
+          </label>
+        </div>
+      `,
+      showCancelButton: true,
       confirmButtonColor: "#2F9262",
-      denyButtonColor: "#2F9262",
-      confirmButtonText: "Кэш",
-      denyButtonText: `Карта`
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Отправить",
+      cancelButtonText: "Отмена",
+      focusConfirm: false,
+      didOpen: () => {
+        // Переносим фокус на поле "Улица"
+        document.getElementById("street").focus();
+      },
+      preConfirm: () => {
+        const street = document.getElementById("street").value.trim();
+        const home = document.getElementById("home").value.trim();
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+    
+        if (!street || !home || !paymentMethod) {
+          Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+          return false;
+        }
+    
+        return {
+          street,
+          home,
+          paymentMethod: paymentMethod.value,
+        };
+      },
     }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-       payment='CASH';
-      } else if (result.isDenied) {
-        payment='CARD';
+        console.log("Введенные данные:", result.value);
+        Swal.fire(
+          "Данные отправлены!",
+          `Улица: ${result.value.street}, Дом: ${result.value.home}, Оплата: ${result.value.paymentMethod}`,
+          "success"
+        );
       }
     });
     let book={};
