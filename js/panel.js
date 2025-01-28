@@ -286,7 +286,40 @@ async function fetchProductTypes() {
                 alert('Пожалуйста, заполните все поля');
             }
         });
-        
+        // Пагинация в меню
+        document.querySelectorAll('.pagging').forEach(el => {
+            el.addEventListener('click', function (e) {
+            const nearestTable = el.closest('div').previousElementSibling;
+
+            if (nearestTable && nearestTable.classList.contains('category-items') && el.classList.contains('pagging')) {
+                let i = 0;
+                // Скрыть строки после 5-й
+                nearestTable.querySelectorAll('tbody tr').forEach(em => {
+                    if (i >= 5) {
+                        em.style.display = 'none'; // Скрыть строки
+                    } else {
+                        em.style.display = ''; // Убедиться, что первые 5 строк видимы
+                        i++;
+                    }
+                });
+
+                // Меняем класс на "pagshow"
+                el.classList.replace('pagging', 'pagshow');
+            }
+            else{
+                let i = 0;
+                // Скрыть строки после 5-й
+                nearestTable.querySelectorAll('tbody tr').forEach(em => {
+                        em.style.display = ''; // Скрыть строки
+                });
+
+                // Меняем класс на "pagshow"
+                el.classList.replace('pagshow', 'pagging');
+            }
+        });
+    });
+
+
       } else {
         console.error('Неверный формат данных:', data);
       }
@@ -373,5 +406,31 @@ async function deleteCategory(categoryId) {
         console.error('Ошибка при удалении категории:', error);
     }
 }
+async function Closepagging() {
+    // запускаем всю страницу
+    await fetchProductTypes();
+    // закрытие всех пагинациий
+    document.querySelectorAll('.pagging').forEach(el => {
+        const nearestTable = el.closest('div').previousElementSibling;
+        
+        if (nearestTable && nearestTable.classList.contains('category-items') && el.classList.contains('pagging')) {
+            let i = 0;
+            // Скрыть строки после 5-й
+            nearestTable.querySelectorAll('tbody tr').forEach(em => {
+                if (i >= 5) {
+                    em.style.display = 'none'; // Скрыть строки
+                } else {
+                    em.style.display = ''; // Убедиться, что первые 5 строк видимы
+                    i++;
+                }
+            });
 
-fetchProductTypes();
+            // Меняем класс на "pagshow"
+            el.classList.replace('pagging', 'pagshow');
+        }
+    });
+}
+
+
+// Запуск
+Closepagging()

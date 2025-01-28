@@ -77,8 +77,13 @@ h1{
     display: flex;
     width: 80%;
 }
-.pagging{
-    text-align: right;
+.pagging, .pagshow{
+    display: flex;
+    justify-content: right;
+    width: auto;
+}
+.pagging p, .pagshow p{
     color: rgb(97, 97, 97);
     cursor: pointer;
+    padding-left: 20px;
 }
