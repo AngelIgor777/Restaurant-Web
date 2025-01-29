@@ -750,8 +750,8 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
             method:'POST'
           })
           .then(response=>response.json())
-          .then(data=>Swal.fire("Успех!", "Расписание обновлено!", "success"))
-          .catch(er =>Swal.fire("Ошибка!", "Не удалось обновить расписание", "error"))
+          .then(data=>console.log(data))
+          .catch(er =>console.log(er))
         }
         
       });
@@ -832,11 +832,11 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         </div>
         <div class="mb-3">
           <label>
-            <input type="radio" id="Cash" name="paymentMethod" value="Cash" />
+            <input type="radio" id="Cash" name="paymentMethod" value="CASH" />
             Кэш
           </label>
           <label style="margin-left: 15px;">
-            <input type="radio" id="Card" name="paymentMethod" value="Card" />
+            <input type="radio" id="Card" name="paymentMethod" value="CARD" />
             Карта
           </label>
         </div>
@@ -901,6 +901,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         userId:0,
         addressRequestDTO:adres
     }
+    console.log(JSON.stringify(book));
     fetch('http://localhost:9091/api/v1/order-products/bulk', {
       method: 'POST',
       headers: {
@@ -911,11 +912,25 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
       .then(response => response.json())
       .then(data => {
           // Обрабатываем успешный ответ
-          Swal.fire("Успех!", "Ваш заказ принят!", "success");
+          Swal.fire({
+            title: "Успех!",
+            text: "Ваш заказ принят!",
+            icon: "success",
+            customClass: {
+              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+            }
+          })
       })
       .catch(error => {
           // Обрабатываем ошибку при отправке
-          Swal.fire("Ошибка!", "Не удалось отправить заказ", "error");
+          Swal.fire({
+            title: "Ошибка!",
+            text: "Не удалось обновить расписание!",
+            icon: "error",
+            customClass: {
+              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+            }
+          })
           console.log(error);
       });
     }
