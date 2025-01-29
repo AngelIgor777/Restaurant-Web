@@ -694,11 +694,25 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
               cronExpression = `0 ${minutes} ${hours},${(parseInt(hours) + 12) % 24} * * *`;
           }
           else if (schedule === "weekly" || schedule === "twice_week") {
-              if (daysOfWeek.length === 0) {
-                  Swal.showValidationMessage("Выберите хотя бы один день недели!");
+              
+              if(schedule==="weekly"){
+                if(daysOfWeek.length===1){
+                  cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`
+                }
+                else{
+                  Swal.showValidationMessage("Выберите толкьо один день недели!");
                   return false;
+                }
               }
-              cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`;
+              if(schedule==="twice_week"){
+                if(daysOfWeek.length===2){
+                  cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`
+                }
+                else{
+                  Swal.showValidationMessage("Выберите толкьо два дня!");
+                  return false;
+                }
+              }
           } else if (schedule === "monthly") {
               cronExpression = `0 ${minutes} ${hours} 1 * *`;
           }
@@ -805,7 +819,6 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
   });
   // Кнопка отправки
   document.querySelector('.ordersend').addEventListener('click', function(){
-    let payment='';
     Swal.fire({
       title: "Введите данные",
       html: `
@@ -857,29 +870,59 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
     }).then((result) => {
       if (result.isConfirmed) {
         console.log("Введенные данные:", result.value);
-        Swal.fire(
-          "Данные отправлены!",
-          `Улица: ${result.value.street}, Дом: ${result.value.home}, Оплата: ${result.value.paymentMethod}`,
-          "success"
-        );
-      }
+        let adres={
+          city:"Copceak",
+          street:String(result.value.street),
+          homeNumber:String(result.value.home),
+          apartmentNumber:"2"
+        }
+        let book={};
+        let order=JSON.parse(localStorage.getItem('order'));
+        let orderrequest=[];
+        order.forEach(item=>{
+            let todo={
+            productId:item.id,
+            quantity:item.quantity,
+        }
+        orderrequest.push(todo);
+        })
+      console.log(orderrequest);
+      book={
+        orderProductRequestDTO:orderrequest,
+        paymentMethod: result.value.paymentMethod,
+        orderInRestaurant:false,
+        tableRequestDTO:{
+          number: null
+        },
+        existDiscountCodes:false,
+        productDiscountCode:"",
+        globalDiscountCode:"",
+        isRegisterUser:false,
+        userId:0,
+        addressRequestDTO:adres
+    }
+    fetch('http://localhost:9091/api/v1/order-products/bulk', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(book),
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Обрабатываем успешный ответ
+          Swal.fire("Успех!", "Ваш заказ принят!", "success");
+      })
+      .catch(error => {
+          // Обрабатываем ошибку при отправке
+          Swal.fire("Ошибка!", "Не удалось отправить заказ", "error");
+          console.log(error);
+      });
+    }
     });
    
-    let book={};
-    let order=JSON.parse(localStorage.getItem('order'));
-    let orderrequest=[];
-    order.forEach(item=>{
-      let todo={
-        productId:item.id,
-        quantity:item.quantity,
-      }
-      orderrequest.push(todo);
-    })
-    console.log(orderrequest);
-  })
-  // document.querySelector('#notification').addEventListener('click', function(){
     
-  // });
+  })
   // Модальное окно 
   document.querySelector(".buttonsend").addEventListener("click", function(){
     let order=JSON.parse(localStorage.getItem('order'));
