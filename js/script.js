@@ -1,4 +1,5 @@
 
+
 // Закрытие меню
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
@@ -14,7 +15,7 @@ const renderHeader = () => `
                 
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
                   <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
-                  <li><a class="dropdown-item" href="#"style="color: black;">Настройки</a></li>
+                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
                 </ul>
@@ -49,11 +50,11 @@ const renderHeader = () => `
             <span class="buttonsing-2 flex-row">
               <div class="dropdown  singin">
                 
-                <ul class="dropdown-menu text-small shadow dropdown-menu-start" >
-                  <li><a class="dropdown-item" style="color: black;" href="#">Зарегестрироваться</a></li>
-                  <li><a class="dropdown-item" style="color: black;" href="#">Настройки</a></li>
+                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
+                  <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
+                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item"href="#" style="color: black;">Выход</a></li>
+                  <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
                 </ul>
                 <a href="#" class="d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class='bx bxs-user-circle singinuser' ></i>
@@ -630,6 +631,117 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         }
       }
     }
+    if(e.target.id==='notification'){
+      Swal.fire({
+        html: `
+        <div class='schedule'>
+          <h1>Расписание уведомлений</h1>
+          <label for="schedule">Выберите периодичность:</label>
+          <select  id="schedule">
+              <option value="daily">Раз в день</option>
+            <option value="twice_day">Два раза в день</option>
+            <option value="weekly">Раз в неделю</option>
+            <option value="twice_week">Два раза в неделю</option>
+            <option value="monthly">Раз в месяц</option>
+          </select>
+       <label for="sctime">Выберите время:</label>
+       <input type="time" id="sctime">
+
+       <div id="days-container" style="display: none; margin-top: 10px;">
+        <h3>Выберите дни недели:</h3>
+        <input type="checkbox" value="1"> Пн
+        <input type="checkbox" value="2"> Вт
+        <input type="checkbox" value="3"> Ср
+        <input type="checkbox" value="4"> Чт
+        <input type="checkbox" value="5"> Пт
+        <input type="checkbox" value="6"> Сб
+        <input type="checkbox" value="0"> Вс
+     </div>
+       </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: "#2F9262",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Отправить",
+        cancelButtonText: "Отмена",
+        focusConfirm: false,
+        didOpen: () =>{
+        //  проверка что если выбрано раз в неделю открывался список дней
+          const scheduleSelect = document.getElementById("schedule");
+          const daysContainer = document.getElementById("days-container");
+          scheduleSelect.addEventListener('change', function(){
+            daysContainer.style.display=(this.value === "weekly" || this.value === "twice_week") ? "block" : "none";
+          });
+        },
+        preConfirm: () => {
+          const schedule = document.getElementById("schedule").value;
+          const time = document.getElementById("sctime").value;
+          const daysOfWeek = [];
+      
+          document.querySelectorAll("#days-container input:checked").forEach(cb => daysOfWeek.push(cb.value));
+      
+          if (!schedule || !time) {
+              Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+              return false;
+          }
+          let [hours, minutes] = time.split(":");
+          let cronExpression = "";
+
+          if (schedule === "daily") {
+              cronExpression = `0 ${minutes} ${hours} * * *`;
+          }
+          else if (schedule === "twice_day") {
+              cronExpression = `0 ${minutes} ${hours},${(parseInt(hours) + 12) % 24} * * *`;
+          }
+          else if (schedule === "weekly" || schedule === "twice_week") {
+              if (daysOfWeek.length === 0) {
+                  Swal.showValidationMessage("Выберите хотя бы один день недели!");
+                  return false;
+              }
+              cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`;
+          } else if (schedule === "monthly") {
+              cronExpression = `0 ${minutes} ${hours} 1 * *`;
+          }
+          return { cronExpression };
+        },
+      }).then((result)=>{
+        if(result.isConfirmed){
+          
+          fetch('http://localhost:9091/api/v1/scheduler/update-cron?cronExpression='+ encodeURIComponent(result.value.cronExpression),{
+            method:'POST',
+            headers: { "Content-Type": "application/json" }
+          })
+          .then(response=>response.text())
+          .then(data=>Swal.fire({
+            title: "Успех!",
+            text: "Расписание обновлено!",
+            icon: "success",
+            customClass: {
+              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+            }
+          }))
+          .catch(er =>{
+            Swal.fire({
+              title: "Ошибка!",
+              text: "Не удалось обновить расписание!",
+              icon: "error",
+              customClass: {
+                confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+              }
+            })
+            console.log(er)
+          });
+          // запуск бота
+          fetch('http://localhost:9091/api/v1/scheduler/start',{
+            method:'POST'
+          })
+          .then(response=>response.json())
+          .then(data=>Swal.fire("Успех!", "Расписание обновлено!", "success"))
+          .catch(er =>Swal.fire("Ошибка!", "Не удалось обновить расписание", "error"))
+        }
+        
+      });
+    }
   });
 
   // Делегирование события на родительский элемент
@@ -765,6 +877,9 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
     })
     console.log(orderrequest);
   })
+  // document.querySelector('#notification').addEventListener('click', function(){
+    
+  // });
   // Модальное окно 
   document.querySelector(".buttonsend").addEventListener("click", function(){
     let order=JSON.parse(localStorage.getItem('order'));

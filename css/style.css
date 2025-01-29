@@ -556,6 +556,18 @@ input[type="number"]::-webkit-inner-spin-button {
   padding: 0 !important;
   margin: 0 !important;
 }
+/* notification */
+.schedule{
+  text-align: left;
+  font-family: "Comfortaa", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 1rem;
+}
+.custom-confirm-button{
+  background-color:#2F9262;
+}
 @media (max-width: 320px) {
   .menu-container .item {
     width: 280px;
