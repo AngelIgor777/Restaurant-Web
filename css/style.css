@@ -503,6 +503,11 @@ input[type="number"]::-webkit-inner-spin-button {
   color: #fff;
   overflow-x: hidden;
   padding-bottom: 30px !important;
+  text-align: center;
+  font-family: "Comfortaa", serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
 }
 .container-fluid.foot h1 {
   font-family: "Playfair Display SC", serif;

@@ -101,6 +101,9 @@ const renderFooter = () => `
               <h5>тел: 078299844</h5>
             </div>
           </div>
+          <p>Acest website a fost realizat în cadrul
+          competiției „Tekwill Junior Ambassadors” organizată de proiectul „Tekwill în Fiecare
+          Școală” și nu reflectă neapărat opinia proiectului.</p>
         </div>
       </footer>`;
 const renderMenu = () =>`
@@ -137,11 +140,7 @@ const renderMenu = () =>`
         <!-- Для пагинации -->
         <div class="pagcontainer">
           <ul class="pagul">
-            <li><button>1</button></li>
-            <li><button>1</button></li>
-            <li><button>1</button></li>
-            <li><button>1</button></li>
-            <li><button>1</button></li>
+
           </ul>
      </div>
         <!-- Кнопка отправки -->
