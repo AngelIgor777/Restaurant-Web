@@ -152,9 +152,13 @@ const renderFooter = () => `
           // Displaying basic order details
           messageElement.innerHTML = `
           <h2>Заказ ID: ${order.id ?? 'Не указано'}</h2>
+          <details>
+          <summary>
           <p><span>Статус:</span> ${order.status ?? 'Не указано'}</p>
           <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
           <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'}</p>
+          <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
+          </summary>
           <p><span>Общее время готовки:</span> ${order.totalCookingTime ?? 'Не указано'}</p>
           <p><span>Создан:</span> ${order.createdAt ?? 'Не указано'}</p>
           <p><span>Обновлён:</span> ${order.updatedAt ?? 'Не указано'}</p>
@@ -164,6 +168,7 @@ const renderFooter = () => `
           <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
           <p><span>Адрес:</span> ${formatAddress(data.addressResponseDTO)}</p>
           <p><span>Стол:</span> ${formatTable(data.tableResponseDTO)}</p>
+          </details>
           <div class="products">
               <strong>Продукты:</strong>
               ${formatProducts(order.products)}
@@ -181,12 +186,13 @@ const renderFooter = () => `
           }
           return products.map(product => 
               `<div class="product">
-                  <p class='prname'><span>Название:</span> ${product.name ?? 'Не указано'}</p>
-                  <p><span>Описание:</span> ${product.description ?? 'Не указано'}</p>
-                  <p><span>Тип:</span> ${product.typeName ?? 'Не указано'}</p>
-                  <p><span>Цена:</span> ${product.price ?? 'Не указано'}</p>
-                  <p><span>Время готовки:</span> ${product.cookingTime ?? 'Не указано'}</p>
-                  <p><span>Количество:</span> ${product.quantity ?? 'Не указано'}</p>
+              <br>
+                  <p class='prname'><span>Название:</span> <b>${product.name ?? 'Не указано'}</b></p>
+                  <p><span>Описание:</span> <b>${product.description ?? 'Не указано'}</b></p>
+                  <p><span>Тип:</span> <b>${product.typeName ?? 'Не указано'}</b></p>
+                  <p><span>Цена:</span> <b>${product.price ?? 'Не указано'}</b></p>
+                  <p><span>Время готовки:</span> <b>${product.cookingTime ?? 'Не указано'}</b></p>
+                  <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b></p>
               </div>`
           ).join('');
       }

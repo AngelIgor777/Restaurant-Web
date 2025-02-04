@@ -36,6 +36,7 @@ body{
     opacity: 0.9;
     color: black;
     width: 500px;
+    height: auto;
 }
 
 .order h2{
@@ -44,9 +45,12 @@ body{
     font-style: normal;
     font-size: 1.8rem;
 }
-.prname{
-    margin-top: 20px;
-    font-family: "Kurale", serif;
-    font-weight: 600;
-    font-style: normal;
+details[open] .and{
+    display: none;
 }
+summary {
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
