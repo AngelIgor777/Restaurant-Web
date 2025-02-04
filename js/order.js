@@ -110,8 +110,6 @@ const renderFooter = () => `
           stompClient = Stomp.over(socket); // Инициализация STOMP клиента
   
           stompClient.connect({}, function (frame) {
-              displayMessage("Соединение установлено: " + frame);
-  
               // Подписка на канал
               stompClient.subscribe('/topic/orders', function (response) {
                   const orderData = JSON.parse(response.body); // Парсим ответ
