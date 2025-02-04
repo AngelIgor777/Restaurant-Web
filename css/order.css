@@ -48,6 +48,16 @@ body{
 details[open] .and{
     display: none;
 }
+details[open]{
+    margin-bottom: 40px;
+}
+
+.product{
+    border-bottom: solid 1px rgba(0, 0, 0, 0.689);
+}
+.product:last-child{
+    border-bottom: solid 0 rgba(0, 0, 0, 0.689);
+}
 summary {
     list-style: none;
   }

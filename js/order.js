@@ -184,15 +184,19 @@ const renderFooter = () => `
           if (!Array.isArray(products) || products.length === 0) {
               return '<em>Нет продуктов</em>';
           }
-          return products.map(product => 
+          return products.map((product, id) => 
               `<div class="product">
-              <br>
-                  <p class='prname'><span>Название:</span> <b>${product.name ?? 'Не указано'}</b></p>
-                  <p><span>Описание:</span> <b>${product.description ?? 'Не указано'}</b></p>
-                  <p><span>Тип:</span> <b>${product.typeName ?? 'Не указано'}</b></p>
+              <details class='det'>
+              <summary>
+                  <p class='prname'><span>${id+1}) Название:</span> <b>${product.name ?? 'Не указано'}</b></p>
                   <p><span>Цена:</span> <b>${product.price ?? 'Не указано'}</b></p>
+                  <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b><span class='and'style='text-align: right; opacity:0.7; margin-left:60%;'>...</span></p>
+                  
+              </summary>
+                  <p><span>Тип:</span> <b>${product.typeName ?? 'Не указано'}</b></p>
+                  <p><span>Описание:</span> <b>${product.description ?? 'Не указано'}</b></p>
                   <p><span>Время готовки:</span> <b>${product.cookingTime ?? 'Не указано'}</b></p>
-                  <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b></p>
+                  </details>
               </div>`
           ).join('');
       }
