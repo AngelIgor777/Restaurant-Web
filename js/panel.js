@@ -1,40 +1,3 @@
-async function Statistik(){
-    document.querySelector('.categorylist').innerHTML='';
-    document.querySelector('.static').classList.add('active');
-    document.querySelector('.cattaloge').classList.remove('active');
-    console.log(document.querySelector('.static').classList)
-    const categorytable = document.querySelector('.categorylist');
-    const table=document.createElement('div');
-          table.classList.add('one-category');
-          table.innerHTML=`
-          <h3>Статистика</h3>
-                <table class="category-items table">
-                    <thead>
-                      <tr>
-                        <th style="text-align: center;">№</th>
-                        <th style="text-align: center;">Название</th>
-                        <th style="text-align: center;">Категория</th>
-                        <th style="text-align: center;">Проданно</th>
-                        <th style="text-align: center;">Заработок</th>
-                      </tr>
-                    </thead>
-                    <tbody class="catlist">
-  
-                    </tbody>
-                  </table>
-                  <div class='pagging'>
-                  <p>ещё...</p>
-                  </div>
-                  <p class='Totalcost' style="text-align:right;"></p>
-                  <p class='Totalorders' style="text-align:right;"></p>
-                  <p class='Earning' style="text-align:right;"></p>
-          `;
-          categorytable.appendChild(table);
-        //   const response = await fetch(`http://localhost:9091/api/v1/statistics?from=2023-01-01T00:00:00&to=2025-01-31T23:59:59`);
-        //   const data = await response.json();
-        //   console.log(data.productSalesResponseDto);
-        await Statistiktable('2023-01-01T00:00:00','2025-01-31T23:59:59');
-}
 async function Statistiktable(start, end) {
     try{
         if (!start) start = '2023-01-01T00:00:00';
@@ -67,7 +30,88 @@ async function Statistiktable(start, end) {
         console.error('Ошибка при запросе данных меню:', error);
       }
 }
+async function Statistik() {
+    document.querySelector('.categorylist').innerHTML = '';
+    document.querySelector('.static').classList.add('active');
+    document.querySelector('.cattaloge').classList.remove('active');
 
+    const categorytable = document.querySelector('.categorylist');
+    const table = document.createElement('div');
+    table.classList.add('one-category');
+
+    // Сортировка по времени
+    const date = new Date(); // Текущая дата
+    const allTime = getFormattedDate(date);  // Для "Все время"
+    const oneDayAgo = getPastDate(1);        // Для "1д"
+    const fiveDaysAgo = getPastDate(5);      // Для "5д"
+    const oneMonthAgo = getPastDate(30);     // Для "1мес" (условно, 30 дней)
+
+    table.innerHTML = `
+        <ul class='time'>
+            <li><button data-timestart='2023-01-01T00:00:00' data-timeend='${allTime}' class='active'>Все время</button></li>
+            <li><button data-timestart='${oneDayAgo}' data-timeend='${allTime}'>1д</button></li>
+            <li><button data-timestart='${fiveDaysAgo}' data-timeend='${allTime}'>5д</button></li>
+            <li><button data-timestart='${oneMonthAgo}' data-timeend='${allTime}'>1мес</button></li>
+        </ul>
+        <table class="category-items table">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">№</th>
+                    <th style="text-align: center;">Название</th>
+                    <th style="text-align: center;">Категория</th>
+                    <th style="text-align: center;">Проданно</th>
+                    <th style="text-align: center;">Заработок</th>
+                </tr>
+            </thead>
+            <tbody class="catlist">
+            </tbody>
+        </table>
+        <div class='pagging'>
+            <p>ещё...</p>
+        </div>
+        <p class='Totalcost' style="text-align:right;"></p>
+        <p class='Totalorders' style="text-align:right;"></p>
+        <p class='Earning' style="text-align:right;"></p>
+    `;
+    categorytable.appendChild(table);
+
+    const buttons = document.querySelector('.time').querySelectorAll("button"); // Получаем все кнопки
+
+    buttons.forEach(button => {
+        button.addEventListener("click", function () {
+            // Удаляем 'active' у всех кнопок
+            buttons.forEach(btn => btn.classList.remove("active"));
+            // Добавляем 'active' только к нажатой кнопке
+            this.classList.add("active");
+
+            const timeStart = this.getAttribute('data-timestart');
+            const timeEnd = this.getAttribute('data-timeend');
+            Statistiktable(timeStart, timeEnd); // Вызываем функцию статистики с нужными датами
+        });
+    });
+
+    await Statistiktable('2023-01-01T00:00:00', '2025-01-31T23:59:59');
+}
+
+
+
+// получение времени
+function getFormattedDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы с 0, поэтому +1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
+// Отнят дату
+function getPastDate(days) {
+    const pastDate = new Date();
+    pastDate.setDate(new Date().getDate() - days);  // Вычитаем дни
+    return getFormattedDate(pastDate);
+}
 async function fetchProductTypes() {
     try {
      

@@ -85,7 +85,26 @@ h3{
     justify-content: center;
     gap: 50px;
   }
-
+/* Время */
+.time{
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+/* оля*/
+.time li button{
+    color: black;
+    padding: 6px;
+    border-radius: 20px;
+    width: auto;
+    min-width: 70px;
+    background-color: #f7f7f7;
+    border: none;
+    font-size: 1.6rem;
+}
+.time button.active{
+    background-color: #d6d6d6;
+}
 .category-items .btn {
     margin: 0 5px; /* Устанавливает отступы между кнопками */
 }
