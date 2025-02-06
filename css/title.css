@@ -191,11 +191,13 @@ body{
   width: 26px;
   height: auto;
   border: none;
-  background-color: #e7e7e7a4;
+  background-color: #e7e7e700;
   margin: 0 20px 0px;
   text-align: center;
   align-items: top;
   font-size:clamp(1rem, 2.5vw, 1.5rem);
+  color: #fff;
+  margin-bottom: 10px;
 }
 .send-but {
   margin-top: 30px;
@@ -214,10 +216,11 @@ body{
   height: 40px;
   width: 50px;
   border: none;
-  background-color: #252525d9;
+  background-color: #fff;
   font-size:clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
   transition: all 0.2s;
+  color: #252525d9;
 }
 .send-but i {
   transition: transform 0.3s ease-in-out, opacity 0.3s ease;
@@ -387,6 +390,7 @@ padding: 10px;
 input{
   color: #000000;
 }
+
 @media (min-width: 992px) {
   .item-name {
     font-size: clamp(2.1rem, 5.5vw, 7vw);

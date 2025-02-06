@@ -1,3 +1,72 @@
+async function Statistik(){
+    document.querySelector('.categorylist').innerHTML='';
+    document.querySelector('.static').classList.add('active');
+    document.querySelector('.cattaloge').classList.remove('active');
+    console.log(document.querySelector('.static').classList)
+    const categorytable = document.querySelector('.categorylist');
+    const table=document.createElement('div');
+          table.classList.add('one-category');
+          table.innerHTML=`
+          <h3>Статистика</h3>
+                <table class="category-items table">
+                    <thead>
+                      <tr>
+                        <th style="text-align: center;">№</th>
+                        <th style="text-align: center;">Название</th>
+                        <th style="text-align: center;">Категория</th>
+                        <th style="text-align: center;">Проданно</th>
+                        <th style="text-align: center;">Заработок</th>
+                      </tr>
+                    </thead>
+                    <tbody class="catlist">
+  
+                    </tbody>
+                  </table>
+                  <div class='pagging'>
+                  <p>ещё...</p>
+                  </div>
+                  <p class='Totalcost' style="text-align:right;"></p>
+                  <p class='Totalorders' style="text-align:right;"></p>
+                  <p class='Earning' style="text-align:right;"></p>
+          `;
+          categorytable.appendChild(table);
+        //   const response = await fetch(`http://localhost:9091/api/v1/statistics?from=2023-01-01T00:00:00&to=2025-01-31T23:59:59`);
+        //   const data = await response.json();
+        //   console.log(data.productSalesResponseDto);
+        await Statistiktable('2023-01-01T00:00:00','2025-01-31T23:59:59');
+}
+async function Statistiktable(start, end) {
+    try{
+        if (!start) start = '2023-01-01T00:00:00';
+        if (!end) end = '2025-01-31T23:59:59';
+        const response = await fetch(`http://localhost:9091/api/v1/statistics?from=2023-01-01T00:00:00&to=2025-01-31T23:59:59`);
+            const data = await response.json();
+            document.querySelector(".Totalcost").textContent=`Общая стоимость: ${data.totalRevenueBasedOrdersDto.totalRevenue}`;
+            document.querySelector(".Totalorders").textContent=`Всего заказанно: ${data.totalRevenueBasedOrdersDto.totalOrders}`;
+            document.querySelector(".Earning").textContent=`Средняя цена одного заказа: ${data.totalRevenueBasedOrdersDto.avgRevenuePerOrder}`;
+            const tableone=document.querySelector(`.one-category`);
+            const tbody=tableone.querySelector(`.catlist`);
+            tbody.innerHTML = '';
+            let i=0;
+            if (data.productSalesResponseDto && Array.isArray(data.productSalesResponseDto)) {
+                for(const item of data.productSalesResponseDto){
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr>
+                          <td style="text-align: center;">${i + 1}</td>
+                          <td style="text-align: center;">${item.productResponseDTO.name}</td>
+                          <td style="text-align: center;">${item.productResponseDTO.typeName}</td>
+                          <td style="text-align: center;">${item.totalQuantitySold}</td>
+                          <td style="text-align: center;">${item.productResponseDTO.price*item.totalQuantitySold}</td>
+                          </tr>
+                      `);
+                      i+=1;
+                }
+            }
+    }
+    catch (error) {
+        console.error('Ошибка при запросе данных меню:', error);
+      }
+}
 
 async function fetchProductTypes() {
     try {
@@ -408,6 +477,9 @@ async function deleteCategory(categoryId) {
 }
 async function Closepagging() {
     // запускаем всю страницу
+    document.querySelector('.categorylist').innerHTML='';
+    document.querySelector('.cattaloge').classList.add('active');
+    document.querySelector('.static').classList.remove('active');
     await fetchProductTypes();
     // закрытие всех пагинациий
     document.querySelectorAll('.pagging').forEach(el => {
@@ -431,6 +503,7 @@ async function Closepagging() {
     });
 }
 
-
+document.querySelector('.static').addEventListener('click', Statistik)
+document.querySelector('.cattaloge').addEventListener('click', Closepagging)
 // Запуск
 Closepagging()

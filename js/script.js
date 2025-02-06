@@ -484,7 +484,7 @@ function updateModal(order) {
 
 function initializeIsotope() {
   var $container = $('.menu-container');
-  var itemsPerPage = 3;
+  var itemsPerPage = 20;
   var currentPage = 1;
 
   // Инициализация Isotope
@@ -944,6 +944,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
   });
   }
   else if(hash==='#about'){
+    window.scrollTo(0, 0);
     document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
     document.querySelector('body').classList.add('bodyc');
 
@@ -1026,6 +1027,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
                   let totalcost=JSON.parse(localStorage.getItem('totalcost'));
                   const input = plusmin.querySelector("input"); 
                   let quantity = parseInt(input.value, 10);
+                  let itemcost=but.closest(".item-cost")
                   totalcost +=quantity*parseFloat(itemCost, 10);
                   console.log(order.length);
                   // Добавляем заказ в массив
@@ -1123,7 +1125,36 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
    
 }
 const menusect=document.querySelector(".app");
-
-
+function Registr(){
+  let params = new URLSearchParams(window.location.search);;
+  let uuid = params.get("uuid"); 
+  if(!localStorage.getItem("uuid")){
+    if(uuid){
+      localStorage.setItem("uuid", JSON.stringify(uuid))
+    }
+  }
+  
+  else{
+    let uuid1=JSON.parse(localStorage.getItem('uuid'));
+    if(uuid1){
+      fetch("http://localhost:9091/api/v1", {
+        method:"POST",
+        headers: {
+          'Content-Type': 'application/json',
+      },
+      body: uuid1,
+      }).then(response => response.json())
+      .then(data => {
+        localStorage.setItem("token", JSON.stringify(data))
+      })
+      .catch(error => {
+          // Обрабатываем ошибку при отправке
+          console.log(error);
+      });
+    }
+  }
+  
+}
+Registr();
 window.addEventListener('hashchange', Hachchange);
 window.addEventListener('load', Hachchange);
