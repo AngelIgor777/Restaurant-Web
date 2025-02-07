@@ -4,12 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/panel.css" />
+    
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Comfortaa:wght@300..700&family=Dancing+Script:wght@400..700&family=Kurale&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/panel.css" />
     <title>PARKTOWN COFFEE</title>
   </head>
   <body>
@@ -17,104 +24,71 @@
       <header>
         <nav class="navbar navbar-expand-lg navcont">
           <div class="container-fluid">
-            <h1 class="logo"><a href="index.html
-              " style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
+            <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
-              <div class="dropdown singin">
+              <div class="dropdown  singin">
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
-                  <li>
-                    <a class="dropdown-item" href="#" style="color: black"
-                      >Профиль</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#" style="color: black"
-                      >Настройки</a
-                    >
-                  </li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li>
-                    <a class="dropdown-item" href="#" style="color: black"
-                      >Выход</a
-                    >
-                  </li>
+                  <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
+                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
                 </ul>
-                <a
-                  href="#"
-                  class="d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="bx bxs-user-circle singinuser"></i>
+                <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class='bx bxs-user-circle singinuser' ></i>
                 </a>
               </div>
-
+    
               <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarcont"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-              >
-                <span><i class="bx bx-menu"></i></span>
-              </button>
+              class="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarcont"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span><i class="bx bx-menu"></i></span>
+            </button>
+            
             </span>
-
+            
             <div class="collapse navbar-collapse" id="navbarcont">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item active">
-                  <a href="index.html#menu">Меню</a>
-                </li>
+                <li class="nav-item active"><a href="index.html#menu">Меню</a></li>
                 <li class="nav-item"><a href="index.html#about">О нас</a></li>
                 <li class="nav-item"><a href="#">Доставка</a></li>
                 <li class="nav-item"><a href="#">Контакты</a></li>
               </ul>
             </div>
-
+  
             <span class="buttonsing-2 flex-row">
-              <div class="dropdown singin">
-                <ul class="dropdown-menu text-small shadow dropdown-menu-start">
-                  <li>
-                    <a class="dropdown-item" style="color: black" href="#"
-                      >Зарегестрироваться</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" style="color: black" href="#"
-                      >Настройки</a
-                    >
-                  </li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li>
-                    <a class="dropdown-item" href="#" style="color: black"
-                      >Выход</a
-                    >
-                  </li>
+              <div class="dropdown  singin">
+                
+                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
+                  <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
+                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
                 </ul>
-                <a
-                  href="#"
-                  class="d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="bx bxs-user-circle singinuser"></i>
+                <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class='bx bxs-user-circle singinuser' ></i>
                 </a>
               </div>
-
+    
               <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarcont"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-              >
-                <span><i class="bx bx-menu"></i></span>
-              </button>
+              class="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarcont"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span><i class="bx bx-menu"></i></span>
+            </button>
+            
             </span>
+            
           </div>
         </nav>
       </header>

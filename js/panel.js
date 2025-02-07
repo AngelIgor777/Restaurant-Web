@@ -4,6 +4,7 @@ async function Statistiktable(start, end) {
         if (!end) end = '2025-01-31T23:59:59';
         const response = await fetch(`http://localhost:9091/api/v1/statistics?from=2023-01-01T00:00:00&to=2025-01-31T23:59:59`);
             const data = await response.json();
+            console.log(data);
             document.querySelector(".Totalcost").textContent=`Общая стоимость: ${data.totalRevenueBasedOrdersDto.totalRevenue}`;
             document.querySelector(".Totalorders").textContent=`Всего заказанно: ${data.totalRevenueBasedOrdersDto.totalOrders}`;
             document.querySelector(".Earning").textContent=`Средняя цена одного заказа: ${data.totalRevenueBasedOrdersDto.avgRevenuePerOrder}`;
@@ -311,7 +312,6 @@ async function fetchProductTypes() {
                         return res.text().then(text => text ? JSON.parse(text) : {});
                     }).then(data=>{
                         console.log('Success:', data);
-                        // уведомление о успехе
                         Addtable(categoryIds);
                     }).catch(errr=>{
                         console.error('Error:', errr);
@@ -353,10 +353,26 @@ async function fetchProductTypes() {
                     console.log('Success:', data);
                     // уведомление о успехе
                     Addtable(categoryIds);
+                    Swal.fire({
+                        title: "Успех!",
+                        text: "Обновленно!",
+                        icon: "success",
+                        customClass: {
+                          confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                        }
+                      });
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     // уведомление о неудаче
+                    Swal.fire({
+                        title: "Ошибка!",
+                        text: "Попробуйте снова!",
+                        icon: "error",
+                        customClass: {
+                          confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                        }
+                      });
                 });
                 }
                 
@@ -546,8 +562,48 @@ async function Closepagging() {
         }
     });
 }
-
-document.querySelector('.static').addEventListener('click', Statistik)
-document.querySelector('.cattaloge').addEventListener('click', Closepagging)
+// Изменения ярлыка
+async function Registr() {
+    let params = new URLSearchParams(window.location.search);
+    let uuid = params.get("uuid");
+  
+    if (!localStorage.getItem("uuid")) {
+      if (uuid) {
+        localStorage.setItem("uuid", JSON.stringify(uuid));
+      }
+    } else {
+      let uuid1 = JSON.parse(localStorage.getItem("uuid"));
+      
+      if (uuid1) {
+        try {
+          // Получаем данные пользователя
+          let response = await fetch(`http://localhost:9091/api/v1/users/${uuid1}`);
+          let data = await response.json();
+          console.log(data);
+  
+          // Получаем изображение
+          let imageResponse = await fetch(`http://localhost:9091/api/v1/photos/resource/?photoName=${data.photoUrl}`);
+          
+          if (!imageResponse.ok) {
+            throw new Error("Ошибка загрузки изображения");
+          }
+  
+          let imageBlob = await imageResponse.blob();
+          let imageUrl = URL.createObjectURL(imageBlob);
+  
+          // Вставляем изображение в элементы
+          document.querySelectorAll(".userimg").forEach(im => {
+            im.innerHTML = `<img src="${imageUrl}" alt="User Image">`;
+          });
+  
+        } catch (error) {
+          console.error("Ошибка запроса:", error);
+        }
+      }
+    }
+  }
+document.querySelector('.static').addEventListener('click', Statistik);
+document.querySelector('.cattaloge').addEventListener('click', Closepagging);
 // Запуск
-Closepagging()
+Closepagging();
+Registr();

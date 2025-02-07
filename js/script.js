@@ -12,14 +12,13 @@ const renderHeader = () => `
             <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
               <div class="dropdown  singin">
-                
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
                   <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
                   <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
                 </ul>
-                <a href="#" class="d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class='bx bxs-user-circle singinuser' ></i>
                 </a>
               </div>
@@ -56,7 +55,7 @@ const renderHeader = () => `
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
                 </ul>
-                <a href="#" class="d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class='bx bxs-user-circle singinuser' ></i>
                 </a>
               </div>
@@ -371,7 +370,6 @@ async function fetchMenuItems(categoryIds) {
     let shet=0;
     if (allitems && Array.isArray(allitems)) {
       for (const it of allitems) {  
-        console.log(it);
         for (const item of it){
         // Запрос URL картинки
         const photoResponse = await fetch(`http://localhost:9091/api/v1/photos/product/${item.id}`);
@@ -380,7 +378,7 @@ async function fetchMenuItems(categoryIds) {
         
         // Создаем элемент меню
         const menuItem = document.createElement('div');
-        menuItem.className = `col-sm-6 col-md-4 col-lg-4 item ${ids[shet]} `;
+        menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${ids[shet]} `;
         menuItem.id= `item-${item.id}`;
         menuItem.innerHTML = `
         
@@ -611,7 +609,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
     menusect.innerHTML='';
     menusect.innerHTML=renderHeader()+renderMenu()+renderFooter();
     await fetchProductTypes();
-    
+    Registr();
     
   console.log("Всё запущено");
   let order=JSON.parse(localStorage.getItem('order'));
@@ -989,7 +987,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         console.log(contentimg);
         localStorage.setItem("onlyItem", JSON.stringify(onlyItem));
         menusect.innerHTML = renderHeader()+renderItem(contentitem)+renderFooter();
-
+        Registr();
         document.querySelector('.only-item').addEventListener("click", function(e) {
           // Находим родительский элемент с классом .plus-min
           const plusmin = e.target.closest(".plus-min");
@@ -1027,11 +1025,10 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
                   let totalcost=JSON.parse(localStorage.getItem('totalcost'));
                   const input = plusmin.querySelector("input"); 
                   let quantity = parseInt(input.value, 10);
-                  let itemcost=but.closest(".item-cost")
-                  totalcost +=quantity*parseFloat(itemCost, 10);
+                  totalcost +=quantity*parseFloat(contentitem[1], 10);
                   console.log(order.length);
                   // Добавляем заказ в массив
-                  order.push({ id:order.length, tovarname:itemName, quantity:quantity, price:parseFloat(itemCost)*quantity});
+                  order.push({ id:order.length, tovarname:contentitem[0], quantity:quantity, price:parseFloat(contentitem[1])*quantity});
                   console.log(order);
                   console.log(totalcost);
                   localStorage.setItem('order', JSON.stringify(order));
@@ -1095,10 +1092,9 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
                     let totalcost=JSON.parse(localStorage.getItem('totalcost'));
                     const input = plusmin.querySelector("input"); 
                     let quantity = parseInt(input.value, 10);
-                    totalcost +=parseFloat(onlyItem[1], 10);
-                    console.log(order.length);
+                    totalcost +=parseFloat(contentitem[1]*quantity, 10);
                     // Добавляем заказ в массив
-                    order.push({ id:order.length, tovarname:onlyItem[0], quantity:quantity, price:parseFloat(onlyItem[1])});
+                    order.push({ id:order.length, tovarname:contentitem[0], quantity:quantity, price:parseFloat(contentitem[1])});
                     console.log(order);
                     console.log(totalcost);
                     localStorage.setItem('order', JSON.stringify(order));
@@ -1125,36 +1121,46 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
    
 }
 const menusect=document.querySelector(".app");
-function Registr(){
-  let params = new URLSearchParams(window.location.search);;
-  let uuid = params.get("uuid"); 
-  if(!localStorage.getItem("uuid")){
-    if(uuid){
-      localStorage.setItem("uuid", JSON.stringify(uuid))
+async function Registr() {
+  let params = new URLSearchParams(window.location.search);
+  let uuid = params.get("uuid");
+
+  if (!localStorage.getItem("uuid")) {
+    if (uuid) {
+      localStorage.setItem("uuid", JSON.stringify(uuid));
+    }
+  } else {
+    let uuid1 = JSON.parse(localStorage.getItem("uuid"));
+    
+    if (uuid1) {
+      try {
+        // Получаем данные пользователя
+        let response = await fetch(`http://localhost:9091/api/v1/users/${uuid1}`);
+        let data = await response.json();
+        console.log(data);
+
+        // Получаем изображение
+        let imageResponse = await fetch(`http://localhost:9091/api/v1/photos/resource/?photoName=${data.photoUrl}`);
+        
+        if (!imageResponse.ok) {
+          throw new Error("Ошибка загрузки изображения");
+        }
+
+        let imageBlob = await imageResponse.blob();
+        let imageUrl = URL.createObjectURL(imageBlob);
+
+        // Вставляем изображение в элементы
+        document.querySelectorAll(".userimg").forEach(im => {
+          im.innerHTML = `<img src="${imageUrl}" alt="User Image">`;
+        });
+
+      } catch (error) {
+        console.error("Ошибка запроса:", error);
+      }
     }
   }
-  
-  else{
-    let uuid1=JSON.parse(localStorage.getItem('uuid'));
-    if(uuid1){
-      fetch("http://localhost:9091/api/v1", {
-        method:"POST",
-        headers: {
-          'Content-Type': 'application/json',
-      },
-      body: uuid1,
-      }).then(response => response.json())
-      .then(data => {
-        localStorage.setItem("token", JSON.stringify(data))
-      })
-      .catch(error => {
-          // Обрабатываем ошибку при отправке
-          console.log(error);
-      });
-    }
-  }
-  
 }
+
 Registr();
 window.addEventListener('hashchange', Hachchange);
 window.addEventListener('load', Hachchange);

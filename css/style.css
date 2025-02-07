@@ -25,11 +25,11 @@ header {
   position: absolute;
   right: 0; /* Привязка к правому краю */
   overflow-x: hidden;
-  
   top: 100%; /* Расположить ниже кнопки */
   transform: translateX(-10%); /* Подвинуть немного левее, если требуется */
   z-index: 1000; /* Чтобы меню отображалось поверх других элементов */
   background-color: #fff !important;
+  width: 170px;
 }
 .dropdown-toggle::after{
   color: #fff;
@@ -78,7 +78,12 @@ header {
   margin: 0 10px;
   color: #ffffffe6;
 }
-
+.userimg img{
+  width:39px;
+  height: 39px;
+  border-radius: 50%;
+  margin: 0 10px;
+}
 
 
 /* Menu-burger*/
@@ -124,6 +129,7 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 .navbar-collapse.show li {
   padding-top: 30px;
@@ -214,11 +220,11 @@ header {
   margin-bottom: 20px;
   width: 100%;
   height: auto !important;
-  gap: 100px 220px;
+  gap: 100px 80px;
 }
 
 .menu-container .item {
-  width: 280px;
+  width: 258px;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -243,7 +249,7 @@ header {
   overflow: hidden;
 }
 .menu-container .item .img-cost img {
-  width: 280px;
+  width: 258px;
   height: 253px;
   object-fit: cover;
   border-radius: 8px;
@@ -664,6 +670,7 @@ input[type="number"]::-webkit-inner-spin-button {
   .menu-container .item h3 {
     margin-top: 20px;
   }
+
 }
 
 @media (max-width: 780px) {
@@ -682,6 +689,13 @@ input[type="number"]::-webkit-inner-spin-button {
     background-color: #e7e7e7a4;
     border-radius: 10px;
     box-shadow: 5px 10px 20px 5px rgba(0, 0, 0, 0.5);
+  }
+  .menu-container .item .img-cost img {
+    width: 280px;
+    height: 253px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: all 0.3s;
   }
   .menu-container {
     overflow: hidden;
