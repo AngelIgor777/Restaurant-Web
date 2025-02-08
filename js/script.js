@@ -189,6 +189,12 @@ const renderMenu = () =>`
                 </div>
               </div>
               <div class="modal-footer">
+                <div class="form-check check-box">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    Заказ на дом
+                  </label>
+                </div>
                 <button
                   type="button"
                   class="btn btn-secondary"
@@ -593,7 +599,7 @@ console.log(quant)
 
 
 
-// Вызываем функцию при изменения хэша
+// Вызываем функцию при изменения хэша это основа не забываеми
 async function Hachchange(){
 
   document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
@@ -610,7 +616,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
     menusect.innerHTML=renderHeader()+renderMenu()+renderFooter();
     await fetchProductTypes();
     Registr();
-    
+    Sendchange();
   console.log("Всё запущено");
   let order=JSON.parse(localStorage.getItem('order'));
   const buttosend=document.querySelector("p.colvo");
@@ -816,125 +822,152 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
   });
   // Кнопка отправки
   document.querySelector('.ordersend').addEventListener('click', function(){
-    Swal.fire({
-      title: "Введите данные",
-      html: `
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="street" placeholder="Улица" />
-          <label for="street">Улица</label>
-        </div>
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="home" placeholder="Дом" />
-          <label for="home">Дом</label>
-        </div>
-        <div class="mb-3">
-          <label>
-            <input type="radio" id="Cash" name="paymentMethod" value="CASH" />
-            Кэш
-          </label>
-          <label style="margin-left: 15px;">
-            <input type="radio" id="Card" name="paymentMethod" value="CARD" />
-            Карта
-          </label>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonColor: "#2F9262",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Отправить",
-      cancelButtonText: "Отмена",
-      focusConfirm: false,
-      didOpen: () => {
-        // Переносим фокус на поле "Улица"
-        document.getElementById("street").focus();
-      },
-      preConfirm: () => {
-        const street = document.getElementById("street").value.trim();
-        const home = document.getElementById("home").value.trim();
-        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-    
-        if (!street || !home || !paymentMethod) {
-          Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-          return false;
-        }
-    
-        return {
-          street,
-          home,
-          paymentMethod: paymentMethod.value,
-        };
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log("Введенные данные:", result.value);
-        let adres={
-          city:"Copceak",
-          street:String(result.value.street),
-          homeNumber:String(result.value.home),
-          apartmentNumber:"2"
-        }
-        let book={};
-        let order=JSON.parse(localStorage.getItem('order'));
-        let orderrequest=[];
-        order.forEach(item=>{
-            let todo={
-            productId:item.id,
-            quantity:item.quantity,
-        }
-        orderrequest.push(todo);
-        })
-      console.log(orderrequest);
-      book={
-        orderProductRequestDTO:orderrequest,
-        paymentMethod: result.value.paymentMethod,
-        orderInRestaurant:false,
-        tableRequestDTO:{
-          number: null
+    let order=JSON.parse(localStorage.getItem('order'));
+    if(order.length>0){
+      console.log(order);
+      Swal.fire({
+        title: "Введите данные",
+        html: `
+        <div class='inputad-container' style='display:none;'>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="street" placeholder="Улица" />
+            <label for="street">Улица</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="home" placeholder="Дом" />
+            <label for="home">Дом</label>
+          </div>
+          </div>
+          <div class='inputtab-container' style='display:none;'>
+          <div class="form-floating mb-3">
+            <input type="number" class="form-control tablenum" id="table" placeholder="Номер столика" />
+            <label for="table">Номер столика</label>
+          </div>
+          </div>
+          <div class="mb-3">
+            <label>
+              <input type="radio" id="Cash" name="paymentMethod" value="CASH" />
+              Кэш
+            </label>
+            <label style="margin-left: 15px;">
+              <input type="radio" id="Card" name="paymentMethod" value="CARD" />
+              Карта
+            </label>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: "#2F9262",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Отправить",
+        cancelButtonText: "Отмена",
+        focusConfirm: false,
+        didOpen: () => {
+          // если выбрали что заказ на дом
+          const check=document.querySelector('.check-box input');
+          if(check.checked){
+            document.querySelector('.inputad-container').style.display='block';
+          }
+          // если делается в ресторане 
+          else{
+            document.querySelector('.inputtab-container').style.display='block';
+          }
+          document.getElementById("street").focus();
         },
-        existDiscountCodes:false,
-        productDiscountCode:"",
-        globalDiscountCode:"",
-        isRegisterUser:false,
-        userId:0,
-        addressRequestDTO:adres
-    }
-    console.log(JSON.stringify(book));
-    fetch('http://localhost:9091/api/v1/order-products/bulk', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(book),
-      })
-      .then(response => response.json())
-      .then(data => {
-          // Обрабатываем успешный ответ
-          Swal.fire({
-            title: "Успех!",
-            text: "Ваш заказ принят!",
-            icon: "success",
-            customClass: {
-              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-            }
+        preConfirm: () => {
+          const street = document.getElementById("street").value.trim();
+          const home = document.getElementById("home").value.trim();
+          const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+      
+          if (!street || !home || !paymentMethod) {
+            Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+            return false;
+          }
+      
+          return {
+            street,
+            home,
+            paymentMethod: paymentMethod.value,
+          };
+        },
+      }).then((result) => {
+        if (result.isConfirmed && check.checked) {
+          console.log("Введенные данные:", result.value);
+          let adres={
+            city:"Copceak",
+            street:String(result.value.street),
+            homeNumber:String(result.value.home),
+            apartmentNumber:"2"
+          }
+          let book={};
+          let order=JSON.parse(localStorage.getItem('order'));
+          let orderrequest=[];
+          order.forEach(item=>{
+              let todo={
+              productId:item.id,
+              quantity:item.quantity,
+          }
+          orderrequest.push(todo);
           })
-      })
-      .catch(error => {
-          // Обрабатываем ошибку при отправке
-          Swal.fire({
-            title: "Ошибка!",
-            text: "Не удалось обновить расписание!",
-            icon: "error",
-            customClass: {
-              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-            }
-          })
-          console.log(error);
+        console.log(orderrequest);
+        book={
+          orderProductRequestDTO:orderrequest,
+          paymentMethod: result.value.paymentMethod,
+          orderInRestaurant:false,
+          tableRequestDTO:{
+            number: null
+          },
+          existDiscountCodes:false,
+          productDiscountCode:"",
+          globalDiscountCode:"",
+          isRegisterUser:false,
+          userId:0,
+          addressRequestDTO:adres
+      }
+      console.log(JSON.stringify(book));
+      fetch('http://localhost:9091/api/v1/order-products/bulk', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(book),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Обрабатываем успешный ответ
+            Swal.fire({
+              title: "Успех!",
+              text: "Ваш заказ принят!",
+              icon: "success",
+              customClass: {
+                confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+              }
+            })
+        })
+        .catch(error => {
+            // Обрабатываем ошибку при отправке
+            Swal.fire({
+              title: "Ошибка!",
+              text: "Не удалось принять заказ!",
+              icon: "error",
+              customClass: {
+                confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+              }
+            })
+            console.log(error);
+        });
+      }
       });
     }
-    });
+    else{
+      Swal.fire({
+        title: "Вы ничего не выбрали!",
+        icon: "error",
+        confirmButtonColor: "#2F9262"
+      });
+    }
    
     
-  })
+  });
   // Модальное окно 
   document.querySelector(".buttonsend").addEventListener("click", function(){
     let order=JSON.parse(localStorage.getItem('order'));
@@ -1160,6 +1193,26 @@ async function Registr() {
     }
   }
 }
+// Привлечение внимание на заказ
+function Sendchange(){
+let buttonsend=document.querySelector('.buttonsend a')
+let changes=[`<i class='bx bxs-bell-ring bx-tada' ></i>`, `<i class="bx bx-cart-download"></i>`]
+let index = 0;
+setInterval(()=>{
+  buttonsend.style.opacity = '0';
+        
+  setTimeout(() => {
+      // Меняем содержимое, когда оно скрыто
+      buttonsend.innerHTML = changes[index];
+      index = (index + 1) % changes.length;
+
+      // Плавно показываем
+      buttonsend.style.opacity = '1';
+  }, 300); // Дождаться завершения анимации скрытия
+
+},3000);
+}
+
 
 Registr();
 window.addEventListener('hashchange', Hachchange);

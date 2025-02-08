@@ -2,9 +2,8 @@ async function Statistiktable(start, end) {
     try{
         if (!start) start = '2023-01-01T00:00:00';
         if (!end) end = '2025-01-31T23:59:59';
-        const response = await fetch(`http://localhost:9091/api/v1/statistics?from=2023-01-01T00:00:00&to=2025-01-31T23:59:59`);
+        const response = await fetch(`http://localhost:9091/api/v1/statistics?from=${start}&to=${end}`);
             const data = await response.json();
-            console.log(data);
             document.querySelector(".Totalcost").textContent=`Общая стоимость: ${data.totalRevenueBasedOrdersDto.totalRevenue}`;
             document.querySelector(".Totalorders").textContent=`Всего заказанно: ${data.totalRevenueBasedOrdersDto.totalOrders}`;
             document.querySelector(".Earning").textContent=`Средняя цена одного заказа: ${data.totalRevenueBasedOrdersDto.avgRevenuePerOrder}`;
@@ -46,7 +45,7 @@ async function Statistik() {
     const oneDayAgo = getPastDate(1);        // Для "1д"
     const fiveDaysAgo = getPastDate(5);      // Для "5д"
     const oneMonthAgo = getPastDate(30);     // Для "1мес" (условно, 30 дней)
-
+    console.log(allTime);
     table.innerHTML = `
         <ul class='time'>
             <li><button data-timestart='2023-01-01T00:00:00' data-timeend='${allTime}' class='active'>Все время</button></li>
@@ -91,7 +90,7 @@ async function Statistik() {
         });
     });
 
-    await Statistiktable('2023-01-01T00:00:00', '2025-01-31T23:59:59');
+    await Statistiktable('2023-01-01T00:00:00', allTime);
 }
 
 
@@ -222,7 +221,7 @@ async function fetchProductTypes() {
             
                         const button = event.target.closest('.category-delete');
                 const categoryId = button.getAttribute('data-delete');
-                await deleteCategory(categoryId);
+                await deleteCategory(categoryId); 
                 // Удаляем категорию (всю таблицу)
                 const categoryDiv = button.closest('.one-category');
                 categoryDiv.remove();
@@ -380,41 +379,6 @@ async function fetchProductTypes() {
                 alert('Пожалуйста, заполните все поля');
             }
         });
-        // Добавление новой категории
-        document.querySelector('.category-confirm').addEventListener('click', function(e){
-            const newcategory=document.querySelector('#category-name');
-            if(newcategory){
-                console.log(newcategory.value)
-                let cat={
-                    name: newcategory.value
-                }
-                let Modal = new bootstrap.Modal(document.getElementById('Modalwindow'), {
-                    keyboard: false
-                });
-                Modal.hide();
-                fetch('http://localhost:9091/api/v1/product-types',{
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body:JSON.stringify(cat)
-                }).then(res=>{
-                    if(!res.ok){
-                         // Обработка ошибки на уровне HTTP
-                         throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
-                    }
-                    return res.text().then(text => text ? JSON.parse(text) : {});
-                }).then(data=>{
-                    console.log('Success:', data);
-                    fetchProductTypes();
-                    // уведомление о успехе
-                    
-                }).catch(err=>{
-                    console.error('Error:', err);
-                });
-            }
-            else{
-                alert('Пожалуйста, заполните все поля');
-            }
-        });
         // Пагинация в меню
         document.querySelectorAll('.pagging').forEach(el => {
             el.addEventListener('click', function (e) {
@@ -457,6 +421,37 @@ async function fetchProductTypes() {
     }
     
   }
+  // Добавление новой категории
+  document.querySelector('.category-confirm').addEventListener('click', function (e) {
+    const newcategory = document.querySelector('#category-name');
+    if (newcategory && newcategory.value.trim() !== "") {  // Проверка на пустое значение
+        let cat = { name: newcategory.value };
+        newcategory.value='';
+        // Получаем существующий модальный экземпляр
+        let modalElement = document.getElementById('Categorywindow');
+        let modalInstance = bootstrap.Modal.getInstance(modalElement); // Получаем уже существующий экземпляр
+
+        if (modalInstance) {
+            modalInstance.hide(); // Закрываем модальное окно
+        }
+        fetch('http://localhost:9091/api/v1/product-types', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cat)
+        }).then(res => {
+            console.log(1);
+            return res.json();
+        }).then(data => {
+            console.log('Success:', data);
+        }).catch(err => {
+            console.error('Error:', err);
+        });
+        fetchProductTypes();
+    }
+         else {
+        alert('Пожалуйста, заполните все поля');
+    }
+});
 async function Addtable(categoryIds){
     try{
         for(const id of categoryIds){
@@ -513,7 +508,7 @@ async function deleteProduct(productId) {
             method: 'DELETE',
         })
        
-        if (!imageResponse.ok) {
+        if (!imageresponse.ok) {
             throw new Error(`Ошибка при удалении изображения для продукта с ID ${productId}`);
         }
         
