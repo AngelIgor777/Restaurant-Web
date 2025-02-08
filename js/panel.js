@@ -2,7 +2,7 @@ async function Statistiktable(start, end) {
     try{
         if (!start) start = '2023-01-01T00:00:00';
         if (!end) end = '2025-01-31T23:59:59';
-        const response = await fetch(`http://localhost:9091/api/v1/statistics?from=${start}&to=${end}`);
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/statistics?from=${start}&to=${end}`);
             const data = await response.json();
             document.querySelector(".Totalcost").textContent=`Общая стоимость: ${data.totalRevenueBasedOrdersDto.totalRevenue}`;
             document.querySelector(".Totalorders").textContent=`Всего заказанно: ${data.totalRevenueBasedOrdersDto.totalOrders}`;
@@ -115,7 +115,7 @@ function getPastDate(days) {
 async function fetchProductTypes() {
     try {
      
-      const response = await fetch('http://localhost:9091/api/v1/product-types');
+      const response = await fetch('http://46.229.212.34:9091/api/v1/product-types');
       const data = await response.json();
   
       if (data.content && Array.isArray(data.content)) {
@@ -300,7 +300,7 @@ async function fetchProductTypes() {
                     formData.append("typeId",changeproduct.typeId);
                     formData.append("price",changeproduct.price);
                     formData.append("cookingTime",changeproduct.cookingTime);
-                    fetch('http://localhost:9091/api/v1/products', {
+                    fetch('http://46.229.212.34:9091/api/v1/products', {
                         method: 'PATCH',
                         
                         body:formData
@@ -337,7 +337,7 @@ async function fetchProductTypes() {
                 
 
                 Modal.hide();
-                fetch('http://localhost:9091/api/v1/products', {
+                fetch('http://46.229.212.34:9091/api/v1/products', {
                     method: 'POST',
                     body: formData
                 })
@@ -434,7 +434,7 @@ async function fetchProductTypes() {
         if (modalInstance) {
             modalInstance.hide(); // Закрываем модальное окно
         }
-        fetch('http://localhost:9091/api/v1/product-types', {
+        fetch('http://46.229.212.34:9091/api/v1/product-types', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cat)
@@ -455,7 +455,7 @@ async function fetchProductTypes() {
 async function Addtable(categoryIds){
     try{
         for(const id of categoryIds){
-            const response = await fetch(`http://localhost:9091/api/v1/products?typeId=${id}`);
+            const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`);
             const data = await response.json();
             const tableone=document.querySelector(`.item-${id}`);
 
@@ -489,14 +489,14 @@ async function Addtable(categoryIds){
 }
 async function deleteProduct(productId) {
     try {
-        const response = await fetch(`http://localhost:9091/api/v1/products/${productId}`, {
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/products/${productId}`, {
             method: 'DELETE',
         });
         if (!response.ok) {
             throw new Error(`Ошибка при удалении продукта с ID ${productId}`);
         }
         // Удаление изображения
-        const photoResponse = await fetch(`http://localhost:9091/api/v1/photos/product/${productId}`);
+        const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${productId}`);
         if (!photoResponse.ok) {
             throw new Error(`Ошибка при получении изображения для продукта с ID ${productId}`);
         }
@@ -504,7 +504,7 @@ async function deleteProduct(productId) {
         if (!photoData.length || !photoData[0].url) {
             throw new Error(`Изображение для продукта с ID ${productId} не найдено`);
         }
-        const imageresponse= await fetch('http://localhost:9091/api/v1/photos/resource?photoName='+photoData[0].url, {
+        const imageresponse= await fetch('http://46.229.212.34:9091/api/v1/photos/resource?photoName='+photoData[0].url, {
             method: 'DELETE',
         })
        
@@ -519,7 +519,7 @@ async function deleteProduct(productId) {
 }
 async function deleteCategory(categoryId) {
     try {
-        const response = await fetch(`http://localhost:9091/api/v1/product-types/${categoryId}`, {
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/product-types/${categoryId}`, {
             method: 'DELETE',
         });
         if (!response.ok) {
@@ -572,12 +572,12 @@ async function Registr() {
       if (uuid1) {
         try {
           // Получаем данные пользователя
-          let response = await fetch(`http://localhost:9091/api/v1/users/${uuid1}`);
+          let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
           let data = await response.json();
           console.log(data);
   
           // Получаем изображение
-          let imageResponse = await fetch(`http://localhost:9091/api/v1/photos/resource/?photoName=${data.photoUrl}`);
+          let imageResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/resource/?photoName=${data.photoUrl}`);
           
           if (!imageResponse.ok) {
             throw new Error("Ошибка загрузки изображения");

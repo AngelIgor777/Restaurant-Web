@@ -106,7 +106,7 @@ const renderFooter = () => `
       let stompClient = null;
 
       function connectWebSocket() {
-          const socket = new SockJS('http://localhost:9091/ws-orders'); // Подключение к WebSocket
+          const socket = new SockJS('http://46.229.212.34:9091/ws-orders'); // Подключение к WebSocket
           stompClient = Stomp.over(socket); // Инициализация STOMP клиента
   
           stompClient.connect({}, function (frame) {
@@ -122,7 +122,7 @@ const renderFooter = () => `
   
       // Функция для отображения всех заказов
       function loadAllOrders() {
-          fetch("http://localhost:9091/api/v1/orders")
+          fetch("http://46.229.212.34:9091/api/v1/orders")
               .then(response => response.json())
               .then(orders => {
                   orders.forEach(orderData => {

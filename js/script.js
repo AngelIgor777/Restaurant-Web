@@ -327,7 +327,7 @@ function formatTime(inputTime) {
 async function fetchProductTypes() {
   try {
    
-    const response = await fetch('http://localhost:9091/api/v1/product-types');
+    const response = await fetch('http://46.229.212.34:9091/api/v1/product-types');
     const data = await response.json();
 
     if (data.content && Array.isArray(data.content)) {
@@ -366,7 +366,7 @@ async function fetchMenuItems(categoryIds) {
     const allitems=[];
     const ids=[];
     for (const id of categoryIds) {
-      const response = await fetch(`http://localhost:9091/api/v1/products?typeId=${id}`);
+      const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`);
       const data = await response.json();
       if(data.content && Array.isArray(data.content)){
       allitems.push(data.content);
@@ -378,9 +378,9 @@ async function fetchMenuItems(categoryIds) {
       for (const it of allitems) {  
         for (const item of it){
         // Запрос URL картинки
-        const photoResponse = await fetch(`http://localhost:9091/api/v1/photos/product/${item.id}`);
+        const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${item.id}`);
         const photoData = await photoResponse.json();
-        const imageUrl = 'http://localhost:9091/api/v1/photos/resource?photoName=' + (photoData[0]?.url || 'default.jpg'); // Если нет URL, используем картинку по умолчанию
+        const imageUrl = 'http://46.229.212.34:9091/api/v1/photos/resource?photoName=' + (photoData[0]?.url || 'default.jpg'); // Если нет URL, используем картинку по умолчанию
         
         // Создаем элемент меню
         const menuItem = document.createElement('div');
@@ -724,7 +724,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
       }).then((result)=>{
         if(result.isConfirmed){
           
-          fetch('http://localhost:9091/api/v1/scheduler/update-cron?cronExpression='+ encodeURIComponent(result.value.cronExpression),{
+          fetch('http://46.229.212.34:9091/api/v1/scheduler/update-cron?cronExpression='+ encodeURIComponent(result.value.cronExpression),{
             method:'POST',
             headers: { "Content-Type": "application/json" }
           })
@@ -749,7 +749,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
             console.log(er)
           });
           // запуск бота
-          fetch('http://localhost:9091/api/v1/scheduler/start',{
+          fetch('http://46.229.212.34:9091/api/v1/scheduler/start',{
             method:'POST'
           })
           .then(response=>response.json())
@@ -944,7 +944,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
           addressRequestDTO:adres
       }
       console.log(JSON.stringify(book));
-      fetch('http://localhost:9091/api/v1/order-products/bulk', {
+      fetch('http://46.229.212.34:9091/api/v1/order-products/bulk', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1014,7 +1014,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         addressRequestDTO:null
     }
     console.log(JSON.stringify(book));
-    fetch('http://localhost:9091/api/v1/order-products/bulk', {
+    fetch('http://46.229.212.34:9091/api/v1/order-products/bulk', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -1100,9 +1100,9 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         console.log(itemid);
       
         let onlyItem=itemid;
-        let contentfetch= await fetch(`http://localhost:9091/api/v1/products/${onlyItem}`);
+        let contentfetch= await fetch(`http://46.229.212.34:9091/api/v1/products/${onlyItem}`);
         let contentdat=await contentfetch.json();
-        let contentimg=`http://localhost:9091/api/v1/photos/resource?photoName=${contentdat.photoResponseDTOList[0].url}`;
+        let contentimg=`http://46.229.212.34:9091/api/v1/photos/resource?photoName=${contentdat.photoResponseDTOList[0].url}`;
         let contentitem=[];
         contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
           contentimg, contentdat.productResponseDTO.description,
@@ -1169,9 +1169,9 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         console.log(localStorage.getItem("onlyItem"))
         if(localStorage.getItem("onlyItem")){
           let onlyItem=parseInt(hash.replace(/[^0-9]/g,""));
-          let contentfetch= await fetch(`http://localhost:9091/api/v1/products/${onlyItem}`);
+          let contentfetch= await fetch(`http://46.229.212.34:9091/api/v1/products/${onlyItem}`);
           let contentdat=await contentfetch.json();
-          let contentimg=`http://localhost:9091/api/v1/photos/resource?photoName=${contentdat.photoResponseDTOList[0].url}`;
+          let contentimg=`http://46.229.212.34:9091/api/v1/photos/resource?photoName=${contentdat.photoResponseDTOList[0].url}`;
           let contentitem=[];
           contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
             contentimg, contentdat.productResponseDTO.description,
@@ -1258,12 +1258,12 @@ async function Registr() {
     if (uuid1) {
       try {
         // Получаем данные пользователя
-        let response = await fetch(`http://localhost:9091/api/v1/users/${uuid1}`);
+        let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
         let data = await response.json();
         console.log(data);
 
         // Получаем изображение
-        let imageResponse = await fetch(`http://localhost:9091/api/v1/photos/resource/?photoName=${data.photoUrl}`);
+        let imageResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/resource/?photoName=${data.photoUrl}`);
         
         if (!imageResponse.ok) {
           throw new Error("Ошибка загрузки изображения");
