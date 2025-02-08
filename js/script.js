@@ -834,7 +834,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
             <label for="street">Улица</label>
           </div>
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="home" placeholder="Дом" />
+            <input type="number" class="form-control" id="home" placeholder="Дом" />
             <label for="home">Дом</label>
           </div>
           </div>
@@ -874,6 +874,9 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
           document.getElementById("street").focus();
         },
         preConfirm: () => {
+
+           const check=document.querySelector('.check-box input');
+          if(check.checked){
           const street = document.getElementById("street").value.trim();
           const home = document.getElementById("home").value.trim();
           const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
@@ -888,8 +891,18 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
             home,
             paymentMethod: paymentMethod.value,
           };
-        },
+        }
+        // Если выбрали что в ресторане проверяем заполнили ли номер
+        else{
+          const num = document.getElementById("table").value.trim();
+          if (!num) {
+            Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+            return false;
+          }
+        }
+      },
       }).then((result) => {
+        const check=document.querySelector('.check-box input');
         if (result.isConfirmed && check.checked) {
           console.log("Введенные данные:", result.value);
           let adres={
@@ -908,7 +921,14 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
           }
           orderrequest.push(todo);
           })
-        console.log(orderrequest);
+        // Проверка на регистрацию
+        let user=JSON.parse(localStorage.getItem('uuid'));
+        if(!user){
+          let restered=false;
+        }
+        else{
+          let restered=true;
+        }
         book={
           orderProductRequestDTO:orderrequest,
           paymentMethod: result.value.paymentMethod,
@@ -955,6 +975,76 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
             })
             console.log(error);
         });
+      }
+
+      // Отправляем если в ресторане
+      if (result.isConfirmed && !check.checked) {
+        console.log("Введенные данные:", result.value);
+        const num = document.getElementById("table").value.trim();
+        let book={};
+        let order=JSON.parse(localStorage.getItem('order'));
+        let orderrequest=[];
+        order.forEach(item=>{
+            let todo={
+            productId:item.id,
+            quantity:item.quantity,
+        }
+        orderrequest.push(todo);
+        })
+        // Проверка на регистрацию
+        let user=JSON.parse(localStorage.getItem('uuid'));
+        if(!user){
+          let restered=false;
+        }
+        else{
+          let restered=true;
+        }
+      book={
+        orderProductRequestDTO:orderrequest,
+        paymentMethod: result.value.paymentMethod,
+        orderInRestaurant:true,
+        tableRequestDTO:{
+          number: num
+        },
+        existDiscountCodes:false,
+        productDiscountCode:"",
+        globalDiscountCode:"",
+        isRegisterUser:false,
+        userId:0,
+        addressRequestDTO:null
+    }
+    console.log(JSON.stringify(book));
+    fetch('http://localhost:9091/api/v1/order-products/bulk', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(book),
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Обрабатываем успешный ответ
+          Swal.fire({
+            title: "Успех!",
+            text: "Ваш заказ принят!",
+            icon: "success",
+            customClass: {
+              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+            }
+          })
+      })
+      .catch(error => {
+          // Обрабатываем ошибку при отправке
+          Swal.fire({
+            title: "Ошибка!",
+            text: "Не удалось принять заказ!",
+            icon: "error",
+            customClass: {
+              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+            }
+          })
+          console.log(error);
+      });
       }
       });
     }
@@ -1213,7 +1303,5 @@ setInterval(()=>{
 },3000);
 }
 
-
-Registr();
 window.addEventListener('hashchange', Hachchange);
 window.addEventListener('load', Hachchange);
