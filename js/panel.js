@@ -263,122 +263,7 @@ async function fetchProductTypes() {
                 document.getElementById('time').value = '';
                 document.getElementById('ischange').value=``;
         });
-        // создание или редактирование нового товара
-        document.querySelector('button.confirm').addEventListener('click', function(e) {
-            let name = document.getElementById('name').value;
-            let price = document.getElementById('price').value;
-            let description = document.getElementById('description').value;
-            let img = document.getElementById('image').files[0]; // Получаем выбранный файл
-            let cookingTime= document.getElementById('time').value;
-            let typeName = document.getElementById('typename').value;
-            if(cookingTime===''){
-                cookingTime='00:00:00';
-            }
-            if (name && price && description) {
-                // Очистка полей формы
-                document.getElementById('name').value = '';
-                document.getElementById('price').value = '';
-                document.getElementById('description').value = '';
-                document.getElementById('image').value = '';
-                document.getElementById('time').value = '';
-                
-                const ischange=document.getElementById('ischange');
-                if(ischange.value.length>0){
-                   
-                    let changeproduct={
-                        id:ischange.value,
-                        name:name,
-                        description:description,
-                        typeId:typeName,
-                        price:price,
-                        cookingTime:cookingTime
-                    };
-                    const formData=new FormData(); 
-                    formData.append("id",changeproduct.id);
-                    formData.append("name",changeproduct.name);
-                    formData.append("description",changeproduct.description);
-                    formData.append("typeId",changeproduct.typeId);
-                    formData.append("price",changeproduct.price);
-                    formData.append("cookingTime",changeproduct.cookingTime);
-                    fetch('http://46.229.212.34:9091/api/v1/products', {
-                        method: 'PATCH',
-                        
-                        body:formData
-                    }).then(res=>{
-                        if(!res.ok){
-                            throw new Error(`Ошибка: ${res.status} ${res.statusText}`);
-                        }
-                        return res.text().then(text => text ? JSON.parse(text) : {});
-                    }).then(data=>{
-                        console.log('Success:', data);
-                        Addtable(categoryIds);
-                    }).catch(errr=>{
-                        console.error('Error:', errr);
-                    });
-                    Modal.hide();
-                }
-                else{
-                let newProduct={
-                        name: name,
-                        price: price,
-                        typeName: typeName,
-                        description: description,
-                        cookingTime: cookingTime
-                    };
-                console.log(newProduct);
-                console.log(cookingTime);
-                const formData=new FormData(); 
-                formData.append('name', newProduct.name);
-                formData.append('description', newProduct.description);
-                formData.append('typeId', newProduct.typeName);
-                formData.append('price', newProduct.price);
-                formData.append('cookingTime', newProduct.cookingTime);
-                formData.append('file', img);
-                
-
-                Modal.hide();
-                fetch('http://46.229.212.34:9091/api/v1/products', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        // Обработка ошибки на уровне HTTP
-                        throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
-                    }
-                    return response.text().then(text => text ? JSON.parse(text) : {});
-                })
-                .then(data => {
-                    console.log('Success:', data);
-                    // уведомление о успехе
-                    Addtable(categoryIds);
-                    Swal.fire({
-                        title: "Успех!",
-                        text: "Обновленно!",
-                        icon: "success",
-                        customClass: {
-                          confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-                        }
-                      });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // уведомление о неудаче
-                    Swal.fire({
-                        title: "Ошибка!",
-                        text: "Попробуйте снова!",
-                        icon: "error",
-                        customClass: {
-                          confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-                        }
-                      });
-                });
-                }
-                
-            } else {
-                alert('Пожалуйста, заполните все поля');
-            }
-        });
+        
         // Пагинация в меню
         document.querySelectorAll('.pagging').forEach(el => {
             el.addEventListener('click', function (e) {
@@ -411,8 +296,9 @@ async function fetchProductTypes() {
             }
         });
     });
-
-
+        // После всего добавляем для категорий
+        console.log(categoryIds);
+        Category(categoryIds);
       } else {
         console.error('Неверный формат данных:', data);
       }
@@ -421,6 +307,126 @@ async function fetchProductTypes() {
     }
     
   }
+// все с изменением товаром
+function Category(categoryIds){
+// создание или редактирование нового товара
+document.querySelector('button.confirm').addEventListener('click', function(e) {
+    let name = document.getElementById('name').value;
+    let price = document.getElementById('price').value;
+    let description = document.getElementById('description').value;
+    let img = document.getElementById('image').files[0]; // Получаем выбранный файл
+    let cookingTime= document.getElementById('time').value;
+    let typeName = document.getElementById('typename').value;
+    if(cookingTime===''){
+        cookingTime='00:00:00';
+    }
+    if (name && price && description) {
+        // Очистка полей формы
+        document.getElementById('name').value = '';
+        document.getElementById('price').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('image').value = '';
+        document.getElementById('time').value = '';
+        // назначение модального окна для дальнейшого его закрытия
+        let modalElement = document.getElementById('Modalwindow');
+        let Modal = bootstrap.Modal.getInstance(modalElement); // Получаем уже существующий экземпляр
+
+        const ischange=document.getElementById('ischange');
+        if(ischange.value.length>0){
+           
+            let changeproduct={
+                id:ischange.value,
+                name:name,
+                description:description,
+                typeId:typeName,
+                price:price,
+                cookingTime:cookingTime
+            };
+            const formData=new FormData(); 
+            formData.append("id",changeproduct.id);
+            formData.append("name",changeproduct.name);
+            formData.append("description",changeproduct.description);
+            formData.append("typeId",changeproduct.typeId);
+            formData.append("price",changeproduct.price);
+            formData.append("cookingTime",changeproduct.cookingTime);
+            fetch('http://46.229.212.34:9091/api/v1/products', {
+                method: 'PATCH',
+                
+                body:formData
+            }).then(res=>{
+                if(!res.ok){
+                    throw new Error(`Ошибка: ${res.status} ${res.statusText}`);
+                }
+                return res.text().then(text => text ? JSON.parse(text) : {});
+            }).then(data=>{
+                console.log('Success:', data);
+                Addtable(categoryIds);
+            }).catch(errr=>{
+                console.error('Error:', errr);
+            });
+            Modal.hide();
+        }
+        else{
+        let newProduct={
+                name: name,
+                price: price,
+                typeName: typeName,
+                description: description,
+                cookingTime: cookingTime
+            };
+        console.log(newProduct);
+        console.log(cookingTime);
+        const formData=new FormData(); 
+        formData.append('name', newProduct.name);
+        formData.append('description', newProduct.description);
+        formData.append('typeId', newProduct.typeName);
+        formData.append('price', newProduct.price);
+        formData.append('cookingTime', newProduct.cookingTime);
+        formData.append('file', img);
+        
+        Modal.hide();
+        fetch('http://46.229.212.34:9091/api/v1/products', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                // Обработка ошибки на уровне HTTP
+                throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+            }
+            return response.text().then(text => text ? JSON.parse(text) : {});
+        })
+        .then(data => {
+            console.log('Success:', data);
+            // уведомление о успехе
+            Addtable(categoryIds);
+            Swal.fire({
+                title: "Успех!",
+                text: "Обновленно!",
+                icon: "success",
+                customClass: {
+                  confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                }
+              });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // уведомление о неудаче
+            Swal.fire({
+                title: "Ошибка!",
+                text: "Попробуйте снова!",
+                icon: "error",
+                customClass: {
+                  confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                }
+              });
+        });
+        }
+        
+    } else {
+        alert('Пожалуйста, заполните все поля');
+    }
+});
   // Добавление новой категории
   document.querySelector('.category-confirm').addEventListener('click', function (e) {
     const newcategory = document.querySelector('#category-name');
@@ -452,6 +458,8 @@ async function fetchProductTypes() {
         alert('Пожалуйста, заполните все поля');
     }
 });
+}
+  
 async function Addtable(categoryIds){
     try{
         for(const id of categoryIds){
