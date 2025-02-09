@@ -13,7 +13,7 @@ const renderHeader = () => `
             <span class="buttonsing-1 d-flex flex-row">
               <div class="dropdown  singin">
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
-                  <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
+                  <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
                   <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
@@ -50,7 +50,7 @@ const renderHeader = () => `
               <div class="dropdown  singin">
                 
                  <ul class="dropdown-menu text-small shadow dropdown-menu-start">
-                  <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
+                  <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
                   <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
@@ -634,6 +634,114 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         }
       }
     }
+    if(e.target.id==='profile'){
+      const uuid=JSON.parse(localStorage.getItem('uuid'));
+      // Если пользователь зарегестрирован
+      if(uuid){
+        Swal.fire({
+          html:`
+          <div class='adres'>
+             <h1>Ваш постояный адрес</h1>
+             <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="street" placeholder="Улица" />
+              <label for="street">Улица</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="num" placeholder="Дом" />
+              <label for="num">Дом</label>
+            </div>
+          </div>
+          `,
+          showCancelButton: true,
+          confirmButtonColor: "#2F9262",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Отправить",
+          cancelButtonText: "Отмена",
+          preConfirm: () => {
+            const street = document.getElementById("street").value;
+            const home = document.getElementById("num").value;
+    
+            if (!street || !home) {
+                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                return false;
+            }
+          }
+        }).then((result)=>{
+          if(result.isConfirmed){
+            const street = document.getElementById("street").value;
+            const home = document.getElementById("num").value;
+            const addres={
+              city:"Copceac",
+              street:street,
+              homeNumber: home,
+              apartmentNumber:1,
+              userUUID:uuid 
+            }
+
+            fetch('http://46.229.212.34:9091/api/v1/addresses',{
+              method:'POST',
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(addres)
+            }).then(result=>result.json())
+            .then(data=>{
+              console.log(data);
+              localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
+            })
+            .catch(error=>{
+              console.log(error);
+            });
+          }
+
+        });
+      }
+      // Если пользователь не зарегестрирован
+      else{
+        Swal.fire({
+          html:`
+          <div class='adres'>
+             <h1>Ваш постояный адрес</h1>
+             <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="street" placeholder="Улица" />
+              <label for="street">Улица</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="num" placeholder="Дом" />
+              <label for="num">Дом</label>
+            </div>
+          </div>
+          `,
+          showCancelButton: true,
+          confirmButtonColor: "#2F9262",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Отправить",
+          cancelButtonText: "Отмена",
+          preConfirm: () => {
+            const street = document.getElementById("street").value;
+            const home = document.getElementById("num").value;
+    
+            if (!street || !home) {
+                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                return false;
+            }
+          }
+        }).then((result)=>{
+          if(result.isConfirmed){
+            const street = document.getElementById("street").value;
+            const home = document.getElementById("num").value;
+            const addres={
+              city:"Copceac",
+              street:street,
+              homeNumber: home,
+              apartmentNumber:1,
+              userUUID:uuid 
+            }
+            localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
+            
+          }
+
+        });
+      }
+    }
     if(e.target.id==='notification'){
       Swal.fire({
         html: `
@@ -834,7 +942,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
             <label for="street">Улица</label>
           </div>
           <div class="form-floating mb-3">
-            <input type="number" class="form-control" id="home" placeholder="Дом" />
+            <input type="text" class="form-control" id="home" placeholder="Дом" />
             <label for="home">Дом</label>
           </div>
           </div>
@@ -865,7 +973,14 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
           // если выбрали что заказ на дом
           const check=document.querySelector('.check-box input');
           if(check.checked){
+            // проверяем зарегестрирован ли пользователь чтобы получить его адресс
             document.querySelector('.inputad-container').style.display='block';
+            let adress=JSON.parse(localStorage.getItem('addressResponseDTO'));
+            let street=document.querySelector("#street");
+            let home=document.querySelector("#home");
+            
+            street.value=adress.street;
+            home.value=adress.homeNumber;
           }
           // если делается в ресторане 
           else{
@@ -1261,7 +1376,9 @@ async function Registr() {
         let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
         let data = await response.json();
         console.log(data);
-
+        if(!localStorage.getItem("addressResponseDTO")){
+          localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO))
+        }
         // Получаем изображение
         let imageResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/resource/?photoName=${data.photoUrl}`);
         
