@@ -380,8 +380,8 @@ async function fetchMenuItems(categoryIds) {
         // Запрос URL картинки
         const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${item.id}`);
         const photoData = await photoResponse.json();
-        const imageUrl = 'http://46.229.212.34:9091/api/v1/photos/resource?photoName=' + (photoData[0]?.url || 'default.jpg'); // Если нет URL, используем картинку по умолчанию
-        
+        const imageUrl = photoData[0].url; // Если нет URL, используем картинку по умолчанию
+        console.log(photoData[0]);
         // Создаем элемент меню
         const menuItem = document.createElement('div');
         menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${ids[shet]} `;
@@ -1217,7 +1217,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         let onlyItem=itemid;
         let contentfetch= await fetch(`http://46.229.212.34:9091/api/v1/products/${onlyItem}`);
         let contentdat=await contentfetch.json();
-        let contentimg=`http://46.229.212.34:9091/api/v1/photos/resource?photoName=${contentdat.photoResponseDTOList[0].url}`;
+        let contentimg=`http://46.229.212.34:9091/api/v1/photos/product/${onlyItem}`;
         let contentitem=[];
         contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
           contentimg, contentdat.productResponseDTO.description,
@@ -1380,7 +1380,7 @@ async function Registr() {
           localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO))
         }
         // Получаем изображение
-        let imageResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/resource/?photoName=${data.photoUrl}`);
+        let imageResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${data.photoUrl}`);
         
         if (!imageResponse.ok) {
           throw new Error("Ошибка загрузки изображения");
