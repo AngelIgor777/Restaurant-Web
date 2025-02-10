@@ -10,6 +10,8 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest  # Use the latest Ubuntu runner
 
+    environment: Main
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4  # Fetches code from GitHub
