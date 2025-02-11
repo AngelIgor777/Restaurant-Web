@@ -393,7 +393,7 @@ input{
 
 @media (min-width: 992px) {
   .item-name {
-    font-size: clamp(2.1rem, 5.5vw, 7vw);
+    font-size: clamp(2.1rem, 3.5vw, 4vw);
     /* font-size: 3.8rem; */
   }
   .cost-item {

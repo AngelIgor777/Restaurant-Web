@@ -161,6 +161,11 @@ const renderMenu = () =>`
             <div class="modal-content">
               <div class="modal-header">
                 <h1>Ваш заказ</h1>
+                <h5 class='history'>
+                    <a type="button" data-bs-toggle="" data-bs-target="">
+                      История
+                    </a>
+                </h5>
                 <button
                   type="button"
                   class="btn-close"
@@ -289,8 +294,8 @@ const renderItem= (onlyItem=[]) =>`
           </div>
           <div class="col-sm-5 col-md-6 col-lg-4 item-descr d-flex flex-column align-items-left">
             <h1 class="item-name">${onlyItem[0]}</h1>
-            <h4 class="cost-item">${onlyItem[1]}</h4>
-            <h5 class="weith"><span>Время: </span>${onlyItem[4]}</h5>
+            <h4 class="cost-item">${onlyItem[1]}MDL</h4>
+            <h5 class="weith"><span>Время: </span>${formatTime(onlyItem[4])}</h5>
             <h5 class="ingredients" style="word-wrap: break-word !important;"><span>Описание: </span> ${onlyItem[3]} </h5>
             <div class="send-but d-flex justify-content-center">
               <div class="plus-min">
@@ -381,7 +386,6 @@ async function fetchMenuItems(categoryIds) {
         const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${item.id}`);
         const photoData = await photoResponse.json();
         const imageUrl = photoData[0].url; // Если нет URL, используем картинку по умолчанию
-        console.log(photoData[0]);
         // Создаем элемент меню
         const menuItem = document.createElement('div');
         menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${ids[shet]} `;
@@ -912,13 +916,20 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         const tovarid =parseInt(but.closest(".item").id.replace(/[^0-9]/g,""));
         console.log(tovarid);
         const price=parseFloat(but.closest(".item").querySelector('.cost').textContent)*quantity;
-        totalcost+=price;
         quant+=quantity;
-        buttosend.innerHTML=order.length+1;
         // Добавляем заказ в массив
-        order.push({ id:tovarid, tovarname, quantity, price});
-        console.log(order);
-        console.log(totalcost);
+        totalcost +=price;
+        if(order.some(item=>item.tovarname===tovarname)){
+          let index=order.findIndex(item => item.tovarname === tovarname);
+          console.log(order[index]);
+          order[index].price+=price;
+          order[index].quantity+=quantity;
+        }
+        else{
+          // Добавляем заказ в массив
+          order.push({ id:tovarid, tovarname:tovarname, quantity:quantity, price:price});
+          buttosend.innerHTML=order.length;
+        }
         localStorage.setItem('order', JSON.stringify(order));
         localStorage.setItem('totalcost', JSON.stringify(totalcost));
         // Убираем класс sold через 1 секунду
@@ -1000,20 +1011,22 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
             Swal.showValidationMessage("Пожалуйста, заполните все поля!");
             return false;
           }
-      
+          
           return {
             street,
             home,
             paymentMethod: paymentMethod.value,
           };
         }
-        // Если выбрали что в ресторане проверяем заполнили ли номер
-        else{
+         // Если выбрали что в ресторане проверяем заполнили ли номер
+         else{
           const num = document.getElementById("table").value.trim();
+          const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
           if (!num) {
             Swal.showValidationMessage("Пожалуйста, заполните все поля!");
             return false;
           }
+          return paymentMethod.value;
         }
       },
       }).then((result) => {
@@ -1094,7 +1107,6 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
 
       // Отправляем если в ресторане
       if (result.isConfirmed && !check.checked) {
-        console.log("Введенные данные:", result.value);
         const num = document.getElementById("table").value.trim();
         let book={};
         let order=JSON.parse(localStorage.getItem('order'));
@@ -1116,7 +1128,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         }
       book={
         orderProductRequestDTO:orderrequest,
-        paymentMethod: result.value.paymentMethod,
+        paymentMethod: result.value,
         orderInRestaurant:true,
         tableRequestDTO:{
           number: num
@@ -1217,7 +1229,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
         let onlyItem=itemid;
         let contentfetch= await fetch(`http://46.229.212.34:9091/api/v1/products/${onlyItem}`);
         let contentdat=await contentfetch.json();
-        let contentimg=`http://46.229.212.34:9091/api/v1/photos/product/${onlyItem}`;
+        let contentimg=contentdat.photoResponseDTOList[0].url;
         let contentitem=[];
         contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
           contentimg, contentdat.productResponseDTO.description,
@@ -1256,7 +1268,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
               // Добавляем класс sold для анимации
               but.classList.add("sold");
               let order=JSON.parse(localStorage.getItem('order'));
-              console.log(order);
+              
               // Находим поле ввода количества
               const plusmin = but.closest(".send-but"); 
               if(plusmin){
@@ -1264,11 +1276,17 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
                   const input = plusmin.querySelector("input"); 
                   let quantity = parseInt(input.value, 10);
                   totalcost +=quantity*parseFloat(contentitem[1], 10);
-                  console.log(order.length);
-                  // Добавляем заказ в массив
-                  order.push({ id:order.length, tovarname:contentitem[0], quantity:quantity, price:parseFloat(contentitem[1])*quantity});
-                  console.log(order);
-                  console.log(totalcost);
+                  if(order.some(item=>item.tovarname===contentitem[0])){
+                    let index=order.findIndex(item => item.tovarname === contentitem[0]);
+                    console.log(order[index]);
+                    order[index].price+=parseFloat(contentitem[1])*quantity;
+                    order[index].quantity+=quantity;
+                  }
+                  else{
+                    // Добавляем заказ в массив
+                    order.push({ id:itemid, tovarname:contentitem[0], quantity:quantity, price:parseFloat(contentitem[1])*quantity});
+                  }
+                 
                   localStorage.setItem('order', JSON.stringify(order));
                   localStorage.setItem('totalcost', JSON.stringify(totalcost));
                   // Убираем класс sold через 1 секунду
@@ -1280,13 +1298,16 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
             }
           }
         });
-      } else {
+      } 
+      // После перезагрузки страницы
+      else {
         console.log(localStorage.getItem("onlyItem"))
         if(localStorage.getItem("onlyItem")){
           let onlyItem=parseInt(hash.replace(/[^0-9]/g,""));
           let contentfetch= await fetch(`http://46.229.212.34:9091/api/v1/products/${onlyItem}`);
           let contentdat=await contentfetch.json();
-          let contentimg=`http://46.229.212.34:9091/api/v1/photos/resource?photoName=${contentdat.photoResponseDTOList[0].url}`;
+          let contentimg=contentdat.photoResponseDTOList[0].url;
+          console.log(contentimg);
           let contentitem=[];
           contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
             contentimg, contentdat.productResponseDTO.description,
@@ -1327,14 +1348,21 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
                 // Находим поле ввода количества
                 const plusmin = but.closest(".send-but"); 
                 if(plusmin){
-                    let totalcost=JSON.parse(localStorage.getItem('totalcost'));
-                    const input = plusmin.querySelector("input"); 
-                    let quantity = parseInt(input.value, 10);
-                    totalcost +=parseFloat(contentitem[1]*quantity, 10);
+                  let totalcost=JSON.parse(localStorage.getItem('totalcost'));
+                  const input = plusmin.querySelector("input"); 
+                  let quantity = parseInt(input.value, 10);
+                  totalcost +=quantity*parseFloat(contentitem[1], 10);
+                  if(order.some(item=>item.tovarname===contentitem[0])){
+                    let index=order.findIndex(item => item.tovarname === contentitem[0]);
+                    console.log(order[index]);
+                    order[index].price+=parseFloat(contentitem[1])*quantity;
+                    order[index].quantity+=quantity;
+                  }
+                  else{
                     // Добавляем заказ в массив
-                    order.push({ id:order.length, tovarname:contentitem[0], quantity:quantity, price:parseFloat(contentitem[1])});
-                    console.log(order);
-                    console.log(totalcost);
+                    let itemid=JSON.stringify(localStorage.getItem("onlyitem"));
+                    order.push({ id:itemid, tovarname:contentitem[0], quantity:quantity, price:parseFloat(contentitem[1])*quantity});
+                  }
                     localStorage.setItem('order', JSON.stringify(order));
                     localStorage.setItem('totalcost', JSON.stringify(totalcost));
                     // Убираем класс sold через 1 секунду

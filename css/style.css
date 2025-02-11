@@ -85,7 +85,13 @@ header {
   margin: 0 10px;
 }
 
-
+/* modal */
+.history{
+  position: absolute;
+  right: 100px;
+  margin-bottom: 0;
+  color: rgba(0, 0, 0, 0.64);
+}
 /* Menu-burger*/
 .container-fluid {
   margin: 0;
@@ -279,11 +285,15 @@ header {
   position: absolute;
   top: 0;
   color: #fff;
+  overflow: hidden;
   border-radius: 10px;
   height: 100%;
   width: 100%;
   transform: translateY(-100%);
   transition: all 0.4s ease;
+}
+.menu-container .item .img-cost .description h3{
+  font-size: 1rem;
 }
 .menu-container .item .img-cost:hover .description {
   transform: translateY(0);
@@ -291,8 +301,12 @@ header {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 30px;
   height: 100%;
   width: 100%;
+}
+.menu-container .item .img-cost:hover .description h3{
+  font-size: 1rem;
 }
 .containe {
   padding: 0;

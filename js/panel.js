@@ -4,7 +4,7 @@ async function Statistiktable(start, end) {
         if (!end) end = '2025-01-31T23:59:59';
         const response = await fetch(`http://46.229.212.34:9091/api/v1/statistics?from=${start}&to=${end}`);
             const data = await response.json();
-            document.querySelector(".Totalcost").textContent=`Общая стоимость: ${data.totalRevenueBasedOrdersDto.totalRevenue}`;
+            document.querySelector(".Totalcost").textContent=`Доход: ${data.totalRevenueBasedOrdersDto.totalRevenue}`;
             document.querySelector(".Totalorders").textContent=`Всего заказанно: ${data.totalRevenueBasedOrdersDto.totalOrders}`;
             document.querySelector(".Earning").textContent=`Средняя цена одного заказа: ${data.totalRevenueBasedOrdersDto.avgRevenuePerOrder}`;
             const tableone=document.querySelector(`.one-category`);
@@ -69,9 +69,11 @@ async function Statistik() {
         <div class='pagging'>
             <p>ещё...</p>
         </div>
+        <div class='information'>
         <p class='Totalcost' style="text-align:right;"></p>
         <p class='Totalorders' style="text-align:right;"></p>
         <p class='Earning' style="text-align:right;"></p>
+        </div>
     `;
     categorytable.appendChild(table);
 

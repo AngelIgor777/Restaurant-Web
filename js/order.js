@@ -159,15 +159,15 @@ const renderFooter = () => `
           <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'}</p>
           <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
           </summary>
-          <p><span>Общее время готовки:</span> ${order.totalCookingTime ?? 'Не указано'}</p>
-          <p><span>Создан:</span> ${order.createdAt ?? 'Не указано'}</p>
+          <p><span>Общее время готовки:</span> ${formatTime(order.totalCookingTime)}</p>
+          <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
           <p><span>Обновлён:</span> ${order.updatedAt ?? 'Не указано'}</p>
           <p><span>В ресторане:</span> ${data.orderInRestaurant ? 'Да' : 'Нет'}</p>
           <p><span>Коды скидки:</span> ${data.existDiscountCodes ? 'Есть' : 'Нет'}</p>
           <p><span>Код продукта скидки:</span> ${data.productDiscountCode ?? 'Нет'}</p>
           <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
-          <p><span>Адрес:</span> ${formatAddress(data.addressResponseDTO)}</p>
-          <p><span>Стол:</span> ${formatTable(data.tableResponseDTO)}</p>
+          <p>${formatAddress(data.addressResponseDTO)}</p>
+          <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
           </details>
           <div class="products">
               <strong>Продукты:</strong>
@@ -203,9 +203,9 @@ const renderFooter = () => `
   
       function formatAddress(address) {
           if (!address) {
-              return '<em>Адрес не указан</em>';
+              return '';
           }
-          return `
+          return `Адрес:
               ${address.city ?? 'Город не указан'},
               ${address.street ?? 'Улица не указана'},
               ${address.homeNumber ?? 'Номер дома не указан'}${address.apartmentNumber ? ', Кв. ' + address.apartmentNumber : ''}`
@@ -214,11 +214,44 @@ const renderFooter = () => `
   
       function formatTable(table) {
           if (!table) {
-              return '<em>Стол не указан</em>';
+              return ``;
           }
-          return `Стол №${table.number ?? 'Не указано'}`;
+          else{
+            return `Стол №${table.number ?? 'Не указано'}`;
+          }
+          
       }
-  
+      function formatTime(inputTime) {
+        const parts = inputTime.split(':').map(Number); // Разделяем строку и преобразуем части в числа
+        const hours = parts[0];
+        const minutes = parts[1];
+        const seconds = parts[2];
+      
+        let formattedTime = '';
+        if (hours > 0) {
+            formattedTime += `${hours} час `;
+        }
+        if (minutes > 0) {
+            formattedTime += `${minutes} мин `;
+        }
+        if (seconds > 0) {
+            formattedTime += `${seconds} сек`;
+        }
+        return formattedTime.trim(); // Убираем лишние пробелы
+      }
+      function formDate(longDate){
+        const date=new Date(longDate);
+        const day =date.getDate();
+        const months=[
+          "января", "февраля", "марта", "апреля", "мая", "июня",
+          "июля", "августа", "сентября", "октября", "ноября", "декабря"
+      ];
+      const month=months[date.getMonth()];
+      let hours = date.getHours()+2;
+      hours.toString().padStart(2, "0");
+      let minutes = date.getMinutes().toString().padStart(2, "0");
+      return `${day} ${month} ${hours}:${minutes}`;
+      }
       // Автоматическое подключение при загрузке страницы
       window.onload = function() {
             document.querySelector('.app').innerHTML=renderHeader()+renderBody()+renderFooter();
