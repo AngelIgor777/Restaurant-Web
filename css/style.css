@@ -92,6 +92,40 @@ header {
   margin-bottom: 0;
   color: rgba(0, 0, 0, 0.64);
 }
+@media (max-width: 480px) {
+
+  .orderList th, .orderList td {
+    padding: 3px;
+    max-width: 15vw; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap;
+    font-size: clamp(0.7rem, 2.6vw, 1.3rem) !important; 
+}
+.orderList .delete{
+  padding: 1vw !important;
+  width: 10vw;
+  height: 10vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px !important;
+}
+.orderList .modal-footer button{
+  font-size: clamp(0.7rem, 2.6vw, 1.3rem) !important; 
+}
+.form-check{
+  font-size: clamp(0.7rem, 2.6vw, 1.3rem) !important; 
+}
+  .history{
+    position: absolute;
+    right: 74px;
+    margin-bottom: 0;
+    color: rgba(0, 0, 0, 0.64);
+    font-size: 1.1rem;
+  }
+}
+
 /* Menu-burger*/
 .container-fluid {
   margin: 0;

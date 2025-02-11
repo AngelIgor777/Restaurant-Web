@@ -152,7 +152,7 @@ const renderMenu = () =>`
 
         <!-- Модальное окно -->
         <div
-          class="modal fade"
+          class="modal fade orderList"
           id="Modalwindow"
           tabindex="-1"
           aria-labelledby="Modalwindow"
