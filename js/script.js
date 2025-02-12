@@ -619,7 +619,7 @@ async function Hachchange(){
 document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
   }
   if(hash==='#menu'){
-    document.querySelector('body').style.backgroundImage="url(./img/flat-lay-composition-mexican-food-with-copyspace.jpg)";
+    document.querySelector('body').style.backgroundImage="url(./img/menu.png)";
     document.querySelector('body').classList.add('bodyc');
     menusect.innerHTML='';
     menusect.innerHTML=renderHeader()+renderMenu()+renderFooter();
@@ -1202,7 +1202,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
   }
   else if(hash==='#about'){
     window.scrollTo(0, 0);
-    document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
+    document.querySelector('body').style.backgroundImage="url(./img/back.jpg)";
     document.querySelector('body').classList.add('bodyc');
 
     menusect.innerHTML='';
@@ -1484,6 +1484,31 @@ function ExitButton(){
     }
   });
 }
+function cacheBackground(url) {
+  fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = function () {
+              localStorage.setItem("backgroundImage", reader.result);
+              document.body.style.backgroundImage = `url(${reader.result})`;
+          };
+      })
+      .catch(err => console.error("Ошибка загрузки:", err));
+}
+
+function loadCachedBackground(url) {
+  const cachedImage = localStorage.getItem("backgroundImage");
+  if (cachedImage) {
+      document.body.style.backgroundImage = `url(${cachedImage})`;
+  } else {
+      document.body.style.backgroundImage = `url(${url})`;
+      cacheBackground(url);
+  }
+}
+
+
 
 window.addEventListener('hashchange', Hachchange);
 window.addEventListener('load', Hachchange);
