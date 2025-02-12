@@ -413,7 +413,7 @@ input[type="number"]::-webkit-inner-spin-button {
   align-items: center;
   right: 0;
   height: 40px;
-  width: 50px;
+  width: 40px;
   border: none;
   background-color: #252525d9;
   font-size: 1.2rem;
@@ -788,9 +788,31 @@ input[type="number"]::-webkit-inner-spin-button {
   .menu-container .item .img-cost{
     margin: 0;
   }
+  .menu-container .item .img-cost .description h3{
+    font-size: 1rem !important;
+  }
+  .menu-container .item .img-cost:hover .description {
+    transform: translateY(0);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    height: 100%;
+    width: 100%;
+  }
+  .description h5{
+    font-size: 0.7rem;
+  }
+  .menu-container .item .img-cost:hover .description h3{
+    font-size: 0.5rem;
+  }
+  .containe {
+    padding: 0;
+  }
   .menu-container .item .img-cost img {
     width: 180px;
-    height: 180px;
+    height: 190px;
     object-fit: cover;
     border-radius: 4px;
     transition: all 0.3s;
