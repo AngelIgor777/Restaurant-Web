@@ -613,12 +613,11 @@ function extractHash(str) {
 // Вызываем функцию при изменения хэша это основа не забываеми
 async function Hachchange(){
 
-  document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
+  document.querySelector('body').style.backgroundImage="url(./img/back.jpg)";
   const hash = extractHash(window.location.hash);
   if(!hash){
     menusect.innerHTML=renderTitle()+renderFooter();
     
-document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
   }
   if(hash==='#menu'){
     document.querySelector('body').style.backgroundImage="url(./img/menu.png)";
@@ -1226,7 +1225,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
   }
   if (hash && hash.startsWith('#item-')) {
     
-      document.querySelector('body').style.backgroundImage="url(./img/flat-lay-composition-mexican-food-with-copyspace.jpg)";
+      document.querySelector('body').style.backgroundImage="url(./img/menu.png)";
     document.querySelector('body').classList.add('bodyc');
       const menuItem = document.querySelector(hash);
       if(!localStorage.getItem("onlyItem")){
