@@ -1403,44 +1403,49 @@ function getUUIDFromURL() {
   const match = hash.match(/#menu\/([a-f0-9\-]{36})/i); // Регулярка для UUID
   return match ? match[1] : null; // Возвращаем UUID или null, если не найден
 }
+async function getReg(uuid1) {
+  try {
+    // Получаем данные пользователя
+    let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
+    let data = await response.json();
+
+    
+    // Сохраняем данные адреса, если они еще не сохранены
+    if (!localStorage.getItem("addressResponseDTO") && data.addressResponseDTO) {
+      localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO));
+    }
+
+    // Получаем изображение
+    let imageResponse = data.photoUrl;
+
+    // Вставляем изображение в элементы
+    if (imageResponse) {
+      document.querySelectorAll(".userimg").forEach(im => {
+        im.innerHTML = `<img src="${imageResponse}" alt="User Image">`;
+      });
+    } else {
+      throw new Error("Изображение не найдено");
+    }
+
+  } catch (error) {
+    console.error("Ошибка запроса:", error);
+  }
+}
+
 async function Registr() {
   // let params = new URLSearchParams(window.location.search);
   let uuid = getUUIDFromURL();
-console.log(uuid);
+  console.log(uuid);
   if (!localStorage.getItem("uuid")) {
     if (uuid) {
       localStorage.setItem("uuid", JSON.stringify(uuid));
+      getReg(uuid);
     }
   } else {
     let uuid1 = JSON.parse(localStorage.getItem("uuid"));
     
     if (uuid1) {
-      try {
-        // Получаем данные пользователя
-        let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
-        let data = await response.json();
-        console.log(data);
-        if(!localStorage.getItem("addressResponseDTO")){
-          localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO))
-        }
-        // Получаем изображение
-        let imageResponse = data.photoUrl;
-        
-        if (!imageResponse.ok) {
-          throw new Error("Ошибка загрузки изображения");
-        }
-
-        let imageBlob = await imageResponse.blob();
-        let imageUrl = URL.createObjectURL(imageBlob);
-
-        // Вставляем изображение в элементы
-        document.querySelectorAll(".userimg").forEach(im => {
-          im.innerHTML = `<img src="${imageUrl}" alt="User Image">`;
-        });
-
-      } catch (error) {
-        console.error("Ошибка запроса:", error);
-      }
+      getReg(uuid1);
     }
   }
 }
