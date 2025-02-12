@@ -170,7 +170,6 @@ textarea{
     }
     .allbuttons i{
         font-size: clamp(0.4rem, 2.6vw, 1.3rem) !important; 
-
     }
     .category-items th, .category-items td {
         padding: 3px;

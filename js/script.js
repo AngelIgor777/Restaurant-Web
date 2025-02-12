@@ -608,6 +608,7 @@ async function Hachchange(){
 
   document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
   const hash = window.location.hash;
+  console.log(hash);
   if(!hash){
     menusect.innerHTML=renderTitle()+renderFooter();
     
@@ -1386,11 +1387,16 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
     
    
 }
-const menusect=document.querySelector(".app");
-async function Registr() {
-  let params = new URLSearchParams(window.location.search);
-  let uuid = params.get("uuid");
 
+const menusect=document.querySelector(".app");
+function getUUIDFromURL() {
+  const hash = window.location.hash; // Получаем часть после #
+  const match = hash.match(/#menu\/([a-f0-9\-]{36})/i); // Регулярка для UUID
+  return match ? match[1] : null; // Возвращаем UUID или null, если не найден
+}
+async function Registr() {
+  let uuid = getUUIDFromURL();
+  console.log(uuid);
   if (!localStorage.getItem("uuid")) {
     if (uuid) {
       localStorage.setItem("uuid", JSON.stringify(uuid));

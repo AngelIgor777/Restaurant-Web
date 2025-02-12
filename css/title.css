@@ -212,7 +212,7 @@ body{
   display: flex;
   justify-content: center;
   align-items: center;
-  right: 0;
+  right: 10px;
   height: 40px;
   width: 50px;
   border: none;
@@ -267,14 +267,14 @@ body{
   margin-left: 60px;
   padding-right: 0  !important;
   text-shadow: 1px 1px 5px rgb(0, 0, 0);
-  font-size:clamp(1.1rem, 2.5vw, 120px);
+  font-size:clamp(1.1rem, 1.7vw, 2rem);
 }
 .item-descr h5{
   font-size:clamp(1.2rem, 2.5vw, 2.1rem);
 }
 .item-name {
   font-weight: 500;
-  font-size:clamp(2.5rem, 2.5vw, 3.5rem);
+  font-size:clamp(1.6rem, 2.1vw, 2.5rem) !important;
  
 }
 .cost-item {
@@ -290,6 +290,9 @@ body{
   font-weight: 500;
   font-size:clamp(1.4rem, 2.5vw, 2.6rem);
   text-shadow: 2px 2px 5px rgb(0, 0, 0);
+}
+.ingredients{
+  width: 290px;
 }
 
 /* Описание ресторана */
@@ -393,26 +396,26 @@ input{
 
 @media (min-width: 992px) {
   .item-name {
-    font-size: clamp(2.1rem, 3.5vw, 4vw);
-    /* font-size: 3.8rem; */
+    font-size:clamp(2.3rem, 2.4vw, 3.5rem);
   }
   .cost-item {
-    font-size:clamp(1.7rem, 2.5vw, 2.6rem);
+    font-size:clamp(1.6rem, 1.8vw, 2.6rem) !important;
   }
   .weith {
-    font-size:clamp(1.7rem, 2.5vw, 2.6rem);
+    font-size:clamp(1.6rem, 1.8vw, 2.6rem) !important;
   }
   .ingredients {
-    font-size:clamp(1.7rem, 2.5vw, 2.6rem);
+    width: auto;
+    font-size:clamp(1.6rem, 1.8vw, 2.6rem) !important;
   }
   .weith span {
     font-weight: 500;
-    font-size:clamp(2.3rem, 2.5vw, 3.2rem);
+    font-size:clamp(1.8rem, 1.8vw, 3.2rem);
     text-shadow: 2px 2px 5px rgb(0, 0, 0);
   }
   .ingredients span {
     font-weight: 500;
-    font-size:clamp(2.3rem, 2.5vw, 3.2rem);
+    font-size:clamp(1.8rem, 1.8vw, 3.2rem);
     text-shadow:2px 2px 5px rgb(0, 0, 0);
   }
 }
