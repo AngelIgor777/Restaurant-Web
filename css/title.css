@@ -334,19 +334,19 @@ background-color: rgba(0, 0, 0, 0.337);
 border-radius: 10px;
 padding: 10px;
 }
-.aboutrestoran button{
+.aboutrestoran .ourmenu{
   
   border-radius: 10px;
-  background-color: #2aac2a;
+  background-color: #adbf6c;
   margin: 30px 0;
   border: none;
   
   height: 100%;
 }
-.aboutrestoran button a{
+.aboutrestoran .ourmenu a{
   padding: 20px;
   text-decoration: none;
-  color: #fff;
+  color: #000000;
   font-family: "Kurale", serif;
   font-weight: 400;
   font-style: normal;

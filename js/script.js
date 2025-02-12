@@ -506,9 +506,10 @@ function initializeIsotope() {
     transitionDuration: 0
   });
 
-  // Обработчик завершения `Isotope`
+
   $container.on('arrangeComplete', function () {
     $container.find('.item').css('position', 'static');
+    revealCards();
   });
 
   // Инициализация пагинации
@@ -587,6 +588,7 @@ function initializeIsotope() {
   var totalPages = Math.ceil($container.find('.item').length / itemsPerPage);
   initializePagination(totalPages);
   showPage(1);
+
 }
 
 if(!localStorage.getItem("order")){

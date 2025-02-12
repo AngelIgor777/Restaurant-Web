@@ -48,7 +48,7 @@ header {
 }
 /*logo*/
 .logo  a{
-  color: #3bfa57;
+  color: #3c5035;
   font-size:clamp(2.5rem, 0.5vw, 3rem);
   display: flex;
   flex-direction: column;
@@ -58,7 +58,7 @@ header {
   width: 70px !important;
 }
 .logo{
-  color: #3bfa57;
+  color: #3c5035;
   margin: 0;
   font-size:clamp(2.5rem, 0.5vw, 3rem);
   display: flex;
@@ -504,7 +504,7 @@ input[type="number"]::-webkit-inner-spin-button {
 /* Send button */
 .buttonsend {
   position: fixed;
-  background-color: #4bff66;
+  background-color: #fff;
   right: 20px;
   bottom: 40px;
   width: 70px;
@@ -596,7 +596,8 @@ input[type="number"]::-webkit-inner-spin-button {
   font-style: italic;
   padding: 0 !important;
   margin: 0 !important;
-  color: #3bfa57;
+  color: #adbf6c;
+  text-shadow: 1px 1px 5px rgb(0, 0, 0);
 }
 .container-fluid.foot h5 {
   color: #ffffffe7;
