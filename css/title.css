@@ -142,7 +142,25 @@ body{
   color:  #3bfa57;
 }
 
-
+/* Заглавие */
+.parktitle{
+  text-align: center;
+  margin-top: 140px;
+  color: #fff;
+  animation-name: Appear;
+  animation-duration: 2s;
+  font-size: 3rem;
+}
+@keyframes Appear {
+  0% {
+    opacity: 0;
+    font-size: 0.1px;
+  }
+  100% {
+    opacity: 1;
+    font-size: 3rem;
+  }
+}
 /* Одиночный */
 
 .item-img img {

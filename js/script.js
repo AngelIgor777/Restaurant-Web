@@ -257,6 +257,7 @@ const renderTitle = () =>`
             </div>
           </nav>
         </header>
+        <h1 class='parktitle'>PARKTOWN COFFEE</h1>
         <div class="aboutrestoran">
         
         <p class="restdescr">
@@ -602,13 +603,16 @@ console.log(quant)
 
 
 
+function extractHash(str) {
+  let match = str.match(/#[a-zA-Z0-9_-]+/);
+  return match ? match[0] : "";
+}
 
 // Вызываем функцию при изменения хэша это основа не забываеми
 async function Hachchange(){
 
   document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
-  const hash = window.location.hash;
-  console.log(hash);
+  const hash = extractHash(window.location.hash);
   if(!hash){
     menusect.innerHTML=renderTitle()+renderFooter();
     
@@ -990,9 +994,10 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
             let adress=JSON.parse(localStorage.getItem('addressResponseDTO'));
             let street=document.querySelector("#street");
             let home=document.querySelector("#home");
-            
-            street.value=adress.street;
-            home.value=adress.homeNumber;
+            if(adress){
+              street.value=adress.street;
+              home.value=adress.homeNumber;
+            }
           }
           // если делается в ресторане 
           else{
@@ -1395,8 +1400,9 @@ function getUUIDFromURL() {
   return match ? match[1] : null; // Возвращаем UUID или null, если не найден
 }
 async function Registr() {
+  let params = new URLSearchParams(window.location.search);
   let uuid = getUUIDFromURL();
-  console.log(uuid);
+console.log(uuid);
   if (!localStorage.getItem("uuid")) {
     if (uuid) {
       localStorage.setItem("uuid", JSON.stringify(uuid));
@@ -1414,7 +1420,7 @@ async function Registr() {
           localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO))
         }
         // Получаем изображение
-        let imageResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${data.photoUrl}`);
+        let imageResponse = data.photoUrl;
         
         if (!imageResponse.ok) {
           throw new Error("Ошибка загрузки изображения");
@@ -1453,6 +1459,19 @@ setInterval(()=>{
 
 },3000);
 }
+function revealCards() {
+  let item = document.querySelectorAll(".item");
+  let windowHeight = window.innerHeight; // Высота окна просмотра
 
+  item.forEach((card, index) => {
+    let position = card.getBoundingClientRect().top; // Расстояние до верха экрана
+
+    if (position < windowHeight - 50) { 
+      setTimeout(() => {
+        card.classList.add("visible");
+      }, index * 200); // Добавляем задержку для плавного появления
+    }
+  });
+}
 window.addEventListener('hashchange', Hachchange);
 window.addEventListener('load', Hachchange);
