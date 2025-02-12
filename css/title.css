@@ -149,7 +149,11 @@ body{
   color: #fff;
   animation-name: Appear;
   animation-duration: 2s;
-  font-size: 3rem;
+  font-size:clamp(2.7rem, 3rem, 1.6rem);
+  font-family: "Playfair Display SC", serif;
+  font-weight: 900;
+  font-style: italic;
+  text-shadow: 1px 1px 5px rgb(0, 0, 0);
 }
 @keyframes Appear {
   0% {
@@ -158,7 +162,7 @@ body{
   }
   100% {
     opacity: 1;
-    font-size: 3rem;
+    font-size:clamp(2.7rem, 3rem, 1.6rem);
   }
 }
 /* Одиночный */

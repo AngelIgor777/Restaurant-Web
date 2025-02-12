@@ -125,7 +125,7 @@ const renderFooter = () => `
           fetch("http://46.229.212.34:9091/api/v1/orders")
               .then(response => response.json())
               .then(orders => {
-                  orders.forEach(orderData => {
+                  orders.reverse().forEach(orderData => {
                       displayOrder(orderData);
                   });
               })
@@ -158,6 +158,7 @@ const renderFooter = () => `
           <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
           <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'}</p>
           <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
+          <p class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></p>
           </summary>
           <p><span>Общее время готовки:</span> ${formatTime(order.totalCookingTime)}</p>
           <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
@@ -190,7 +191,8 @@ const renderFooter = () => `
               <summary>
                   <p class='prname'><span>${id+1}) Название:</span> <b>${product.name ?? 'Не указано'}</b></p>
                   <p><span>Цена:</span> <b>${product.price ?? 'Не указано'}</b></p>
-                  <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b><span class='and'style='text-align: right; opacity:0.7; margin-left:60%;'>...</span></p>
+                  <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b><span class='and'style='text-align: right; opacity:0.7; margin-left:60%;'>...</span>
+                  <span class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></span></p>
                   
               </summary>
                   <p><span>Тип:</span> <b>${product.typeName ?? 'Не указано'}</b></p>

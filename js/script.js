@@ -16,7 +16,7 @@ const renderHeader = () => `
                   <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
                   <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
+                  <li><a class="dropdown-item exit" style="color: black;">Выход</a></li>
                 </ul>
                 <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class='bx bxs-user-circle singinuser' ></i>
@@ -53,7 +53,7 @@ const renderHeader = () => `
                   <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
                   <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
+                  <li><a class="dropdown-item exit" style="color: black;">Выход</a></li>
                 </ul>
                 <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class='bx bxs-user-circle singinuser' ></i>
@@ -624,8 +624,11 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
     menusect.innerHTML='';
     menusect.innerHTML=renderHeader()+renderMenu()+renderFooter();
     await fetchProductTypes();
+    // запуск всех нужных функ. после загрузки самого сайта
     Registr();
     Sendchange();
+    ExitButton();
+    revealCards()
   console.log("Всё запущено");
   let order=JSON.parse(localStorage.getItem('order'));
   const buttosend=document.querySelector("p.colvo");
@@ -971,7 +974,7 @@ document.querySelector('body').style.backgroundImage="url(./img/dinner.jpg)";
           <div class="mb-3">
             <label>
               <input type="radio" id="Cash" name="paymentMethod" value="CASH" />
-              Кэш
+                Наличные
             </label>
             <label style="margin-left: 15px;">
               <input type="radio" id="Card" name="paymentMethod" value="CARD" />
@@ -1400,7 +1403,7 @@ function getUUIDFromURL() {
   return match ? match[1] : null; // Возвращаем UUID или null, если не найден
 }
 async function Registr() {
-  let params = new URLSearchParams(window.location.search);
+  // let params = new URLSearchParams(window.location.search);
   let uuid = getUUIDFromURL();
 console.log(uuid);
   if (!localStorage.getItem("uuid")) {
@@ -1473,5 +1476,14 @@ function revealCards() {
     }
   });
 }
+function ExitButton(){
+  document.querySelector('.exit').addEventListener('click', function(){
+    if(localStorage.getItem('uuid')){
+      localStorage.removeItem('uuid');
+      localStorage.removeItem('addressResponseDTO');
+    }
+  });
+}
+
 window.addEventListener('hashchange', Hachchange);
 window.addEventListener('load', Hachchange);

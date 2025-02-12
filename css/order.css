@@ -48,6 +48,13 @@ body{
 details[open] .and{
     display: none;
 }
+details .andv{
+    display: none;
+}
+details[open] .andv{
+    display: block;
+    font-size: 1.4rem;
+}
 details[open]{
     margin-bottom: 40px;
 }
