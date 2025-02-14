@@ -50,6 +50,7 @@ const renderHeader = () => `
               <div class="dropdown  singin">
                 
                  <ul class="dropdown-menu text-small shadow dropdown-menu-start">
+                 
                   <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
                   <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
@@ -613,7 +614,7 @@ function extractHash(str) {
 // Вызываем функцию при изменения хэша это основа не забываеми
 async function Hachchange(){
 
-  document.querySelector('body').style.backgroundImage="url(./img/back.jpg)";
+  document.querySelector('body').style.backgroundImage="url(./img/about.png)";
   const hash = extractHash(window.location.hash);
   if(!hash){
     menusect.innerHTML=renderTitle()+renderFooter();
@@ -1203,7 +1204,7 @@ async function Hachchange(){
   }
   else if(hash==='#about'){
     window.scrollTo(0, 0);
-    document.querySelector('body').style.backgroundImage="url(./img/back.jpg)";
+    document.querySelector('body').style.backgroundImage="url(./img/about.png)";
     document.querySelector('body').classList.add('bodyc');
 
     menusect.innerHTML='';
@@ -1478,7 +1479,7 @@ function revealCards() {
     if (position < windowHeight - 50) { 
       setTimeout(() => {
         card.classList.add("visible");
-      }, index * 200); // Добавляем задержку для плавного появления
+      }, index * 300); // Добавляем задержку для плавного появления
     }
   });
 }
@@ -1518,3 +1519,9 @@ function loadCachedBackground(url) {
 
 window.addEventListener('hashchange', Hachchange);
 window.addEventListener('load', Hachchange);
+window.onload = function() {
+  const loadingScreens = document.getElementsByClassName('loader');
+  for (let loadingScreen of loadingScreens) {
+    loadingScreen.classList.remove('close');
+  }
+};
