@@ -567,48 +567,69 @@ async function Closepagging() {
         }
     });
 }
+function getUUIDFromURL() {
+    const hash = window.location.hash; // Получаем часть после #
+    const match = hash.match(/#menu\/([a-f0-9\-]{36})/i); // Регулярка для UUID
+    return match ? match[1] : null; // Возвращаем UUID или null, если не найден
+  }
 // Изменения ярлыка
-async function Registr() {
-    let params = new URLSearchParams(window.location.search);
-    let uuid = params.get("uuid");
+async function getReg(uuid1) {
+    try {
+      // Получаем данные пользователя
+      let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
+      let data = await response.json();
   
+      
+      // Сохраняем данные адреса, если они еще не сохранены
+      if (!localStorage.getItem("addressResponseDTO") && data.addressResponseDTO) {
+        localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO));
+      }
+  
+      // Получаем изображение
+      let imageResponse = data.photoUrl;
+  
+      // Вставляем изображение в элементы
+      if (imageResponse) {
+        document.querySelectorAll(".userimg").forEach(im => {
+          im.innerHTML = `<img src="${imageResponse}" alt="User Image">`;
+        });
+      } else {
+        throw new Error("Изображение не найдено");
+      }
+  
+    } catch (error) {
+      console.error("Ошибка запроса:", error);
+    }
+  }
+  
+  async function Registr() {
+    // let params = new URLSearchParams(window.location.search);
+    let uuid = getUUIDFromURL();
+    console.log(uuid);
     if (!localStorage.getItem("uuid")) {
       if (uuid) {
         localStorage.setItem("uuid", JSON.stringify(uuid));
+        getReg(uuid);
       }
     } else {
       let uuid1 = JSON.parse(localStorage.getItem("uuid"));
       
       if (uuid1) {
-        try {
-          // Получаем данные пользователя
-          let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
-          let data = await response.json();
-          console.log(data);
-  
-          // Получаем изображение
-          let imageResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/resource/?photoName=${data.photoUrl}`);
-          
-          if (!imageResponse.ok) {
-            throw new Error("Ошибка загрузки изображения");
-          }
-  
-          let imageBlob = await imageResponse.blob();
-          let imageUrl = URL.createObjectURL(imageBlob);
-  
-          // Вставляем изображение в элементы
-          document.querySelectorAll(".userimg").forEach(im => {
-            im.innerHTML = `<img src="${imageUrl}" alt="User Image">`;
-          });
-  
-        } catch (error) {
-          console.error("Ошибка запроса:", error);
-        }
+        getReg(uuid1);
       }
     }
   }
+function Language(){
+    document.getElementById("lang").addEventListener("change", function(event) {
+      console.log("Выбрано:", event.target.value);
+      localStorage.setItem('lang', JSON.stringify(event.target.value));
+  });
+  }
+  
+  
 document.querySelector('.static').addEventListener('click', Statistik);
 document.querySelector('.cattaloge').addEventListener('click', Closepagging);
 // Запуск
 Closepagging();
 Registr();
+Language();

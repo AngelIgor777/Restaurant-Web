@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
-    
+
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -24,79 +24,139 @@
       <header>
         <nav class="navbar navbar-expand-lg navcont">
           <div class="container-fluid">
-            <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
+            <h1 class="logo">
+              <a href="panel.html" style="text-decoration: none"
+                ><img src="./css/Park.png" alt="" />
+              </a>
+            </h1>
             <span class="buttonsing-1 d-flex flex-row">
-              <div class="dropdown  singin">
+              <select class="form-select" id="lang">
+                <option value="rus" selected>rus</option>
+                <option value="rum">rum</option>
+              </select>
+              <div class="dropdown singin">
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
-                  <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
-                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
+                  <li>
+                    <a class="dropdown-item" href="#" style="color: black"
+                      >Профиль</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      id="notification"
+                      style="color: black"
+                      >Уведомления</a
+                    >
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a class="dropdown-item" href="#" style="color: black"
+                      >Выход</a
+                    >
+                  </li>
                 </ul>
-                <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class='bx bxs-user-circle singinuser' ></i>
+                <a
+                  href="#"
+                  class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bx bxs-user-circle singinuser"></i>
                 </a>
               </div>
-    
+
               <button
-              class="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarcont"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span><i class="bx bx-menu"></i></span>
-            </button>
-            
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarcont"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span><i class="bx bx-menu"></i></span>
+              </button>
             </span>
-            
+
             <div class="collapse navbar-collapse" id="navbarcont">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item active"><a href="index.html#menu">Меню</a></li>
+                <li class="nav-item active">
+                  <a href="index.html#menu">Меню</a>
+                </li>
                 <li class="nav-item"><a href="index.html#about">О нас</a></li>
                 <li class="nav-item"><a href="#">Доставка</a></li>
                 <li class="nav-item"><a href="#">Контакты</a></li>
               </ul>
             </div>
-  
+
             <span class="buttonsing-2 flex-row">
-              <div class="dropdown  singin">
-                
-                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
-                  <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
-                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
+              <select class="form-select" id="lang">
+                <option value="rus" selected>rus</option>
+                <option value="rum">rum</option>
+              </select>
+              <div class="dropdown singin">
+                <ul class="dropdown-menu text-small shadow dropdown-menu-start">
+                  <li>
+                    <a class="dropdown-item" href="#" style="color: black"
+                      >Профиль</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      id="notification"
+                      style="color: black"
+                      >Уведомления</a
+                    >
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a class="dropdown-item" href="#" style="color: black"
+                      >Выход</a
+                    >
+                  </li>
                 </ul>
-                <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class='bx bxs-user-circle singinuser' ></i>
+                <a
+                  href="#"
+                  class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bx bxs-user-circle singinuser"></i>
                 </a>
               </div>
-    
+
               <button
-              class="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarcont"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span><i class="bx bx-menu"></i></span>
-            </button>
-            
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarcont"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span><i class="bx bx-menu"></i></span>
+              </button>
             </span>
-            
           </div>
         </nav>
       </header>
       <div class="head">
-        <h1 class="cattaloge">Категории <span class="add-category"><button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#Categorywindow"><i class='bx bx-plus-medical' style='color:#ffffff'  ></i></button></span></h1>
+        <h1 class="cattaloge">
+          Категории
+          <span class="add-category"
+            ><button
+              class="btn btn-success"
+              data-bs-toggle="modal"
+              data-bs-target="#Categorywindow"
+            >
+              <i class="bx bx-plus-medical" style="color: #ffffff"></i></button
+          ></span>
+        </h1>
         <h1 class="static">Статистика</h1>
       </div>
-      
+
       <div class="container-fluid categorylist">
         <!-- Загружаем таблицу с каждой категорией -->
       </div>
@@ -175,77 +235,79 @@
       </div>
       <!-- Модальное окно для категорий -->
       <div
-      class="modal fade"
-      id="Categorywindow"
-      tabindex="-1"
-      aria-labelledby="Categorywindow"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1>Добавить Категорию</h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="category-name" />
-              <label for="category-name">Название</label>
+        class="modal fade"
+        id="Categorywindow"
+        tabindex="-1"
+        aria-labelledby="Categorywindow"
+      >
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1>Добавить Категорию</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
             </div>
-            <input type="hidden" id="typename" />
-            <input type="hidden" id="ischange" />
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-              style="font-size: 1.2rem"
-            >
-              Отмена
-            </button>
-            <button
-              type="button"
-              class="btn btn-success category-confirm"
-              style="font-size: 1.4rem"
-            >
-              Подтвердить
-            </button>
+            <div class="modal-body">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="category-name" />
+                <label for="category-name">Название</label>
+              </div>
+              <input type="hidden" id="typename" />
+              <input type="hidden" id="ischange" />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                style="font-size: 1.2rem"
+              >
+                Отмена
+              </button>
+              <button
+                type="button"
+                class="btn btn-success category-confirm"
+                style="font-size: 1.4rem"
+              >
+                Подтвердить
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <footer>
-      <div class="container-fluid foot">
-        <div class="row text-center">
-          <h1 class="col-12" id="about"><b>PARKTOWN COFFEE</b></h1>
-          <h3 class="col-12">Кафе - кондитерская</h3>
+      <footer>
+        <div class="container-fluid foot">
+          <div class="row text-center">
+            <h1 class="col-12" id="about"><b>PARKTOWN COFFEE</b></h1>
+            <h3 class="col-12">Кафе - кондитерская</h3>
+          </div>
+          <div class="row text-center">
+            <div class="col-md-4 part">
+              <h3>Адрес</h3>
+              <h5>Ул. Советская 2</h5>
+              <h5>Copceac. Tighina</h5>
+            </div>
+            <div class="col-md-4 part">
+              <h3>Время работы</h3>
+              <h5>с 8:00 до 00:00</h5>
+              <h5>Кухня работает до 23:00</h5>
+            </div>
+            <div class="col-md-4 part">
+              <h3>Контакты</h3>
+              <h5>тел: 068965098 / 068755980</h5>
+            </div>
+          </div>
+          <p>
+            Acest website a fost realizat în cadrul competiției „Tekwill Junior
+            Ambassadors” organizată de proiectul „Tekwill în Fiecare Școală” și
+            nu reflectă neapărat opinia proiectului.
+          </p>
         </div>
-        <div class="row text-center">
-          <div class="col-md-4 part">
-            <h3>Адрес</h3>
-            <h5>Ул. Советская 2</h5>
-            <h5>Copceac. Tighina</h5>
-          </div>
-          <div class="col-md-4 part">
-            <h3>Время работы</h3>
-            <h5>с 8:00 до 00:00</h5>
-            <h5>Кухня работает до 23:00</h5>
-          </div>
-          <div class="col-md-4 part">
-            <h3>Контакты</h3>
-            <h5>тел: 068965098 / 068755980</h5>
-          </div>
-        </div>
-        <p>Acest website a fost realizat în cadrul
-          competiției „Tekwill Junior Ambassadors” organizată de proiectul „Tekwill în Fiecare
-          Școală” și nu reflectă neapărat opinia proiectului.</p>
-      </div>
-    </footer>
+      </footer>
     </section>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>

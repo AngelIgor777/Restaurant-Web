@@ -48,8 +48,11 @@ header {
   top: 100%; /* Расположить ниже кнопки */
   transform: translateX(-10%); /* Подвинуть немного левее, если требуется */
   z-index: 1000; /* Чтобы меню отображалось поверх других элементов */
-  background-color: #fff !important;
+  background-color: rgba(0, 0, 0, 0.6);
   width: 170px;
+}
+.dropdown-menu.show li a{
+  color: #fff !important;
 }
 .dropdown-toggle::after{
   color: #fff;
@@ -681,6 +684,20 @@ input[type="number"]::-webkit-inner-spin-button {
 .custom-confirm-button{
   background-color:#2F9262;
 }
+/* кнопка с юзером */
+.buttonsing-2{
+  display: flex;
+}
+.form-select{
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #fff;
+}
+.form-select option{
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
+
+
 @media (max-width: 320px) {
   .menu-container .item {
     width: 280px;
@@ -900,7 +917,6 @@ input[type="number"]::-webkit-inner-spin-button {
 @media (min-width: 992px) {
   .buttonsing-1 {
     display: none !important;
-
     margin-right: 10px;
   }
   .buttonsing-2 a {

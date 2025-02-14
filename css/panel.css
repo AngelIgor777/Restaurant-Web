@@ -45,7 +45,7 @@ textarea{
 }
 .allbuttons{
     display: flex;
-    width: 80%;
+    width: 85%;
 }
 .category-items th, .category-items td {
     padding: 6px;
@@ -154,7 +154,7 @@ textarea{
         display: flex;
         width: 100%;
         margin: 0;
-        max-width: 80px !important; 
+        max-width: 90px !important; 
     }
     .allbuttons button{
         padding: 1vw !important;

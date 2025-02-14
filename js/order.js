@@ -4,6 +4,10 @@ const renderHeader = () => `
           <div class="container-fluid">
             <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
+            <select class="form-select" id='lang'>
+              <option value="rus"  selected>rus</option>
+              <option value="rum">rum</option>
+            </select>
               <div class="dropdown  singin">
                 
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
@@ -12,7 +16,7 @@ const renderHeader = () => `
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
                 </ul>
-                <a href="#" class="d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class='bx bxs-user-circle singinuser' ></i>
                 </a>
               </div>
@@ -41,6 +45,10 @@ const renderHeader = () => `
             </div>
   
             <span class="buttonsing-2 flex-row">
+            <select class="form-select" id='lang'>
+              <option value="rus"  selected>rus</option>
+              <option value="rum">rum</option>
+            </select>
               <div class="dropdown  singin">
                 
                  <ul class="dropdown-menu text-small shadow dropdown-menu-start">
@@ -49,7 +57,7 @@ const renderHeader = () => `
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
                 </ul>
-                <a href="#" class="d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class='bx bxs-user-circle singinuser' ></i>
                 </a>
               </div>
@@ -103,9 +111,8 @@ const renderFooter = () => `
           Școală” și nu reflectă neapărat opinia proiectului.</p>
         </div>
       </footer>`;
-      let stompClient = null;
-
-      function connectWebSocket() {
+let stompClient = null;
+function connectWebSocket() {
           const socket = new SockJS('http://46.229.212.34:9091/ws-orders'); // Подключение к WebSocket
           stompClient = Stomp.over(socket); // Инициализация STOMP клиента
   
@@ -118,112 +125,112 @@ const renderFooter = () => `
           }, function (error) {
               displayMessage("Ошибка подключения: " + error);
           });
-      }
-  
-      // Функция для отображения всех заказов
-      function loadAllOrders() {
-          fetch("http://46.229.212.34:9091/api/v1/orders")
-              .then(response => response.json())
-              .then(orders => {
-                  orders.reverse().forEach(orderData => {
-                      displayOrder(orderData);
-                  });
-              })
-              .catch(error => {
-                  displayMessage("Ошибка загрузки заказов: " + error);
-              });
-      }
-  
-      function displayMessage(message) {
+}
+
+// Функция для отображения всех заказов
+function loadAllOrders() {
+    fetch("http://46.229.212.34:9091/api/v1/orders")
+        .then(response => response.json())
+        .then(orders => {
+            orders.reverse().forEach(orderData => {
+                displayOrder(orderData);
+            });
+        })
+        .catch(error => {
+            displayMessage("Ошибка загрузки заказов: " + error);
+        });
+}
+
+function displayMessage(message) {
           const messageDiv = document.getElementById("messages");
           const messageElement = document.createElement("p");
           messageElement.className = "message";
           messageElement.textContent = message;
           messageDiv.appendChild(messageElement);
-      }
-  
-      function displayOrder(data) {
-          const messageDiv = document.getElementById("messages");
-          const messageElement = document.createElement("div");
-          messageElement.className = "order";
-  
-          const order = data.orderResponseDTO;
-  
-          // Displaying basic order details
-          messageElement.innerHTML = `
-          <h2>Заказ ID: ${order.id ?? 'Не указано'}</h2>
-          <details>
-          <summary>
-          <p><span>Статус:</span> ${order.status ?? 'Не указано'}</p>
-          <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
-          <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'}</p>
-          <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
-          <p class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></p>
-          </summary>
-          <p><span>Общее время готовки:</span> ${formatTime(order.totalCookingTime)}</p>
-          <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
-          <p><span>Обновлён:</span> ${order.updatedAt ?? 'Не указано'}</p>
-          <p><span>В ресторане:</span> ${data.orderInRestaurant ? 'Да' : 'Нет'}</p>
-          <p><span>Коды скидки:</span> ${data.existDiscountCodes ? 'Есть' : 'Нет'}</p>
-          <p><span>Код продукта скидки:</span> ${data.productDiscountCode ?? 'Нет'}</p>
-          <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
-          <p>${formatAddress(data.addressResponseDTO)}</p>
-          <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
-          </details>
-          <div class="products">
-              <strong>Продукты:</strong>
-              ${formatProducts(order.products)}
-          </div>`
-      ;
-          messageDiv.appendChild(messageElement);
-  
-          // Автопрокрутка вниз
-          messageDiv.scrollTop = messageDiv.scrollHeight;
-      }
-  
-      function formatProducts(products) {
-          if (!Array.isArray(products) || products.length === 0) {
-              return '<em>Нет продуктов</em>';
-          }
-          return products.map((product, id) => 
-              `<div class="product">
-              <details class='det'>
-              <summary>
-                  <p class='prname'><span>${id+1}) Название:</span> <b>${product.name ?? 'Не указано'}</b></p>
-                  <p><span>Цена:</span> <b>${product.price ?? 'Не указано'}</b></p>
-                  <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b><span class='and'style='text-align: right; opacity:0.7; margin-left:60%;'>...</span>
-                  <span class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></span></p>
-                  
-              </summary>
-                  <p><span>Тип:</span> <b>${product.typeName ?? 'Не указано'}</b></p>
-                  <p><span>Описание:</span> <b>${product.description ?? 'Не указано'}</b></p>
-                  <p><span>Время готовки:</span> <b>${product.cookingTime ?? 'Не указано'}</b></p>
-                  </details>
-              </div>`
-          ).join('');
-      }
-  
-      function formatAddress(address) {
-          if (!address) {
-              return '';
-          }
-          return `Адрес:
-              ${address.city ?? 'Город не указан'},
-              ${address.street ?? 'Улица не указана'},
-              ${address.homeNumber ?? 'Номер дома не указан'}${address.apartmentNumber ? ', Кв. ' + address.apartmentNumber : ''}`
-          ;
-      }
-  
-      function formatTable(table) {
-          if (!table) {
-              return ``;
-          }
-          else{
-            return `Стол №${table.number ?? 'Не указано'}`;
-          }
-          
-      }
-      function formatTime(inputTime) {
+}
+
+function displayOrder(data) {
+    const messageDiv = document.getElementById("messages");
+    const messageElement = document.createElement("div");
+    messageElement.className = "order";
+
+    const order = data.orderResponseDTO;
+
+    // Displaying basic order details
+    messageElement.innerHTML = `
+        <h2>Заказ ID: ${order.id ?? 'Не указано'}</h2>
+        <details>
+        <summary>
+        <p><span>Статус:</span> ${order.status ?? 'Не указано'}</p>
+        <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
+        <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'}</p>
+        <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
+        <p class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></p>
+        </summary>
+        <p><span>Общее время готовки:</span> ${formatTime(order.totalCookingTime)}</p>
+        <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
+        <p><span>Обновлён:</span> ${order.updatedAt ?? 'Не указано'}</p>
+        <p><span>В ресторане:</span> ${data.orderInRestaurant ? 'Да' : 'Нет'}</p>
+        <p><span>Коды скидки:</span> ${data.existDiscountCodes ? 'Есть' : 'Нет'}</p>
+        <p><span>Код продукта скидки:</span> ${data.productDiscountCode ?? 'Нет'}</p>
+        <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
+        <p>${formatAddress(data.addressResponseDTO)}</p>
+        <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
+        </details>
+        <div class="products">
+            <strong>Продукты:</strong>
+            ${formatProducts(order.products)}
+        </div>`
+;
+    messageDiv.appendChild(messageElement);
+
+    // Автопрокрутка вниз
+    messageDiv.scrollTop = messageDiv.scrollHeight;
+}
+
+function formatProducts(products) {
+    if (!Array.isArray(products) || products.length === 0) {
+        return '<em>Нет продуктов</em>';
+    }
+    return products.map((product, id) => 
+        `<div class="product">
+        <details class='det'>
+        <summary>
+            <p class='prname'><span>${id+1}) Название:</span> <b>${product.name ?? 'Не указано'}</b></p>
+            <p><span>Цена:</span> <b>${product.price ?? 'Не указано'}</b></p>
+            <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b><span class='and'style='text-align: right; opacity:0.7; margin-left:60%;'>...</span>
+            <span class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></span></p>
+            
+        </summary>
+            <p><span>Тип:</span> <b>${product.typeName ?? 'Не указано'}</b></p>
+            <p><span>Описание:</span> <b>${product.description ?? 'Не указано'}</b></p>
+            <p><span>Время готовки:</span> <b>${product.cookingTime ?? 'Не указано'}</b></p>
+            </details>
+        </div>`
+    ).join('');
+}
+
+function formatAddress(address) {
+    if (!address) {
+        return '';
+    }
+    return `Адрес:
+        ${address.city ?? 'Город не указан'},
+        ${address.street ?? 'Улица не указана'},
+        ${address.homeNumber ?? 'Номер дома не указан'}${address.apartmentNumber ? ', Кв. ' + address.apartmentNumber : ''}`
+    ;
+}
+
+function formatTable(table) {
+    if (!table) {
+        return ``;
+    }
+    else{
+      return `Стол №${table.number ?? 'Не указано'}`;
+    }
+    
+}
+function formatTime(inputTime) {
         const parts = inputTime.split(':').map(Number); // Разделяем строку и преобразуем части в числа
         const hours = parts[0];
         const minutes = parts[1];
@@ -240,23 +247,84 @@ const renderFooter = () => `
             formattedTime += `${seconds} сек`;
         }
         return formattedTime.trim(); // Убираем лишние пробелы
-      }
-      function formDate(longDate){
-        const date=new Date(longDate);
-        const day =date.getDate();
-        const months=[
-          "января", "февраля", "марта", "апреля", "мая", "июня",
-          "июля", "августа", "сентября", "октября", "ноября", "декабря"
-      ];
-      const month=months[date.getMonth()];
-      let hours = date.getHours()+2;
-      hours.toString().padStart(2, "0");
-      let minutes = date.getMinutes().toString().padStart(2, "0");
-      return `${day} ${month} ${hours}:${minutes}`;
-      }
-      // Автоматическое подключение при загрузке страницы
-      window.onload = function() {
-            document.querySelector('.app').innerHTML=renderHeader()+renderBody()+renderFooter();
-          loadAllOrders();  // Загрузка всех заказов
-          connectWebSocket();  // Подключение к WebSocket
-      };
+}
+function formDate(longDate){
+  const date=new Date(longDate);
+  const day =date.getDate();
+  const months=[
+    "января", "февраля", "марта", "апреля", "мая", "июня",
+    "июля", "августа", "сентября", "октября", "ноября", "декабря"
+];
+const month=months[date.getMonth()];
+let hours = date.getHours()+2;
+hours.toString().padStart(2, "0");
+let minutes = date.getMinutes().toString().padStart(2, "0");
+return `${day} ${month} ${hours}:${minutes}`;
+}
+function getUUIDFromURL() {
+  const hash = window.location.hash; // Получаем часть после #
+  const match = hash.match(/#menu\/([a-f0-9\-]{36})/i); // Регулярка для UUID
+  return match ? match[1] : null; // Возвращаем UUID или null, если не найден
+}
+async function getReg(uuid1) {
+  try {
+    // Получаем данные пользователя
+    let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
+    let data = await response.json();
+
+    
+    // Сохраняем данные адреса, если они еще не сохранены
+    if (!localStorage.getItem("addressResponseDTO") && data.addressResponseDTO) {
+      localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO));
+    }
+
+    // Получаем изображение
+    let imageResponse = data.photoUrl;
+
+    // Вставляем изображение в элементы
+    if (imageResponse) {
+      document.querySelectorAll(".userimg").forEach(im => {
+        im.innerHTML = `<img src="${imageResponse}" alt="User Image">`;
+      });
+    } else {
+      throw new Error("Изображение не найдено");
+    }
+
+  } catch (error) {
+    console.error("Ошибка запроса:", error);
+  }
+}
+
+async function Registr() {
+  // let params = new URLSearchParams(window.location.search);
+  let uuid = getUUIDFromURL();
+  console.log(uuid);
+  if (!localStorage.getItem("uuid")) {
+    if (uuid) {
+      localStorage.setItem("uuid", JSON.stringify(uuid));
+      getReg(uuid);
+    }
+  } else {
+    let uuid1 = JSON.parse(localStorage.getItem("uuid"));
+    if (uuid1) {
+      getReg(uuid1);
+    }
+  }
+}
+function Language(){
+  document.getElementById("lang").addEventListener("change", function(event) {
+    console.log("Выбрано:", event.target.value);
+    localStorage.setItem('lang', JSON.stringify(event.target.value));
+});
+}
+
+
+// Автоматическое подключение при загрузке страницы
+window.onload = function() {
+      document.querySelector('.app').innerHTML=renderHeader()+renderBody()+renderFooter();
+    loadAllOrders();  // Загрузка всех заказов
+    Registr(); //Изменение лого
+    Language();
+    connectWebSocket();  // Подключение к WebSocket
+  
+};

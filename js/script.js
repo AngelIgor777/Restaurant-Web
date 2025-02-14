@@ -11,6 +11,10 @@ const renderHeader = () => `
           <div class="container-fluid">
             <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
+            <select class="form-select" id='lang'>
+              <option value="rus"  selected>rus</option>
+              <option value="rum">rum</option>
+            </select>
               <div class="dropdown  singin">
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
                   <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
@@ -47,6 +51,10 @@ const renderHeader = () => `
             </div>
   
             <span class="buttonsing-2 flex-row">
+            <select class="form-select" id='lang'>
+              <option value="rus"  selected>rus</option>
+              <option value="rum">rum</option>
+            </select>
               <div class="dropdown  singin">
                 
                  <ul class="dropdown-menu text-small shadow dropdown-menu-start">
@@ -630,7 +638,8 @@ async function Hachchange(){
     Registr();
     Sendchange();
     ExitButton();
-    revealCards()
+    revealCards();
+    Language();
   console.log("Всё запущено");
   let order=JSON.parse(localStorage.getItem('order'));
   const buttosend=document.querySelector("p.colvo");
@@ -1514,7 +1523,12 @@ function loadCachedBackground(url) {
       cacheBackground(url);
   }
 }
-
+function Language(){
+  document.getElementById("lang").addEventListener("change", function(event) {
+    console.log("Выбрано:", event.target.value);
+    localStorage.setItem('lang', JSON.stringify(event.target.value));
+});
+}
 
 
 window.addEventListener('hashchange', Hachchange);
