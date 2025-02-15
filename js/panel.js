@@ -114,6 +114,36 @@ function getPastDate(days) {
     pastDate.setDate(new Date().getDate() - days);  // Вычитаем дни
     return getFormattedDate(pastDate);
 }
+async function Rumname() {
+    // Получение руммынского языка
+    return Swal.fire({
+        title: "Alternativă",
+        html: `
+        <div class="form-floating mb-3 tovname">
+            <input type="text" class="form-control" id="rumname" />
+            <label for="rumname">Nume</label>
+        </div>
+        <div class="form-floating mb-3 descr">
+            <textarea class="form-control" placeholder="Leave a comment here" id="rumdescription"></textarea>
+            <label for="rumdescription">Descriere</label>
+        </div>
+        `,
+        confirmButtonColor: "#2F9262",
+        confirmButtonText: "OK",
+        preConfirm: () => {
+            const rumnume = document.getElementById("rumname").value.trim();
+            const rumdesc = document.getElementById("rumdescription").value.trim();
+            if (!rumdesc || !rumnume) {
+                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                return false;
+              }
+            return {
+                rumname: document.getElementById("rumname").value,
+                rumdescription: document.getElementById("rumdescription").value
+            };
+        }
+    });
+}
 async function fetchProductTypes() {
     try {
      
@@ -300,7 +330,7 @@ async function fetchProductTypes() {
     });
         // После всего добавляем для категорий
         console.log(categoryIds);
-        Category(categoryIds);
+        await Category(categoryIds);
       } else {
         console.error('Неверный формат данных:', data);
       }
@@ -310,9 +340,9 @@ async function fetchProductTypes() {
     
   }
 // все с изменением товаром
-function Category(categoryIds){
+async function Category(categoryIds){
 // создание или редактирование нового товара
-document.querySelector('button.confirm').addEventListener('click', function(e) {
+document.querySelector('button.confirm').addEventListener('click', async function(e) {
     let name = document.getElementById('name').value;
     let price = document.getElementById('price').value;
     let description = document.getElementById('description').value;
@@ -376,8 +406,7 @@ document.querySelector('button.confirm').addEventListener('click', function(e) {
                 description: description,
                 cookingTime: cookingTime
             };
-        console.log(newProduct);
-        console.log(cookingTime);
+
         const formData=new FormData(); 
         formData.append('name', newProduct.name);
         formData.append('description', newProduct.description);
@@ -385,8 +414,11 @@ document.querySelector('button.confirm').addEventListener('click', function(e) {
         formData.append('price', newProduct.price);
         formData.append('cookingTime', newProduct.cookingTime);
         formData.append('file', img);
-        
+
         Modal.hide();
+        const rumData = await Rumname();
+        console.log(rumData);
+
         fetch('http://46.229.212.34:9091/api/v1/products', {
             method: 'POST',
             body: formData
@@ -505,7 +537,7 @@ async function deleteProduct(productId) {
         if (!response.ok) {
             throw new Error(`Ошибка при удалении продукта с ID ${productId}`);
         }
-        // Удаление изображения
+        // Удаление изображения может не понадибтся если что удалим
         const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${productId}`);
         if (!photoResponse.ok) {
             throw new Error(`Ошибка при получении изображения для продукта с ID ${productId}`);
@@ -514,6 +546,7 @@ async function deleteProduct(productId) {
         if (!photoData.length || !photoData[0].url) {
             throw new Error(`Изображение для продукта с ID ${productId} не найдено`);
         }
+        console.log(photoData);
         const imageresponse= await fetch('http://46.229.212.34:9091/api/v1/photos/resource?photoName='+photoData[0].url, {
             method: 'DELETE',
         })
@@ -625,7 +658,7 @@ function Language(){
       localStorage.setItem('lang', JSON.stringify(event.target.value));
   });
   }
-  
+
   
 document.querySelector('.static').addEventListener('click', Statistik);
 document.querySelector('.cattaloge').addEventListener('click', Closepagging);

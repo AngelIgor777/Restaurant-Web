@@ -141,6 +141,7 @@ const renderMenu = () =>`
         <div class="row">
           <div class="col-12 containe" style="height: 2000px; opacity:0">
             <div class="menu-container text-center col-sm-6 col-md-4 col-lg-4 container">
+           
               <!-- Сюда будет загружаться меню -->
             </div>
           </div>
@@ -631,8 +632,16 @@ async function Hachchange(){
   if(hash==='#menu'){
     document.querySelector('body').style.backgroundImage="url(./img/menu.png)";
     document.querySelector('body').classList.add('bodyc');
+    document.querySelector('.app').style.display='none';
     menusect.innerHTML='';
     menusect.innerHTML=renderHeader()+renderMenu()+renderFooter();
+    
+    const loadingScreens = document.getElementsByClassName('loader');
+        for (let loadingScreen of loadingScreens) {
+          loadingScreen.classList.add('close');
+    }
+
+    
     await fetchProductTypes();
     // запуск всех нужных функ. после загрузки самого сайта
     Registr();
@@ -641,6 +650,7 @@ async function Hachchange(){
     revealCards();
     Language();
   console.log("Всё запущено");
+  loadscreen();
   let order=JSON.parse(localStorage.getItem('order'));
   const buttosend=document.querySelector("p.colvo");
   buttosend.innerHTML=order.length;
@@ -1215,9 +1225,10 @@ async function Hachchange(){
     window.scrollTo(0, 0);
     document.querySelector('body').style.backgroundImage="url(./img/about.png)";
     document.querySelector('body').classList.add('bodyc');
-
+    document.querySelector('.app').style.display='none';
     menusect.innerHTML='';
     menusect.innerHTML=renderTitle()+renderFooter();
+    loadscreen();
     // Добавляем обработчик события клика по документу
     document.addEventListener('click', function (e) {
       var navbarToggler = document.querySelector('.navbar-toggler'); // Кнопка меню
@@ -1529,13 +1540,14 @@ function Language(){
     localStorage.setItem('lang', JSON.stringify(event.target.value));
 });
 }
+function loadscreen(){
+    const loadingScreens = document.getElementsByClassName('loader');
+    for (let loadingScreen of loadingScreens) {
+      loadingScreen.classList.remove('close');
+    }
+    document.querySelector('.app').style.display='block'  
+}
 
 
 window.addEventListener('hashchange', Hachchange);
 window.addEventListener('load', Hachchange);
-window.onload = function() {
-  const loadingScreens = document.getElementsByClassName('loader');
-  for (let loadingScreen of loadingScreens) {
-    loadingScreen.classList.remove('close');
-  }
-};
