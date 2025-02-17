@@ -1,4 +1,5 @@
 const token=JSON.parse(localStorage.getItem('accessToken'));
+let allitems=[];
 async function Statistiktable(start, end) {
     try{
         if (!start) start = '2023-01-01T00:00:00';
@@ -312,8 +313,8 @@ async function CuponAll() {
                   <td style="text-align: center;">${item.code}</td>
                   <td style="text-align: center;">${item.description}</td>
                   <td style="text-align: center;">${item.discount}</td>
-                  <td style="text-align: center;">${item.validFrom}</td>
-                  <td style="text-align: center;">${item.validTo}</td>
+                  <td style="text-align: center;">${formDate(item.validFrom)}</td>
+                  <td style="text-align: center;">${formDate(item.validTo)}</td>
                   <td style="text-align: center;" class="allbuttons">
                       <button class="delete delete-cup btn btn-danger" data-id="${item.id}">
                           <i class="bx bx-trash-alt"></i>
@@ -343,7 +344,118 @@ async function CuponAll() {
 
                 if (result.isConfirmed) {
                     try {
-                        await deleteCuppon(productId);
+                        await deleteCupponAl(productId);
+                        button.closest("tr").remove();
+
+                        Swal.fire({
+                            title: "Успех!",
+                            text: "Купон был удален!",
+                            icon: "success",
+                            customClass: {
+                              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                            }
+                          })
+                    } catch (error) {
+                        Swal.fire({
+                            title: "Ошибка!",
+                            text: "Не удалось удалить!",
+                            icon: "error",
+                            customClass: {
+                              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                            }
+                          })
+                    }
+                }
+            }
+        });
+
+
+    } catch (error) {
+        console.error("Ошибка при загрузке купонов:", error);
+        Swal.fire("Ошибка", "Не удалось загрузить купоны", "error");
+    }
+}
+
+async function deleteCupponAl(productId) {
+    try {
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/discounts/${productId}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Ошибка при удалении продукта с ID ${productId}`);
+        }
+        console.log(`Продукт с ID ${productId} успешно удален`);
+    } catch (error) {
+        console.error('Ошибка при удалении продукта:', error);
+    }
+}
+async function CuponItem() {
+    try {
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/product-discounts`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        });
+
+        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+
+        const data = await response.json();
+        console.log("Купоны:", data);
+
+        const tableone = document.querySelector(".cupons-it");
+        const tbody = tableone.querySelector(".catlist");
+
+        if (!tbody) {
+            console.error("Элемент .catlist не найден!");
+            return;
+        }
+
+        tbody.innerHTML = "";
+        let i = 0;
+        
+        for (const item of data) {
+            tbody.insertAdjacentHTML("beforeend", `
+                <tr>
+                  <td style="text-align: center;">${i + 1}</td>
+                  <td style="text-align: center;">${item.code}</td>
+                  <td style="text-align: center;">${item.description}</td>
+                  <td style="text-align: center;">${item.discount}</td>
+                  <td style="text-align: center;">${formDate(item.validFrom)}</td>
+                  <td style="text-align: center;">${formDate(item.validTo)}</td>
+                  <td style="text-align: center;" class="allbuttons">
+                      <button class="delete delete-cup btn btn-danger" data-id="${item.id}">
+                          <i class="bx bx-trash-alt"></i>
+                      </button>
+                  </td>
+                </tr>
+            `);
+            i++;
+        }
+
+        // Обработчик удаления купона
+        document.querySelector(".categorylist").addEventListener("click", async (event) => {
+            if (event.target.closest(".delete-cup")) {
+                const button = event.target.closest(".btn-danger");
+                const productId = button.getAttribute("data-id");
+
+                const result = await Swal.fire({
+                    title: "Вы уверены?",
+                    text: "Вы не сможете это восстановить!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#2F9262",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Да, удалить!",
+                    cancelButtonText: "Отмена"
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        await deleteCupponIt(productId);
                         button.closest("tr").remove();
 
                         Swal.fire({
@@ -369,7 +481,7 @@ async function CuponAll() {
         });
 
         // Открытие формы для создания купона
-        document.querySelector(".cupon-all").addEventListener("click", function () {
+        document.querySelector(".cupon-one").addEventListener("click", function () {
             Swal.fire({
                 html: `
                 <div class="adres">
@@ -377,6 +489,10 @@ async function CuponAll() {
                    <div class="form-floating mb-3">
                       <input type="text" class="form-control" id="cupname" placeholder="Название" />
                       <label for="cupname">Название</label>
+                   </div>
+                   <div class="form-floating mb-3">
+                      <textarea class="form-control" placeholder="Имя товара" id="cupid" rows="3"></textarea>
+                      <label for="cupid">Имя товара</label>
                    </div>
                    <div class="form-floating mb-3">
                       <textarea class="form-control" placeholder="Описание" id="cupdes" rows="3"></textarea>
@@ -407,17 +523,18 @@ async function CuponAll() {
                     const des = document.getElementById("cupdes").value;
                     const dis = document.getElementById("cupskid").value;
                     const cuptime = document.getElementById("cupday").value;
-
-                    if (!name || !dis || !cuptime) {
-                        Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                    const findid=document.getElementById("cupid").value;
+                    const cupid = allitems.find(item => item.name === findid).id;
+                    if (!name || !dis || !cuptime || !cupid) {
+                        Swal.showValidationMessage("Пожалуйста, заполните все поля или проверьте правильность написания имени!");
                         return false;
                     }
 
-                    return { name, des, dis, cuptime };
+                    return { name, des, dis, cuptime, cupid };
                 }
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    const { name, des, dis, cuptime } = result.value;
+                    const { name, des, dis, cuptime, cupid} = result.value;
 
                     const now = new Date();
                     const validFrom = now.toISOString().slice(0, 19);
@@ -427,13 +544,14 @@ async function CuponAll() {
 
                     const cupon = {
                         code: name,
+                        productId:cupid,
                         description: des,
                         discount: parseFloat(dis), // Преобразуем в число
                         validFrom,
                         validTo
                     };
                     try {
-                        const response = await fetch("http://46.229.212.34:9091/api/v1/discounts", {
+                        const response = await fetch("http://46.229.212.34:9091/api/v1/product-discounts", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
@@ -446,7 +564,7 @@ async function CuponAll() {
 
                         const data = await response.json();
                         console.log("Создан купон:", data);
-                        await CuponAll(); // Перезагружаем список купонов
+                        await CuponItem(); // Перезагружаем список купонов
                        
                     } catch (error) {
                         console.error(error);
@@ -457,13 +575,19 @@ async function CuponAll() {
 
     } catch (error) {
         console.error("Ошибка при загрузке купонов:", error);
-        Swal.fire("Ошибка", "Не удалось загрузить купоны", "error");
+        Swal.fire({
+            title: "Ошибка!",
+            text: "Не удалось загрузить!",
+            icon: "error",
+            customClass: {
+              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+            }
+          })
     }
 }
-
-async function deleteCuppon(productId) {
+async function deleteCupponIt(productId) {
     try {
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/discounts/${productId}`, {
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/product-discounts/${productId}`, {
             method: 'DELETE',
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -477,12 +601,113 @@ async function deleteCuppon(productId) {
         console.error('Ошибка при удалении продукта:', error);
     }
 }
+function formDate(longDate){
+    const date=new Date(longDate);
+    const day =date.getDate();
+    const months=[
+      "января", "февраля", "марта", "апреля", "мая", "июня",
+      "июля", "августа", "сентября", "октября", "ноября", "декабря"
+  ];
+  const month=months[date.getMonth()];
+  let hours = date.getHours()+2;
+  hours.toString().padStart(2, "0");
+  let minutes = date.getMinutes().toString().padStart(2, "0");
+  return `${day} ${month} ${hours}:${minutes}`;
+  }
+async function Addallcup() {
+    // Открытие формы для создания купона
+    document.querySelector(".cupon-all").addEventListener("click", function () {
+        Swal.fire({
+            html: `
+            <div class="adres">
+               <h1>Создать купон</h1>
+               <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="cupname" placeholder="Название" />
+                  <label for="cupname">Название</label>
+               </div>
+               <div class="form-floating mb-3">
+                  <textarea class="form-control" placeholder="Описание" id="cupdes" rows="3"></textarea>
+                  <label for="cupdes">Описание</label>
+               </div>
+               <div class="form-floating mb-3">
+                  <input type="number" class="form-control" id="cupskid" placeholder="Процент скидки" />
+                  <label for="cupskid">Процент скидки</label>
+               </div>
+               <div class="form-floating mb-3">
+                  <select class="form-select" id="cupday">
+                      <option value="1" selected>1 день</option>
+                      <option value="7">1 неделя</option>
+                      <option value="14">2 недели</option>
+                      <option value="28">1 месяц</option>
+                  </select>
+                  <label for="cupday">Длительность</label>
+               </div>
+            </div>
+            `,
+            showCancelButton: true,
+            confirmButtonColor: "#2F9262",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Создать",
+            cancelButtonText: "Отмена",
+            preConfirm: () => {
+                const name = document.getElementById("cupname").value;
+                const des = document.getElementById("cupdes").value;
+                const dis = document.getElementById("cupskid").value;
+                const cuptime = document.getElementById("cupday").value;
+
+                if (!name || !dis || !cuptime) {
+                    Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                    return false;
+                }
+
+                return { name, des, dis, cuptime };
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const { name, des, dis, cuptime } = result.value;
+
+                const now = new Date();
+                const validFrom = now.toISOString().slice(0, 19);
+
+                now.setDate(now.getDate() + parseInt(cuptime, 10));
+                const validTo = now.toISOString().slice(0, 19);
+
+                const cupon = {
+                    code: name,
+                    description: des,
+                    discount: parseFloat(dis), // Преобразуем в число
+                    validFrom,
+                    validTo
+                };
+                try {
+                    const response = await fetch("http://46.229.212.34:9091/api/v1/discounts", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify(cupon)
+                    });
+
+                    if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+
+                    const data = await response.json();
+                    console.log("Создан купон:", data);
+                    await CuponAll(); // Перезагружаем список купонов
+                   
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        });
+    });
+}
 async function Cupon() {
     document.querySelectorAll('.catbut').forEach(el=>{
         el.classList.remove('active');
     });
     document.querySelector('.cupon').classList.add('active');
-    
+
     const categorytable = document.querySelector('.categorylist');
     categorytable.innerHTML='';
     // 1 таблица купонов
@@ -513,7 +738,8 @@ async function Cupon() {
             </div>
     `;
     categorytable.appendChild(table);
-    CuponAll();
+    await CuponAll();
+    await Addallcup();
     // 2 таблица купонов
     const table2=document.createElement('div');
     table2.classList.add('one-category');
@@ -542,13 +768,45 @@ async function Cupon() {
             </div>
     `;
     categorytable.appendChild(table2);
+    // await CuponItem();
+    
+    document.querySelectorAll('.pagging').forEach(el => {
+        pagcup(el);
+        el.addEventListener('click', function (e) {
+            pagcup(el);
+        });
+    });
+}
+function pagcup(el){
+    const nearestTable = el.closest('div').previousElementSibling;
+            if (nearestTable &&  el.classList.contains('pagging')) {
+                let i = 0;
+                
+                nearestTable.querySelectorAll('tbody tr').forEach(em => {
+                    if (i >= 2) {
+                        em.style.display = 'none'; // Скрыть строки
+                    } else {
+                        em.style.display = ''; // Убедиться, что строки видимы
+                        i++;
+                    }
+                });
+    
+                el.classList.replace('pagging', 'pagshow');
+            } else {
+                let i = 0;
+                nearestTable.querySelectorAll('tbody tr').forEach(em => {
+                    em.style.display = ''; // Паказать строки
+                });
+    
+                el.classList.replace('pagshow', 'pagging');
+            }
 }
 async function fetchProductTypes() {
     try {
      
       const response = await fetch('http://46.229.212.34:9091/api/v1/product-types');
       const data = await response.json();
-  
+      
       if (data.content && Array.isArray(data.content)) {
         const categorytable = document.querySelector('.categorylist');
       
@@ -589,6 +847,7 @@ async function fetchProductTypes() {
         // После загрузки категорий загружаем меню
         const categoryIds = data.content.map(item => item.id); // Извлекаем IDs
         await Addtable(categoryIds);
+        console.log(allitems);
         document.querySelector('.categorylist').addEventListener('click', async (event) => {
             if (event.target.closest('.delete-item')) {
                 Swal.fire({
@@ -914,12 +1173,13 @@ async function Addtable(categoryIds){
             const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`);
             const data = await response.json();
             const tableone=document.querySelector(`.item-${id}`);
-
+            
             const tbody=tableone.querySelector(`.catlist`);
             tbody.innerHTML = '';
             let i=0;
             if (data.content && Array.isArray(data.content)) {
                 for(const item of data.content){
+                    allitems.push({name: item.name, id: item.id}); // Добавляем объект в массив
                     tbody.insertAdjacentHTML('beforeend', `
                         <tr>
                           <td style="text-align: center;">${i + 1}</td>
@@ -1065,140 +1325,7 @@ function Language(){
   });
   }
 
-document.addEventListener('click', function(e){
-    if(e.target.id==='notification'){
-        Swal.fire({
-          html: `
-          <div class='choysenot'>
-          <div class='schedule'>
-            <h1>Расписание уведомлений</h1>
-            <label for="schedule">Выберите периодичность:</label>
-            <select  id="schedule">
-                <option value="daily">Раз в день</option>
-              <option value="twice_day">Два раза в день</option>
-              <option value="weekly">Раз в неделю</option>
-              <option value="twice_week">Два раза в неделю</option>
-              <option value="monthly">Раз в месяц</option>
-            </select>
-         <label for="sctime">Выберите время:</label>
-         <input type="time" id="sctime">
-    
-         <div id="days-container" style="display: none; margin-top: 10px;">
-          <h3>Выберите дни недели:</h3>
-          <input type="checkbox" value="1"> Пн
-          <input type="checkbox" value="2"> Вт
-          <input type="checkbox" value="3"> Ср
-          <input type="checkbox" value="4"> Чт
-          <input type="checkbox" value="5"> Пт
-          <input type="checkbox" value="6"> Сб
-          <input type="checkbox" value="0"> Вс
-       </div>
-         </div>
-         </div>
-          `,
-          showCancelButton: true,
-          confirmButtonColor: "#2F9262",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Отправить",
-          cancelButtonText: "Отмена",
-          focusConfirm: false,
-          didOpen: () =>{
-          //  проверка что если выбрано раз в неделю открывался список дней
-            const scheduleSelect = document.getElementById("schedule");
-            const daysContainer = document.getElementById("days-container");
-            scheduleSelect.addEventListener('change', function(){
-              daysContainer.style.display=(this.value === "weekly" || this.value === "twice_week") ? "block" : "none";
-            });
-          },
-          preConfirm: () => {
-            const schedule = document.getElementById("schedule").value;
-            const time = document.getElementById("sctime").value;
-            const daysOfWeek = [];
-        
-            document.querySelectorAll("#days-container input:checked").forEach(cb => daysOfWeek.push(cb.value));
-        
-            if (!schedule || !time) {
-                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-                return false;
-            }
-            let [hours, minutes] = time.split(":");
-            let cronExpression = "";
-    
-            if (schedule === "daily") {
-                cronExpression = `0 ${minutes} ${hours} * * *`;
-            }
-            else if (schedule === "twice_day") {
-                cronExpression = `0 ${minutes} ${hours},${(parseInt(hours) + 12) % 24} * * *`;
-            }
-            else if (schedule === "weekly" || schedule === "twice_week") {
-                
-                if(schedule==="weekly"){
-                  if(daysOfWeek.length===1){
-                    cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`
-                  }
-                  else{
-                    Swal.showValidationMessage("Выберите толкьо один день недели!");
-                    return false;
-                  }
-                }
-                if(schedule==="twice_week"){
-                  if(daysOfWeek.length===2){
-                    cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`
-                  }
-                  else{
-                    Swal.showValidationMessage("Выберите толкьо два дня!");
-                    return false;
-                  }
-                }
-            } else if (schedule === "monthly") {
-                cronExpression = `0 ${minutes} ${hours} 1 * *`;
-            }
-            return { cronExpression };
-          },
-        }).then((result)=>{
-          if(result.isConfirmed){
-            
-            fetch('http://46.229.212.34:9091/api/v1/scheduler/update-cron?cronExpression='+ encodeURIComponent(result.value.cronExpression),{
-              method:'POST',
-              headers: {
-                "Authorization": `Bearer ${token}`
-            }
-            })
-            .then(response=>response.text())
-            .then(data=>Swal.fire({
-              title: "Успех!",
-              text: "Расписание обновлено!",
-              icon: "success",
-              customClass: {
-                confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-              }
-            }))
-            .catch(er =>{
-              Swal.fire({
-                title: "Ошибка!",
-                text: "Не удалось обновить расписание!",
-                icon: "error",
-                customClass: {
-                  confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-                }
-              })
-              console.log(er)
-            });
-            // запуск бота
-            fetch('http://46.229.212.34:9091/api/v1/scheduler/start',{
-              method:'POST',
-                headers: {
-                "Authorization": `Bearer ${token}`
-            }
-            })
-            .then(response=>response.json())
-            .then(data=>console.log(data))
-            .catch(er =>console.log(er))
-          }
-          
-        });
-      }
-})
+
 document.querySelector('.cupon').addEventListener('click', Cupon);
 document.querySelector('.notifay').addEventListener('click', Notifications);
 document.querySelector('.static').addEventListener('click', Statistik);

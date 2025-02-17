@@ -260,7 +260,11 @@ body{
   opacity: 0;
   transform: scale(0);
 }
-
+/* Купоны */
+.couponch {
+  display: flex;
+  gap: 20px;
+}
 /* Когда кнопка нажата */
 .send-but button.sold .bx-dish {
   display: none;

@@ -891,26 +891,38 @@ async function Hachchange(){
       Swal.fire({
         title: "Введите данные",
         html: `
-        <div class='inputad-container' style='display:none;'>
-          <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="street" placeholder="Улица" />
-            <label for="street">Улица</label>
-          </div>
-          <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="home" placeholder="Дом" />
-            <label for="home">Дом</label>
-          </div>
+          <div class='inputad-container' style='display:none;'>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="street" placeholder="Улица" />
+              <label for="street">Улица</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="home" placeholder="Дом" />
+              <label for="home">Дом</label>
+            </div>
           </div>
           <div class='inputtab-container' style='display:none;'>
-          <div class="form-floating mb-3">
-            <input type="number" class="form-control tablenum" id="table" placeholder="Номер столика" />
-            <label for="table">Номер столика</label>
+            <div class="form-floating mb-3">
+              <input type="number" class="form-control tablenum" id="table" placeholder="Номер столика" />
+              <label for="table">Номер столика</label>
+            </div>
           </div>
-          </div>
+           <div class="form-floating mb-3" id="coupon-container1" style="display:none;">
+              <input type="text" class="form-control" id="coupon" placeholder="Купон для всего заказов" />
+              <label for="coupon">Купон для всего заказов</label>
+            </div>
+            <div class="form-floating mb-3" id="coupon-container2" style="display:none;">
+              <input type="text" class="form-control" id="couponIt" placeholder="Купон для товара" />
+              <label for="coupon">Купон для товара</label>
+            </div>
+          <div class="form-check couponch">
+              <input type="checkbox" class="form-check-input" id="couponCheckbox" />
+              <label class="form-check-label" for="couponCheckbox">Есть купон?</label>
+            </div>
           <div class="mb-3">
             <label>
               <input type="radio" id="Cash" name="paymentMethod" value="CASH" />
-                Наличные
+              Наличные
             </label>
             <label style="margin-left: 15px;">
               <input type="radio" id="Card" name="paymentMethod" value="CARD" />
@@ -925,55 +937,76 @@ async function Hachchange(){
         cancelButtonText: "Отмена",
         focusConfirm: false,
         didOpen: () => {
-          // если выбрали что заказ на дом
-          const check=document.querySelector('.check-box input');
-          if(check.checked){
-            // проверяем зарегестрирован ли пользователь чтобы получить его адресс
-            document.querySelector('.inputad-container').style.display='block';
-            let adress=JSON.parse(localStorage.getItem('addressResponseDTO'));
-            let street=document.querySelector("#street");
-            let home=document.querySelector("#home");
-            if(adress){
-              street.value=adress.street;
-              home.value=adress.homeNumber;
+          // Ожидаем изменение состояния чекбокса
+          
+          const couponCheckbox = document.getElementById('couponCheckbox');
+          const couponContainer1 = document.getElementById('coupon-container1');
+          const couponContainer2 = document.getElementById('coupon-container2');
+          // Устанавливаем обработчик события для чекбокса
+          couponCheckbox.addEventListener('change', () => {
+            if (couponCheckbox.checked) {
+              couponContainer1.style.display = 'block';
+              couponContainer2.style.display = 'block';
+            } else {
+              couponContainer1.style.display = 'none';
+              couponContainer2.style.display = 'none';
             }
+          });
+      
+          const check = document.querySelector('.check-box input');
+          if (check.checked) {
+            // Проверка зарегистрирован ли пользователь
+            document.querySelector('.inputad-container').style.display = 'block';
+            let adress = JSON.parse(localStorage.getItem('addressResponseDTO'));
+            let street = document.querySelector("#street");
+            let home = document.querySelector("#home");
+            if (adress) {
+              street.value = adress.street;
+              home.value = adress.homeNumber;
+            }
+          } else {
+            document.querySelector('.inputtab-container').style.display = 'block';
           }
-          // если делается в ресторане 
-          else{
-            document.querySelector('.inputtab-container').style.display='block';
-          }
-          document.getElementById("street").focus();
         },
         preConfirm: () => {
-
-           const check=document.querySelector('.check-box input');
-          if(check.checked){
-          const street = document.getElementById("street").value.trim();
-          const home = document.getElementById("home").value.trim();
-          const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+          const check = document.querySelector('.check-box input');
+          let data = {};
+          if (check.checked) {
+            const street = document.getElementById("street").value.trim();
+            const home = document.getElementById("home").value.trim();
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+            const coupon = document.getElementById('coupon').value.trim();
+            const couponit = document.getElementById('couponIt').value.trim();
+            if (!street || !home || !paymentMethod) {
+              Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+              return false;
+            }
+            data = {
+              street,
+              home,
+              paymentMethod: paymentMethod.value,
+              coupon: coupon || null,
+              couponit:couponit || null  // Если купон пустой, не передаем его
+            };
+          } else {
+            const num = document.getElementById("table").value.trim();
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+            const coupon = document.getElementById('coupon').value.trim();
+            const couponit = document.getElementById('couponIt').value.trim();
+            if (!num) {
+              Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+              return false;
+            }
+            data = {
+              paymentMethod: paymentMethod.value,
+              coupon: coupon || null,
+              couponit:couponit || null  // Если купон пустой, не передаем его
+            };
+          }
       
-          if (!street || !home || !paymentMethod) {
-            Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-            return false;
-          }
-          
-          return {
-            street,
-            home,
-            paymentMethod: paymentMethod.value,
-          };
-        }
-         // Если выбрали что в ресторане проверяем заполнили ли номер
-         else{
-          const num = document.getElementById("table").value.trim();
-          const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-          if (!num) {
-            Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-            return false;
-          }
-          return paymentMethod.value;
-        }
-      },
+          // Возвращаем собранные данные
+          return data;
+        },
       }).then((result) => {
         const check=document.querySelector('.check-box input');
         if (result.isConfirmed && check.checked) {
@@ -1009,9 +1042,9 @@ async function Hachchange(){
           tableRequestDTO:{
             number: null
           },
-          existDiscountCodes:false,
-          productDiscountCode:"",
-          globalDiscountCode:"",
+          existDiscountCodes:(result.value.coupon || result.value.couponIt) ? true : false,
+          productDiscountCode:result.value.couponIt || "",
+          globalDiscountCode:result.value.coupon || "",
           isRegisterUser:restered,
           userId:user,
           addressRequestDTO:adres
@@ -1065,24 +1098,25 @@ async function Hachchange(){
         })
         // Проверка на регистрацию
         let user=JSON.parse(localStorage.getItem('uuid'));
+        let restered;
         if(!user){
-          let restered=false;
+          restered=false;
         }
         else{
-          let restered=true;
+          restered=true;
         }
       book={
         orderProductRequestDTO:orderrequest,
-        paymentMethod: result.value,
+        paymentMethod: result.value.paymentMethod,
         orderInRestaurant:true,
         tableRequestDTO:{
           number: num
         },
-        existDiscountCodes:false,
-        productDiscountCode:"",
-        globalDiscountCode:"",
+        existDiscountCodes:(result.value.coupon || result.value.couponIt) ? true : false,
+        productDiscountCode:result.value.couponIt || "",
+        globalDiscountCode:result.value.coupon || "",
         isRegisterUser:restered,
-        userId:user,
+        userId:user||0,
         addressRequestDTO:null
     }
     console.log(JSON.stringify(book));
