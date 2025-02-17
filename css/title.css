@@ -165,6 +165,12 @@ body{
     font-size:clamp(2.7rem, 3rem, 1.6rem);
   }
 }
+@media (max-width: 475px) {
+  .parktitle{
+    display: flex;
+    flex-direction: column;
+  }
+}
 /* Одиночный */
 
 .item-img img {
@@ -318,6 +324,11 @@ body{
 }
 
 /* Описание ресторана */
+.menuContainer{
+  height: auto;
+  width: auto;
+  border-top:125px solid #ffffff1c;
+}
 .aboutrestoran{
   margin-top: 120px;
   color: #fff;
@@ -335,13 +346,15 @@ border-radius: 10px;
 padding: 10px;
 }
 .aboutrestoran .ourmenu{
-  
   border-radius: 10px;
   background-color: #adbf6c;
   margin: 30px 0;
   border: none;
-  
   height: 100%;
+  box-shadow: 0 0 15px #adbf6ce6, 0 0 20px #adbf6ce6, 0 0 25px #adbf6ce6;
+}
+.ourmenu:hover a{
+  color: #fff !important;
 }
 .aboutrestoran .ourmenu a{
   padding: 20px;
@@ -354,9 +367,10 @@ padding: 10px;
   display: flex;
   width: 100%;
   height: 100%;
+  transition: all 0.5s ease-in-out;
 }
 .aboutourgroup{
-  margin-top: 100px !important;
+  margin-top: 0 !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -373,11 +387,7 @@ padding: 10px;
   background-attachment: fixed;
   
 }
-.menuContainer{
-  height: auto;
-  width: auto;
-  
-}
+
 
 .commantname{
   display: flex;
@@ -400,7 +410,7 @@ padding: 10px;
   width: 32%;
   height: auto;
   border: solid 2px #ffffff3d;
-  background-color:rgba(0, 0, 0, 0.479) ;
+  background-color:rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -415,7 +425,131 @@ padding: 10px;
 input{
   color: #000000;
 }
-
+/* contact us */
+.contact-us{
+  margin-top: 100px;
+  padding: 40px;
+  background-color:rgba(0, 0, 0, 0.6);
+  width: 95%;
+  border-radius: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: "Kurale", serif;
+  font-weight: 400;
+  font-style: normal;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.contactTitle{
+  color: #fff;
+  margin-bottom: 30px;
+  font-weight: 700;
+  width: auto;
+}
+.inputs{
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+}
+.contact-inputs{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+  .contact-inputs .form-floating{
+    margin-left: 14px;
+    max-width: 40%;
+  }
+.contact-inputs .form-group{
+  margin-left: 14px;
+  width: 100%;
+  max-width: 82% !important;
+}
+.form-group textarea{
+  padding: 12px;
+}
+.contact-button{
+  width: auto;
+  margin-left: auto;
+  margin-right: 60px;
+  padding: 20px;
+  border-radius: 15px;
+  background-color: #adbf6c;
+}
+.contact-info{
+  margin-top: 55px;
+  width: 30%;
+  color: #fff;
+}
+.contact-info a{
+  color: #fff;
+  text-decoration: none;
+}
+.contact-info i{
+  font-size: 1rem;
+}
+.contact-info span{
+  margin-right: 5px;
+}
+.admininput{
+  width:80%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 20px;
+  padding: 100px;
+  display: flex;
+  flex-direction: column;
+  font-family: "Kurale", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+.admininput h1{
+  text-align: center;
+  color: #fff;
+  margin-bottom: 40px;
+}
+.chatbut{
+  padding: 20px;
+  border-radius: 10px;
+  margin-left: auto;
+  background-color: #adbf6c;
+  border: none;
+}
+.chatbut:hover{
+  color: #fff;
+}
+@media (max-width: 822px) {
+  .inputs{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .contact-inputs .form-floating{
+    margin-left: 14px;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .contact-inputs .form-group{
+    margin-left: 14px;
+    width: 100%;
+    max-width: 100% !important;
+  }
+  .contact-button{
+    width: auto;
+    margin-left: auto;
+    margin-right: 0;
+    padding: 20px;
+    border-radius: 15px;
+  }
+  .contact-us{
+    flex-direction: column;
+  }
+  .contact-info{
+    width: 100%;
+  }
+}
 @media (min-width: 992px) {
   .item-name {
     font-size:clamp(2.3rem, 2.4vw, 3.5rem);

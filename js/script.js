@@ -46,7 +46,7 @@ const renderHeader = () => `
                 <li class="nav-item active"><a href="#menu">Меню</a></li>
                 <li class="nav-item"><a href="#about">О нас</a></li>
                 <li class="nav-item"><a href="#">Доставка</a></li>
-                <li class="nav-item"><a href="#">Контакты</a></li>
+                <li class="nav-item"><a href="#Contacts">Контакты</a></li>
               </ul>
             </div>
   
@@ -261,13 +261,13 @@ const renderTitle = () =>`
                   <li class="nav-item active"><a href="#menu">Меню</a></li>
                   <li class="nav-item"><a href="#about">О нас</a></li>
                   <li class="nav-item"><a href="#">Доставка</a></li>
-                  <li class="nav-item"><a href="#">Контакты</a></li>
+                  <li class="nav-item"><a href="#Contacts">Контакты</a></li>
                 </ul>
               </div>
             </div>
           </nav>
         </header>
-        <h1 class='parktitle'>PARKTOWN COFFEE</h1>
+        <h1 class='parktitle' id='about'>PARKTOWN <span>COFFEE<span></h1>
         <div class="aboutrestoran">
         
         <p class="restdescr">
@@ -279,7 +279,8 @@ const renderTitle = () =>`
         Приходите, чтобы открыть уникальный вкус и незабываемые эмоции.
         
         </p>
-        <button class="ourmenu"><a href="#menu">Наше Меню</a></button>
+        <button class="ourmenu">
+        <a href="#menu">Наше Меню</a></button>
       </div>
       <section class='menuContainer'>
       <div class="aboutourgroup container-fluid">
@@ -294,6 +295,47 @@ const renderTitle = () =>`
         </div>
       </div>
       </section>
+       <section class="contact-us">
+      <div class="inputs">
+      <h3 class="contactTitle" id='Contacts'>Свяжитесь с нами</h3>
+      <div class='contact-inputs'>
+        <div class="form-floating mb-3 col-6">
+          <input type="text" class="form-control" id="contact-name" placeholder="Имя" />
+          <label for="contact-name">Имя</label>
+        </div>
+        <div class="form-floating mb-3 col-6">
+          <input type="email" class="form-control" id="contact-mail" placeholder="Электронная почта" />
+          <label for="contact-mail">Электронная почта</label>
+        </div>
+        <div class="form-floating mb-3 col-6">
+          <input type="number" class="form-control" id="contact-number" placeholder="Номер телефона" />
+          <label for="contact-number">Номер телефона</label>
+        </div>
+        <div class="form-floating mb-3 col-6">
+          <input type="text" class="form-control" id="contact-event" placeholder="Мероприятие" />
+          <label for="contact-event">Мероприятие</label>
+        </div>
+        <div class="form-group mb-3">
+          <textarea class="form-control" placeholder='Сообщение'id="contact-message" rows="3"></textarea>
+        </div>
+      </div>
+       <button class="contact-button text-end">Отправить</button>
+      </div>
+      <div class="contact-info">
+          <div class="">
+              <h3><b>Время работы</b></h3>
+              <h5>с 8:00 до 22:00</h5>
+              <h5>Кухня до 21:00</h5>
+            </div>
+            <div class="">
+              <h3><b>Контактеый адрес</b></h3>
+              <h5><span><i class='bx bxs-location-plus' ></i></span>Lenin 81/a
+Copceac</h5>
+              <h5><span><i class='bx bx-phone' ></i></span> 078299844</h5>
+              <h5><span><i class='bx bxl-instagram'></i></span><a href='https://www.instagram.com/parktown_coffee/'>parktown_coffee</a></span></h5>
+            </div>
+      </div>
+    </section>
       </section>
       
 `
@@ -625,10 +667,7 @@ async function Hachchange(){
 
   document.querySelector('body').style.backgroundImage="url(./img/about.png)";
   const hash = extractHash(window.location.hash);
-  if(!hash){
-    menusect.innerHTML=renderTitle()+renderFooter();
-    
-  }
+
   if(hash==='#menu'){
     document.querySelector('body').style.backgroundImage="url(./img/menu.png)";
     document.querySelector('body').classList.add('bodyc');
@@ -775,131 +814,7 @@ async function Hachchange(){
         });
       }
     }
-    if(e.target.id==='notification'){
-      Swal.fire({
-        html: `
-        <div class='schedule'>
-          <h1>Расписание уведомлений</h1>
-          <label for="schedule">Выберите периодичность:</label>
-          <select  id="schedule">
-              <option value="daily">Раз в день</option>
-            <option value="twice_day">Два раза в день</option>
-            <option value="weekly">Раз в неделю</option>
-            <option value="twice_week">Два раза в неделю</option>
-            <option value="monthly">Раз в месяц</option>
-          </select>
-       <label for="sctime">Выберите время:</label>
-       <input type="time" id="sctime">
-
-       <div id="days-container" style="display: none; margin-top: 10px;">
-        <h3>Выберите дни недели:</h3>
-        <input type="checkbox" value="1"> Пн
-        <input type="checkbox" value="2"> Вт
-        <input type="checkbox" value="3"> Ср
-        <input type="checkbox" value="4"> Чт
-        <input type="checkbox" value="5"> Пт
-        <input type="checkbox" value="6"> Сб
-        <input type="checkbox" value="0"> Вс
-     </div>
-       </div>
-        `,
-        showCancelButton: true,
-        confirmButtonColor: "#2F9262",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Отправить",
-        cancelButtonText: "Отмена",
-        focusConfirm: false,
-        didOpen: () =>{
-        //  проверка что если выбрано раз в неделю открывался список дней
-          const scheduleSelect = document.getElementById("schedule");
-          const daysContainer = document.getElementById("days-container");
-          scheduleSelect.addEventListener('change', function(){
-            daysContainer.style.display=(this.value === "weekly" || this.value === "twice_week") ? "block" : "none";
-          });
-        },
-        preConfirm: () => {
-          const schedule = document.getElementById("schedule").value;
-          const time = document.getElementById("sctime").value;
-          const daysOfWeek = [];
-      
-          document.querySelectorAll("#days-container input:checked").forEach(cb => daysOfWeek.push(cb.value));
-      
-          if (!schedule || !time) {
-              Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-              return false;
-          }
-          let [hours, minutes] = time.split(":");
-          let cronExpression = "";
-
-          if (schedule === "daily") {
-              cronExpression = `0 ${minutes} ${hours} * * *`;
-          }
-          else if (schedule === "twice_day") {
-              cronExpression = `0 ${minutes} ${hours},${(parseInt(hours) + 12) % 24} * * *`;
-          }
-          else if (schedule === "weekly" || schedule === "twice_week") {
-              
-              if(schedule==="weekly"){
-                if(daysOfWeek.length===1){
-                  cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`
-                }
-                else{
-                  Swal.showValidationMessage("Выберите толкьо один день недели!");
-                  return false;
-                }
-              }
-              if(schedule==="twice_week"){
-                if(daysOfWeek.length===2){
-                  cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`
-                }
-                else{
-                  Swal.showValidationMessage("Выберите толкьо два дня!");
-                  return false;
-                }
-              }
-          } else if (schedule === "monthly") {
-              cronExpression = `0 ${minutes} ${hours} 1 * *`;
-          }
-          return { cronExpression };
-        },
-      }).then((result)=>{
-        if(result.isConfirmed){
-          
-          fetch('http://46.229.212.34:9091/api/v1/scheduler/update-cron?cronExpression='+ encodeURIComponent(result.value.cronExpression),{
-            method:'POST',
-            headers: { "Content-Type": "application/json" }
-          })
-          .then(response=>response.text())
-          .then(data=>Swal.fire({
-            title: "Успех!",
-            text: "Расписание обновлено!",
-            icon: "success",
-            customClass: {
-              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-            }
-          }))
-          .catch(er =>{
-            Swal.fire({
-              title: "Ошибка!",
-              text: "Не удалось обновить расписание!",
-              icon: "error",
-              customClass: {
-                confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-              }
-            })
-            console.log(er)
-          });
-          // запуск бота
-          fetch('http://46.229.212.34:9091/api/v1/scheduler/start',{
-            method:'POST'
-          })
-          .then(response=>response.json())
-          .then(data=>console.log(data))
-          .catch(er =>console.log(er))
-        }
-        
-      });
-    }
+  
   });
 
   // Делегирование события на родительский элемент
@@ -1097,8 +1012,8 @@ async function Hachchange(){
           existDiscountCodes:false,
           productDiscountCode:"",
           globalDiscountCode:"",
-          isRegisterUser:false,
-          userId:0,
+          isRegisterUser:restered,
+          userId:user,
           addressRequestDTO:adres
       }
       console.log(JSON.stringify(book));
@@ -1166,8 +1081,8 @@ async function Hachchange(){
         existDiscountCodes:false,
         productDiscountCode:"",
         globalDiscountCode:"",
-        isRegisterUser:false,
-        userId:0,
+        isRegisterUser:restered,
+        userId:user,
         addressRequestDTO:null
     }
     console.log(JSON.stringify(book));
@@ -1221,30 +1136,8 @@ async function Hachchange(){
     updateModal(order);
   });
   }
-  else if(hash==='#about'){
-    window.scrollTo(0, 0);
-    document.querySelector('body').style.backgroundImage="url(./img/about.png)";
-    document.querySelector('body').classList.add('bodyc');
-    document.querySelector('.app').style.display='none';
-    menusect.innerHTML='';
-    menusect.innerHTML=renderTitle()+renderFooter();
-    loadscreen();
-    // Добавляем обработчик события клика по документу
-    document.addEventListener('click', function (e) {
-      var navbarToggler = document.querySelector('.navbar-toggler'); // Кнопка меню
-      var navbarCollapse = document.querySelector('.navbar-collapse'); // Меню
-      
-      if (navbarToggler && navbarCollapse) { // Проверяем, что элементы существуют
-        if (!navbarToggler.contains(e.target) && !navbarCollapse.contains(e.target)) {
-          // Если клик был не по кнопке и не по самому меню, то закрываем меню
-          if (navbarCollapse.classList.contains('show')) {
-            navbarCollapse.classList.remove('show');
-          }
-        }
-      }
-    });
-  }
-  if (hash && hash.startsWith('#item-')) {
+
+  else if (hash && hash.startsWith('#item-')) {
     
       document.querySelector('body').style.backgroundImage="url(./img/menu.png)";
     document.querySelector('body').classList.add('bodyc');
@@ -1268,7 +1161,13 @@ async function Hachchange(){
         console.log(contentimg);
         localStorage.setItem("onlyItem", JSON.stringify(onlyItem));
         menusect.innerHTML = renderHeader()+renderItem(contentitem)+renderFooter();
+        const loadingScreens = document.getElementsByClassName('loader');
+        for (let loadingScreen of loadingScreens) {
+          loadingScreen.classList.add('close');
+    } 
+    
         Registr();
+        loadscreen();
         document.querySelector('.only-item').addEventListener("click", function(e) {
           // Находим родительский элемент с классом .plus-min
           const plusmin = e.target.closest(".plus-min");
@@ -1414,7 +1313,35 @@ async function Hachchange(){
       
       
     }
-    
+    // когда равен #about
+  else{
+      window.scrollTo(0, 0);
+      document.querySelector('body').style.backgroundImage="url(./img/about.png)";
+      document.querySelector('body').classList.add('bodyc');
+      document.querySelector('.app').style.display='none';
+      menusect.innerHTML='';
+      menusect.innerHTML=renderTitle()+renderFooter();
+      // кнопка загрузки
+      const loadingScreens = document.getElementsByClassName('loader');
+          for (let loadingScreen of loadingScreens) {
+            loadingScreen.classList.add('close');
+      } 
+      loadscreen();
+      // Добавляем обработчик события клика по документу
+      document.addEventListener('click', function (e) {
+        var navbarToggler = document.querySelector('.navbar-toggler'); // Кнопка меню
+        var navbarCollapse = document.querySelector('.navbar-collapse'); // Меню
+        
+        if (navbarToggler && navbarCollapse) { // Проверяем, что элементы существуют
+          if (!navbarToggler.contains(e.target) && !navbarCollapse.contains(e.target)) {
+            // Если клик был не по кнопке и не по самому меню, то закрываем меню
+            if (navbarCollapse.classList.contains('show')) {
+              navbarCollapse.classList.remove('show');
+            }
+          }
+        }
+      });
+    }
    
 }
 
@@ -1547,7 +1474,7 @@ function loadscreen(){
     }
     document.querySelector('.app').style.display='block'  
 }
-
+  
 
 window.addEventListener('hashchange', Hachchange);
 window.addEventListener('load', Hachchange);

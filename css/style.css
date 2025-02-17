@@ -690,11 +690,11 @@ input[type="number"]::-webkit-inner-spin-button {
 .buttonsing-2{
   display: flex;
 }
-.form-select{
+#lang{
   background-color: rgba(0, 0, 0, 0.4);
   color: #fff;
 }
-.form-select option{
+#lang option{
   background-color: rgba(0, 0, 0, 0.6);
   color: #fff;
 }

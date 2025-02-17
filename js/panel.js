@@ -1,8 +1,15 @@
+const token=JSON.parse(localStorage.getItem('accessToken'));
 async function Statistiktable(start, end) {
     try{
         if (!start) start = '2023-01-01T00:00:00';
         if (!end) end = '2025-01-31T23:59:59';
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/statistics?from=${start}&to=${end}`);
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/statistics?from=${start}&to=${end}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        
             const data = await response.json();
             document.querySelector(".Totalcost").textContent=`Доход: ${data.totalRevenueBasedOrdersDto.totalRevenue}`;
             document.querySelector(".Totalorders").textContent=`Всего заказанно: ${data.totalRevenueBasedOrdersDto.totalOrders}`;
@@ -32,8 +39,10 @@ async function Statistiktable(start, end) {
 }
 async function Statistik() {
     document.querySelector('.categorylist').innerHTML = '';
+    document.querySelectorAll('.catbut').forEach(el=>{
+        el.classList.remove('active');
+    });
     document.querySelector('.static').classList.add('active');
-    document.querySelector('.cattaloge').classList.remove('active');
 
     const categorytable = document.querySelector('.categorylist');
     const table = document.createElement('div');
@@ -95,7 +104,134 @@ async function Statistik() {
     await Statistiktable('2023-01-01T00:00:00', allTime);
 }
 
-
+async function Notifications() {
+    document.querySelectorAll('.catbut').forEach(el=>{
+        el.classList.remove('active');
+    });
+    document.querySelector('.notifay').classList.add('active');
+        // Находим контейнер, куда будем добавлять форму
+        const container = document.querySelector('.categorylist');
+        container.innerHTML = ''; // Очищаем перед добавлением
+    
+        const scheduleForm = document.createElement('div');
+        scheduleForm.classList.add('one-category');
+        scheduleForm.innerHTML = `
+        <div class='choysenot'>
+            <div class='schedule'>
+                <h2>Расписание уведомлений</h2>
+                <label for="schedule">Выберите периодичность:</label>
+                <select id="schedule">
+                    <option value="daily">Раз в день</option>
+                    <option value="twice_day">Два раза в день</option>
+                    <option value="weekly">Раз в неделю</option>
+                    <option value="twice_week">Два раза в неделю</option>
+                    <option value="monthly">Раз в месяц</option>
+                </select>
+    
+                <label for="sctime">Выберите время:</label>
+                <input type="time" id="sctime">
+    
+                <div id="days-container" style="display: none; margin-top: 10px;">
+                    <h4>Выберите дни недели:</h4>
+                    <label><input type="checkbox" value="1"> Пн</label>
+                    <label><input type="checkbox" value="2"> Вт</label>
+                    <label><input type="checkbox" value="3"> Ср</label>
+                    <label><input type="checkbox" value="4"> Чт</label>
+                    <label><input type="checkbox" value="5"> Пт</label>
+                    <label><input type="checkbox" value="6"> Сб</label>
+                    <label><input type="checkbox" value="0"> Вс</label>
+                </div>
+            </div>
+             <button class="submit-schedule">Отправить</button>
+            <h6>Выберите периодичность отправки уведомлений в телеграмме</h6>
+        </div>
+        `;
+    
+        container.appendChild(scheduleForm);
+    
+        // Логика переключения дней недели
+        const scheduleSelect = document.getElementById("schedule");
+        const daysContainer = document.getElementById("days-container");
+        
+        scheduleSelect.addEventListener('change', function () {
+            daysContainer.style.display = (this.value === "weekly" || this.value === "twice_week") ? "block" : "none";
+        });
+    
+        // Обработчик кнопки "Отправить"
+        document.querySelector('.submit-schedule').addEventListener('click', async function () {
+            const schedule = document.getElementById("schedule").value;
+            const time = document.getElementById("sctime").value;
+            const daysOfWeek = [];
+        
+            document.querySelectorAll("#days-container input:checked").forEach(cb => daysOfWeek.push(cb.value));
+        
+            if (!schedule || !time) {
+                alert("Пожалуйста, заполните все поля!");
+                return;
+            }
+    
+            let [hours, minutes] = time.split(":");
+            let cronExpression = "";
+    
+            if (schedule === "daily") {
+                cronExpression = `0 ${minutes} ${hours} * * *`;
+            } else if (schedule === "twice_day") {
+                cronExpression = `0 ${minutes} ${hours},${(parseInt(hours) + 12) % 24} * * *`;
+            } else if (schedule === "weekly" || schedule === "twice_week") {
+                if (schedule === "weekly" && daysOfWeek.length !== 1) {
+                    alert("Выберите только один день недели!");
+                    return;
+                }
+                if (schedule === "twice_week" && daysOfWeek.length !== 2) {
+                    alert("Выберите только два дня!");
+                    return;
+                }
+                cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`;
+            } else if (schedule === "monthly") {
+                cronExpression = `0 ${minutes} ${hours} 1 * *`;
+            }
+    
+            try {
+                const response = await fetch(`http://46.229.212.34:9091/api/v1/scheduler/update-cron?cronExpression=${encodeURIComponent(cronExpression)}`, {
+                    method: 'POST',
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+    
+                if (response.ok) {
+                    Swal.fire({
+                        title: "Успех!",
+                        text: "Расписание обновленно!",
+                        icon: "success",
+                        customClass: {
+                          confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                        }
+                      })
+                } else {
+                    Swal.fire({
+                        title: "Ошибка!",
+                        text: "Не удалось обновить!",
+                        icon: "error",
+                        customClass: {
+                          confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                        }
+                      })
+                }
+    
+                // Запуск бота
+                await fetch('http://46.229.212.34:9091/api/v1/scheduler/start', {
+                    method: 'POST',
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+            } catch (error) {
+                console.error(error);
+                alert("Ошибка при отправке данных.");
+            }
+        });  
+}
 
 // получение времени
 function getFormattedDate(date) {
@@ -114,35 +250,298 @@ function getPastDate(days) {
     pastDate.setDate(new Date().getDate() - days);  // Вычитаем дни
     return getFormattedDate(pastDate);
 }
-async function Rumname() {
-    // Получение руммынского языка
-    return Swal.fire({
-        title: "Alternativă",
-        html: `
-        <div class="form-floating mb-3 tovname">
-            <input type="text" class="form-control" id="rumname" />
-            <label for="rumname">Nume</label>
-        </div>
-        <div class="form-floating mb-3 descr">
-            <textarea class="form-control" placeholder="Leave a comment here" id="rumdescription"></textarea>
-            <label for="rumdescription">Descriere</label>
-        </div>
-        `,
-        confirmButtonColor: "#2F9262",
-        confirmButtonText: "OK",
-        preConfirm: () => {
-            const rumnume = document.getElementById("rumname").value.trim();
-            const rumdesc = document.getElementById("rumdescription").value.trim();
-            if (!rumdesc || !rumnume) {
-                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-                return false;
-              }
-            return {
-                rumname: document.getElementById("rumname").value,
-                rumdescription: document.getElementById("rumdescription").value
-            };
+// async function Rumname() {
+//     // Получение руммынского языка
+//     return Swal.fire({
+//         title: "Alternativă",
+//         html: `
+//         <div class="form-floating mb-3 tovname">
+//             <input type="text" class="form-control" id="rumname" />
+//             <label for="rumname">Nume</label>
+//         </div>
+//         <div class="form-floating mb-3 descr">
+//             <textarea class="form-control" placeholder="Leave a comment here" id="rumdescription"></textarea>
+//             <label for="rumdescription">Descriere</label>
+//         </div>
+//         `,
+//         confirmButtonColor: "#2F9262",
+//         confirmButtonText: "OK",
+//         preConfirm: () => {
+//             const rumnume = document.getElementById("rumname").value.trim();
+//             const rumdesc = document.getElementById("rumdescription").value.trim();
+//             if (!rumdesc || !rumnume) {
+//                 Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+//                 return false;
+//               }
+//             return {
+//                 rumname: document.getElementById("rumname").value,
+//                 rumdescription: document.getElementById("rumdescription").value
+//             };
+//         }
+//     });
+// }
+async function CuponAll() {
+    try {
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/discounts`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        });
+
+        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+
+        const data = await response.json();
+        console.log("Купоны:", data);
+
+        const tableone = document.querySelector(".cuppons-al");
+        const tbody = tableone.querySelector(".catlist");
+
+        if (!tbody) {
+            console.error("Элемент .catlist не найден!");
+            return;
         }
+
+        tbody.innerHTML = "";
+        let i = 0;
+
+        for (const item of data) {
+            tbody.insertAdjacentHTML("beforeend", `
+                <tr>
+                  <td style="text-align: center;">${i + 1}</td>
+                  <td style="text-align: center;">${item.code}</td>
+                  <td style="text-align: center;">${item.description}</td>
+                  <td style="text-align: center;">${item.discount}</td>
+                  <td style="text-align: center;">${item.validFrom}</td>
+                  <td style="text-align: center;">${item.validTo}</td>
+                  <td style="text-align: center;" class="allbuttons">
+                      <button class="delete delete-cup btn btn-danger" data-id="${item.id}">
+                          <i class="bx bx-trash-alt"></i>
+                      </button>
+                  </td>
+                </tr>
+            `);
+            i++;
+        }
+
+        // Обработчик удаления купона
+        document.querySelector(".categorylist").addEventListener("click", async (event) => {
+            if (event.target.closest(".delete-cup")) {
+                const button = event.target.closest(".btn-danger");
+                const productId = button.getAttribute("data-id");
+
+                const result = await Swal.fire({
+                    title: "Вы уверены?",
+                    text: "Вы не сможете это восстановить!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#2F9262",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Да, удалить!",
+                    cancelButtonText: "Отмена"
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        await deleteCuppon(productId);
+                        button.closest("tr").remove();
+
+                        Swal.fire({
+                            title: "Успех!",
+                            text: "Купон был удален!",
+                            icon: "success",
+                            customClass: {
+                              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                            }
+                          })
+                    } catch (error) {
+                        Swal.fire({
+                            title: "Ошибка!",
+                            text: "Не удалось удалить!",
+                            icon: "error",
+                            customClass: {
+                              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                            }
+                          })
+                    }
+                }
+            }
+        });
+
+        // Открытие формы для создания купона
+        document.querySelector(".cupon-all").addEventListener("click", function () {
+            Swal.fire({
+                html: `
+                <div class="adres">
+                   <h1>Создать купон</h1>
+                   <div class="form-floating mb-3">
+                      <input type="text" class="form-control" id="cupname" placeholder="Название" />
+                      <label for="cupname">Название</label>
+                   </div>
+                   <div class="form-floating mb-3">
+                      <textarea class="form-control" placeholder="Описание" id="cupdes" rows="3"></textarea>
+                      <label for="cupdes">Описание</label>
+                   </div>
+                   <div class="form-floating mb-3">
+                      <input type="number" class="form-control" id="cupskid" placeholder="Процент скидки" />
+                      <label for="cupskid">Процент скидки</label>
+                   </div>
+                   <div class="form-floating mb-3">
+                      <select class="form-select" id="cupday">
+                          <option value="1" selected>1 день</option>
+                          <option value="7">1 неделя</option>
+                          <option value="14">2 недели</option>
+                          <option value="28">1 месяц</option>
+                      </select>
+                      <label for="cupday">Длительность</label>
+                   </div>
+                </div>
+                `,
+                showCancelButton: true,
+                confirmButtonColor: "#2F9262",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Создать",
+                cancelButtonText: "Отмена",
+                preConfirm: () => {
+                    const name = document.getElementById("cupname").value;
+                    const des = document.getElementById("cupdes").value;
+                    const dis = document.getElementById("cupskid").value;
+                    const cuptime = document.getElementById("cupday").value;
+
+                    if (!name || !dis || !cuptime) {
+                        Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                        return false;
+                    }
+
+                    return { name, des, dis, cuptime };
+                }
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const { name, des, dis, cuptime } = result.value;
+
+                    const now = new Date();
+                    const validFrom = now.toISOString().slice(0, 19);
+
+                    now.setDate(now.getDate() + parseInt(cuptime, 10));
+                    const validTo = now.toISOString().slice(0, 19);
+
+                    const cupon = {
+                        code: name,
+                        description: des,
+                        discount: parseFloat(dis), // Преобразуем в число
+                        validFrom,
+                        validTo
+                    };
+                    try {
+                        const response = await fetch("http://46.229.212.34:9091/api/v1/discounts", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },
+                            body: JSON.stringify(cupon)
+                        });
+
+                        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+
+                        const data = await response.json();
+                        console.log("Создан купон:", data);
+                        await CuponAll(); // Перезагружаем список купонов
+                       
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+            });
+        });
+
+    } catch (error) {
+        console.error("Ошибка при загрузке купонов:", error);
+        Swal.fire("Ошибка", "Не удалось загрузить купоны", "error");
+    }
+}
+
+async function deleteCuppon(productId) {
+    try {
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/discounts/${productId}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Ошибка при удалении продукта с ID ${productId}`);
+        }
+        console.log(`Продукт с ID ${productId} успешно удален`);
+    } catch (error) {
+        console.error('Ошибка при удалении продукта:', error);
+    }
+}
+async function Cupon() {
+    document.querySelectorAll('.catbut').forEach(el=>{
+        el.classList.remove('active');
     });
+    document.querySelector('.cupon').classList.add('active');
+    
+    const categorytable = document.querySelector('.categorylist');
+    categorytable.innerHTML='';
+    // 1 таблица купонов
+    const table=document.createElement('div');
+    table.classList.add('one-category');
+    table.innerHTML=`
+    <h3>Купон для всех товаров</h3>
+          <table class="cuppons-al table ">
+              <thead>
+                <tr>
+                  <th style="text-align: center;">№</th>
+                  <th style="text-align: center;">Название</th>
+                  <th style="text-align: center;">Описание</th>
+                  <th style="text-align: center;">Скидка</th>
+                  <th style="text-align: center;">Начало</th>
+                  <th style="text-align: center;">Окончание</th>
+                  <th class="allbuttons">
+                   <button class="delete category-btn btn btn-success cupon-all"><i class='bx bx-book-add' ></i></button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="catlist">
+
+              </tbody>
+            </table>
+            <div class='pagging'>
+            <p>ещё...</p>
+            </div>
+    `;
+    categorytable.appendChild(table);
+    CuponAll();
+    // 2 таблица купонов
+    const table2=document.createElement('div');
+    table2.classList.add('one-category');
+    table2.innerHTML=`
+    <h3>Купон для всех товаров</h3>
+          <table class="cupons-it table">
+              <thead>
+                <tr>
+                  <th style="text-align: center;">№</th>
+                  <th style="text-align: center;">Название</th>
+                  <th style="text-align: center;">Описание</th>
+                  <th style="text-align: center;">Скидка</th>
+                  <th style="text-align: center;">Начало</th>
+                  <th style="text-align: center;">Окончание</th>
+                  <th class="allbuttons">
+                   <button class="delete category-btn btn btn-success cupon-one"><i class='bx bx-book-add' ></i></button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="catlist">
+
+              </tbody>
+            </table>
+            <div class='pagging'>
+            <p>ещё...</p>
+            </div>
+    `;
+    categorytable.appendChild(table2);
 }
 async function fetchProductTypes() {
     try {
@@ -267,8 +666,8 @@ async function fetchProductTypes() {
                 const name = row.cells[1].innerText;
                 const price = row.cells[2].innerText;
                 const description = row.cells[3].innerText;
-                const time = row.cells[4].innerText;
-
+                const time = row.cells[4].innerText.split(":")[1];
+                console.log(time);
                 // Заполняем модальное окно
                 document.getElementById('name').value = name;
                 document.getElementById('price').value = price;
@@ -318,9 +717,8 @@ async function fetchProductTypes() {
             }
             else{
                 let i = 0;
-                // Скрыть строки после 5-й
                 nearestTable.querySelectorAll('tbody tr').forEach(em => {
-                        em.style.display = ''; // Скрыть строки
+                        em.style.display = ''; // Паказать строки
                 });
 
                 // Меняем класс на "pagshow"
@@ -346,19 +744,23 @@ document.querySelector('button.confirm').addEventListener('click', async functio
     let name = document.getElementById('name').value;
     let price = document.getElementById('price').value;
     let description = document.getElementById('description').value;
+    let cookingTime=document.getElementById("time").value;
     let img = document.getElementById('image').files[0]; // Получаем выбранный файл
-    let cookingTime= document.getElementById('time').value;
     let typeName = document.getElementById('typename').value;
-    if(cookingTime===''){
-        cookingTime='00:00:00';
+    if(cookingTime==='1'){
+        cookingTime='00:50:00';
+        console.log(cookingTime);
     }
-    if (name && price && description) {
+    else{
+        cookingTime=`00:${cookingTime}:00`
+    }
+    if (name && price) {
         // Очистка полей формы
         document.getElementById('name').value = '';
         document.getElementById('price').value = '';
         document.getElementById('description').value = '';
         document.getElementById('image').value = '';
-        document.getElementById('time').value = '';
+        document.getElementById("time").value='';
         // назначение модального окна для дальнейшого его закрытия
         let modalElement = document.getElementById('Modalwindow');
         let Modal = bootstrap.Modal.getInstance(modalElement); // Получаем уже существующий экземпляр
@@ -383,7 +785,9 @@ document.querySelector('button.confirm').addEventListener('click', async functio
             formData.append("cookingTime",changeproduct.cookingTime);
             fetch('http://46.229.212.34:9091/api/v1/products', {
                 method: 'PATCH',
-                
+                headers: {
+                "Authorization": `Bearer ${token}`
+            },
                 body:formData
             }).then(res=>{
                 if(!res.ok){
@@ -406,7 +810,7 @@ document.querySelector('button.confirm').addEventListener('click', async functio
                 description: description,
                 cookingTime: cookingTime
             };
-
+           
         const formData=new FormData(); 
         formData.append('name', newProduct.name);
         formData.append('description', newProduct.description);
@@ -414,13 +818,19 @@ document.querySelector('button.confirm').addEventListener('click', async functio
         formData.append('price', newProduct.price);
         formData.append('cookingTime', newProduct.cookingTime);
         formData.append('file', img);
-
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ": " + pair[1]);
+        }
+        
         Modal.hide();
-        const rumData = await Rumname();
-        console.log(rumData);
+        // const rumData = await Rumname();
+        // console.log(rumData);
 
         fetch('http://46.229.212.34:9091/api/v1/products', {
             method: 'POST',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
             body: formData
         })
         .then(response => {
@@ -476,7 +886,10 @@ document.querySelector('button.confirm').addEventListener('click', async functio
         }
         fetch('http://46.229.212.34:9091/api/v1/product-types', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
             body: JSON.stringify(cat)
         }).then(res => {
             console.log(1);
@@ -489,6 +902,7 @@ document.querySelector('button.confirm').addEventListener('click', async functio
         fetchProductTypes();
     }
          else {
+            
         alert('Пожалуйста, заполните все поля');
     }
 });
@@ -533,28 +947,13 @@ async function deleteProduct(productId) {
     try {
         const response = await fetch(`http://46.229.212.34:9091/api/v1/products/${productId}`, {
             method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         });
         if (!response.ok) {
             throw new Error(`Ошибка при удалении продукта с ID ${productId}`);
         }
-        // Удаление изображения может не понадибтся если что удалим
-        const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${productId}`);
-        if (!photoResponse.ok) {
-            throw new Error(`Ошибка при получении изображения для продукта с ID ${productId}`);
-        }
-        const photoData = await photoResponse.json();
-        if (!photoData.length || !photoData[0].url) {
-            throw new Error(`Изображение для продукта с ID ${productId} не найдено`);
-        }
-        console.log(photoData);
-        const imageresponse= await fetch('http://46.229.212.34:9091/api/v1/photos/resource?photoName='+photoData[0].url, {
-            method: 'DELETE',
-        })
-       
-        if (!imageresponse.ok) {
-            throw new Error(`Ошибка при удалении изображения для продукта с ID ${productId}`);
-        }
-        
         console.log(`Продукт с ID ${productId} успешно удален`);
     } catch (error) {
         console.error('Ошибка при удалении продукта:', error);
@@ -564,6 +963,9 @@ async function deleteCategory(categoryId) {
     try {
         const response = await fetch(`http://46.229.212.34:9091/api/v1/product-types/${categoryId}`, {
             method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         });
         if (!response.ok) {
             throw new Error(`Ошибка при удалении категории с ID ${categoryId}`);
@@ -576,8 +978,10 @@ async function deleteCategory(categoryId) {
 async function Closepagging() {
     // запускаем всю страницу
     document.querySelector('.categorylist').innerHTML='';
+    document.querySelectorAll('.catbut').forEach(el=>{
+        el.classList.remove('active');
+    });
     document.querySelector('.cattaloge').classList.add('active');
-    document.querySelector('.static').classList.remove('active');
     await fetchProductTypes();
     // закрытие всех пагинациий
     document.querySelectorAll('.pagging').forEach(el => {
@@ -609,7 +1013,9 @@ function getUUIDFromURL() {
 async function getReg(uuid1) {
     try {
       // Получаем данные пользователя
-      let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
+      let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`,{
+        
+      });
       let data = await response.json();
   
       
@@ -659,10 +1065,146 @@ function Language(){
   });
   }
 
-  
+document.addEventListener('click', function(e){
+    if(e.target.id==='notification'){
+        Swal.fire({
+          html: `
+          <div class='choysenot'>
+          <div class='schedule'>
+            <h1>Расписание уведомлений</h1>
+            <label for="schedule">Выберите периодичность:</label>
+            <select  id="schedule">
+                <option value="daily">Раз в день</option>
+              <option value="twice_day">Два раза в день</option>
+              <option value="weekly">Раз в неделю</option>
+              <option value="twice_week">Два раза в неделю</option>
+              <option value="monthly">Раз в месяц</option>
+            </select>
+         <label for="sctime">Выберите время:</label>
+         <input type="time" id="sctime">
+    
+         <div id="days-container" style="display: none; margin-top: 10px;">
+          <h3>Выберите дни недели:</h3>
+          <input type="checkbox" value="1"> Пн
+          <input type="checkbox" value="2"> Вт
+          <input type="checkbox" value="3"> Ср
+          <input type="checkbox" value="4"> Чт
+          <input type="checkbox" value="5"> Пт
+          <input type="checkbox" value="6"> Сб
+          <input type="checkbox" value="0"> Вс
+       </div>
+         </div>
+         </div>
+          `,
+          showCancelButton: true,
+          confirmButtonColor: "#2F9262",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Отправить",
+          cancelButtonText: "Отмена",
+          focusConfirm: false,
+          didOpen: () =>{
+          //  проверка что если выбрано раз в неделю открывался список дней
+            const scheduleSelect = document.getElementById("schedule");
+            const daysContainer = document.getElementById("days-container");
+            scheduleSelect.addEventListener('change', function(){
+              daysContainer.style.display=(this.value === "weekly" || this.value === "twice_week") ? "block" : "none";
+            });
+          },
+          preConfirm: () => {
+            const schedule = document.getElementById("schedule").value;
+            const time = document.getElementById("sctime").value;
+            const daysOfWeek = [];
+        
+            document.querySelectorAll("#days-container input:checked").forEach(cb => daysOfWeek.push(cb.value));
+        
+            if (!schedule || !time) {
+                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                return false;
+            }
+            let [hours, minutes] = time.split(":");
+            let cronExpression = "";
+    
+            if (schedule === "daily") {
+                cronExpression = `0 ${minutes} ${hours} * * *`;
+            }
+            else if (schedule === "twice_day") {
+                cronExpression = `0 ${minutes} ${hours},${(parseInt(hours) + 12) % 24} * * *`;
+            }
+            else if (schedule === "weekly" || schedule === "twice_week") {
+                
+                if(schedule==="weekly"){
+                  if(daysOfWeek.length===1){
+                    cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`
+                  }
+                  else{
+                    Swal.showValidationMessage("Выберите толкьо один день недели!");
+                    return false;
+                  }
+                }
+                if(schedule==="twice_week"){
+                  if(daysOfWeek.length===2){
+                    cronExpression = `0 ${minutes} ${hours} * * ${daysOfWeek.join(",")}`
+                  }
+                  else{
+                    Swal.showValidationMessage("Выберите толкьо два дня!");
+                    return false;
+                  }
+                }
+            } else if (schedule === "monthly") {
+                cronExpression = `0 ${minutes} ${hours} 1 * *`;
+            }
+            return { cronExpression };
+          },
+        }).then((result)=>{
+          if(result.isConfirmed){
+            
+            fetch('http://46.229.212.34:9091/api/v1/scheduler/update-cron?cronExpression='+ encodeURIComponent(result.value.cronExpression),{
+              method:'POST',
+              headers: {
+                "Authorization": `Bearer ${token}`
+            }
+            })
+            .then(response=>response.text())
+            .then(data=>Swal.fire({
+              title: "Успех!",
+              text: "Расписание обновлено!",
+              icon: "success",
+              customClass: {
+                confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+              }
+            }))
+            .catch(er =>{
+              Swal.fire({
+                title: "Ошибка!",
+                text: "Не удалось обновить расписание!",
+                icon: "error",
+                customClass: {
+                  confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                }
+              })
+              console.log(er)
+            });
+            // запуск бота
+            fetch('http://46.229.212.34:9091/api/v1/scheduler/start',{
+              method:'POST',
+                headers: {
+                "Authorization": `Bearer ${token}`
+            }
+            })
+            .then(response=>response.json())
+            .then(data=>console.log(data))
+            .catch(er =>console.log(er))
+          }
+          
+        });
+      }
+})
+document.querySelector('.cupon').addEventListener('click', Cupon);
+document.querySelector('.notifay').addEventListener('click', Notifications);
 document.querySelector('.static').addEventListener('click', Statistik);
 document.querySelector('.cattaloge').addEventListener('click', Closepagging);
 // Запуск
 Closepagging();
 Registr();
 Language();
+

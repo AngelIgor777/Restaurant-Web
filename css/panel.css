@@ -49,10 +49,18 @@ textarea{
 }
 .category-items th, .category-items td {
     padding: 6px;
+    max-height: 40px;
     max-width: 120px; /* ширина ячейки */
     overflow: hidden; /*Скрытие переполненного содержимого*/
     text-overflow: ellipsis; /* Добавление многоточия при переполнении */
     white-space: nowrap; /* Запрет переноса текста */
+}
+.head{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: auto;
+    margin-right: auto;
 }
 .head h1{
     display: flex;
@@ -61,7 +69,7 @@ textarea{
     font-family: "Kurale", serif;
     font-weight: 800;
     font-style: normal;
-    font-size: clamp(1.6rem, 2.5vw, 3.8rem);
+    font-size: clamp(1.2rem, 1.5vw, 2.8rem);
     font-size: 2.4rem;
     width: auto;
     padding: 13px;
@@ -73,6 +81,22 @@ textarea{
 }
 .head .active{
     opacity: 1 !important;
+}
+.choysenot{
+    display: flex;
+    flex-direction: column;
+}
+.choysenot h6{
+    color: rgba(0, 0, 0, 0.6);
+}
+.submit-schedule{
+    margin-left: auto;
+    color: #fff;
+    background-color: #252525a3;
+    padding: 10px;
+    border-radius: 15px;
+    margin-top: 20px;
+    font-size: 1.1rem !important;
 }
 .add-category{
     display: flex;
@@ -149,6 +173,7 @@ textarea{
     }
     .category-items tr{
         width: auto;
+        max-height: 40px;
     }
     .allbuttons{
         display: flex;
@@ -158,8 +183,8 @@ textarea{
     }
     .allbuttons button{
         padding: 1vw !important;
-        width: 6vw;
-        height: 6vw;
+        width: 3.4vw;
+        height: 3.4vw;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -201,7 +226,7 @@ textarea{
         font-family: "Kurale", serif;
         font-weight: 800;
         font-style: normal;
-        font-size: clamp(1.2rem, 1.5vw, 3.8rem);
+        font-size: clamp(1.2rem, 1.5vw, 2.8rem);
         width: auto;
         padding: 13px;
         border-radius: 20px;
