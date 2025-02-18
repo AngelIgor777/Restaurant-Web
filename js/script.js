@@ -12,8 +12,8 @@ const renderHeader = () => `
             <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
             <select class="form-select" id='lang'>
-              <option value="rus"  selected>rus</option>
-              <option value="rum">rum</option>
+              <option value="ru">ru</option>
+              <option value="ro">ro</option>
             </select>
               <div class="dropdown  singin">
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
@@ -52,8 +52,8 @@ const renderHeader = () => `
   
             <span class="buttonsing-2 flex-row">
             <select class="form-select" id='lang'>
-              <option value="rus"  selected>rus</option>
-              <option value="rum">rum</option>
+              <option value="ru">ru</option>
+              <option value="ro">ro</option>
             </select>
               <div class="dropdown  singin">
                 
@@ -362,6 +362,31 @@ const renderItem= (onlyItem=[]) =>`
           </div>
         </div>
       </div>
+
+    <div class='weektop'>
+      <h2>Топ 10 блюд недели</h2>
+        <div class='topcont swiper'>
+            <div class="card-cont menu-container">
+                <div class="swiper-wrapper">
+
+
+                </div>
+             </div>
+               
+            <div class="swiper-button-prev">
+            <i class='bx bx-left-arrow-alt'></i>
+            </div>
+            <div class="swiper-button-next">
+            <i class='bx bx-left-arrow-alt bx-rotate-180' ></i>
+            </div>
+
+            <div class="swiper-pagination"></div>
+        </div>
+        
+
+
+  
+    </div>
 `
 function formatTime(inputTime) {
   const parts = inputTime.split(':').map(Number); // Разделяем строку и преобразуем части в числа
@@ -380,6 +405,272 @@ function formatTime(inputTime) {
       formattedTime += `${seconds} сек`;
   }
   return formattedTime.trim(); // Убираем лишние пробелы
+}
+async function WeekTop() {
+  const container=document.querySelector('.swiper-wrapper');
+ 
+  const response = await fetch(`http://46.229.212.34:9091/api/v1/products/top-weekly?page=0&size=10`);
+  const data = await response.json();
+  console.log(data);
+  for (const item of data){
+    // Запрос URL картинки
+    const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${item.id}`);
+    const photoData = await photoResponse.json();
+    const imageUrl = photoData[0].url; // Если нет URL, используем картинку по умолчанию
+    // Создаем элемент меню
+    let name=item.name;
+    let descr=item.description;
+    if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+      const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${item.id}?lang=ro`, {
+        method: "GET"
+    });
+
+    if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
+
+    const dat = await respo.json();
+    name=dat.name;
+    descr=dat.description;
+    }
+    const menuItem = document.createElement('div');
+    menuItem.className = `col-sm-6 col-md-4 col-lg-1 item swiper-slide visible `;
+    menuItem.id= `item-${item.id}`;
+    menuItem.innerHTML = `
+      <div class="img-cost">
+      <a href="#item-${item.id}">
+        <div class="description">
+        <h3><b>${descr}</b></h3>
+            <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
+              ? `Примерное время готовки: <b>${formatTime(item.cookingTime)}</b>` 
+              : "Сразу"}</h5>
+        </div>
+        </a>
+        <img src="${imageUrl}" alt="${item.name}" />
+        <p class="cost">${item.price} MDL</p>
+        
+      </div>
+      <h3 class="name">${name}</h3>
+      <div class="send-plus-min">
+        <div class="plus-min">
+          <p class="min"><i class="bx bx-minus-circle"></i></p>
+          <input type="number" value="1" maxlength="2" min="0" disabled/>
+          <p class="plus"><i class="bx bx-plus-circle"></i></p>
+        </div>
+        <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+      </div>
+    `;
+
+    // Добавляем элемент в контейнер
+    container.appendChild(menuItem);
+   
+    }
+    let swiper = new Swiper('.card-cont', {
+      loop: true,  // если элементы дублируются — отключи loop
+      spaceBetween: 32, // Уменьши расстояние между карточками
+      slidesPerView: "auto", // Автоматическая ширина слайдов
+      centeredSlides: false,
+      autoplay: {
+        delay: 4000, // Автоматическое пролистывание каждые 3 секунды
+        disableOnInteraction: false, // Автопрокрутка не останавливается при взаимодействии
+    }, 
+      pagination: {
+          el: ".swiper-pagination",
+          clickable: false,
+          dynamicBullets:true,
+      },
+      navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+      },
+  });
+    // Добавляем обработчик события клика по документу
+    document.addEventListener('click', function (e) {
+      var navbarToggler = document.querySelector('.navbar-toggler'); // Кнопка меню
+      var navbarCollapse = document.querySelector('.navbar-collapse'); // Меню
+      
+      if (navbarToggler && navbarCollapse) { // Проверяем, что элементы существуют
+        if (!navbarToggler.contains(e.target) && !navbarCollapse.contains(e.target)) {
+          // Если клик был не по кнопке и не по самому меню, то закрываем меню
+          if (navbarCollapse.classList.contains('show')) {
+            navbarCollapse.classList.remove('show');
+          }
+        }
+      }
+      if(e.target.id==='profile'){
+        const uuid=JSON.parse(localStorage.getItem('uuid'));
+        // Если пользователь зарегестрирован
+        if(uuid){
+          Swal.fire({
+            html:`
+            <div class='adres'>
+               <h1>Ваш постояный адрес</h1>
+               <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="street" placeholder="Улица" />
+                <label for="street">Улица</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="num" placeholder="Дом" />
+                <label for="num">Дом</label>
+              </div>
+            </div>
+            `,
+            showCancelButton: true,
+            confirmButtonColor: "#2F9262",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Отправить",
+            cancelButtonText: "Отмена",
+            preConfirm: () => {
+              const street = document.getElementById("street").value;
+              const home = document.getElementById("num").value;
+      
+              if (!street || !home) {
+                  Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                  return false;
+              }
+            }
+          }).then((result)=>{
+            if(result.isConfirmed){
+              const street = document.getElementById("street").value;
+              const home = document.getElementById("num").value;
+              const addres={
+                city:"Copceac",
+                street:street,
+                homeNumber: home,
+                apartmentNumber:1,
+                userUUID:uuid 
+              }
+  
+              fetch('http://46.229.212.34:9091/api/v1/addresses',{
+                method:'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(addres)
+              }).then(result=>result.json())
+              .then(data=>{
+                console.log(data);
+                localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
+              })
+              .catch(error=>{
+                console.log(error);
+              });
+            }
+  
+          });
+        }
+        // Если пользователь не зарегестрирован
+        else{
+          Swal.fire({
+            html:`
+            <div class='adres'>
+               <h1>Ваш постояный адрес</h1>
+               <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="street" placeholder="Улица" />
+                <label for="street">Улица</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="num" placeholder="Дом" />
+                <label for="num">Дом</label>
+              </div>
+            </div>
+            `,
+            showCancelButton: true,
+            confirmButtonColor: "#2F9262",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Отправить",
+            cancelButtonText: "Отмена",
+            preConfirm: () => {
+              const street = document.getElementById("street").value;
+              const home = document.getElementById("num").value;
+      
+              if (!street || !home) {
+                  Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                  return false;
+              }
+            }
+          }).then((result)=>{
+            if(result.isConfirmed){
+              const street = document.getElementById("street").value;
+              const home = document.getElementById("num").value;
+              const addres={
+                city:"Copceac",
+                street:street,
+                homeNumber: home,
+                apartmentNumber:1,
+                userUUID:uuid 
+              }
+              localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
+              
+            }
+  
+          });
+        }
+      }
+    
+    });
+  
+    // Делегирование события на родительский элемент
+    document.querySelector('.menu-container').addEventListener("click", function(e) {
+      
+      // Находим родительский элемент с классом .plus-min
+      const plusmin = e.target.closest(".plus-min");
+      
+      // Если элемент .plus-min существует, работаем с ним
+      if (plusmin) {
+        const input = plusmin.querySelector("input");
+        
+        // Кнопки для увеличения и уменьшения количества товаров
+        if (e.target && (e.target.matches("p.plus") || e.target.closest("p.plus"))) {
+          let value = parseInt(input.value, 10);
+          input.value = value + 1;
+        }
+        
+        if (e.target && (e.target.matches("p.min") || e.target.closest("p.min"))) {
+          let value = parseInt(input.value, 10);
+          if (value > 1) {
+            input.value = value - 1;
+          }
+        }
+      }
+  
+      // Кнопка отправки
+      if (e.target && (e.target.matches(".send") || e.target.closest(".send"))) {
+        const but = e.target.closest(".send");
+        const buttosend=document.querySelector("p.colvo");
+        if (but) {
+          // Добавляем класс sold для анимации
+          but.classList.add("sold");
+          let order=JSON.parse(localStorage.getItem('order'));
+          let totalcost=JSON.parse(localStorage.getItem('totalcost'));
+          console.log(order);
+          // Находим поле ввода количества
+          const input = but.closest(".send-plus-min").querySelector("input");
+          let quantity = parseInt(input.value, 10);
+  
+          // Находим данные товара
+          const tovarname = but.closest(".item").querySelector('.name').textContent;
+          const tovarid =parseInt(but.closest(".item").id.replace(/[^0-9]/g,""));
+          console.log(tovarid);
+          const price=parseFloat(but.closest(".item").querySelector('.cost').textContent)*quantity;
+          quant+=quantity;
+          // Добавляем заказ в массив
+          totalcost +=price;
+          if(order.some(item=>item.tovarname===tovarname)){
+            let index=order.findIndex(item => item.tovarname === tovarname);
+            console.log(order[index]);
+            order[index].price+=price;
+            order[index].quantity+=quantity;
+          }
+          else{
+            // Добавляем заказ в массив
+            order.push({ id:tovarid, tovarname:tovarname, quantity:quantity, price:price});
+          }
+          localStorage.setItem('order', JSON.stringify(order));
+          localStorage.setItem('totalcost', JSON.stringify(totalcost));
+          // Убираем класс sold через 1 секунду
+          setTimeout(function() {
+            but.classList.remove("sold");
+          }, 1000); // 1 секунда анимации
+        }
+      }
+    });
 }
 // Получение данных категорий с сервера
 async function fetchProductTypes() {
@@ -440,15 +731,27 @@ async function fetchMenuItems(categoryIds) {
         const photoData = await photoResponse.json();
         const imageUrl = photoData[0].url; // Если нет URL, используем картинку по умолчанию
         // Создаем элемент меню
+        let name=item.name;
+        let descr=item.description;
+        if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+          const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${item.id}?lang=ro`, {
+            method: "GET"
+        });
+    
+        if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
+    
+        const dat = await respo.json();
+        name=dat.name;
+        descr=dat.description;
+        }
         const menuItem = document.createElement('div');
         menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${ids[shet]} `;
         menuItem.id= `item-${item.id}`;
         menuItem.innerHTML = `
-        
           <div class="img-cost">
           <a href="#item-${item.id}">
             <div class="description">
-            <h3><b>${item.description}</b></h3>
+            <h3><b>${descr}</b></h3>
                 <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
                   ? `Примерное время готовки: <b>${formatTime(item.cookingTime)}</b>` 
                   : "Сразу"}</h5>
@@ -458,7 +761,7 @@ async function fetchMenuItems(categoryIds) {
             <p class="cost">${item.price} MDL</p>
             
           </div>
-          <h3 class="name">${item.name}</h3>
+          <h3 class="name">${name}</h3>
           <div class="send-plus-min">
             <div class="plus-min">
               <p class="min"><i class="bx bx-minus-circle"></i></p>
@@ -669,6 +972,7 @@ async function Hachchange(){
   const hash = extractHash(window.location.hash);
 
   if(hash==='#menu'){
+    window.scrollTo(0, 1);
     document.querySelector('body').style.backgroundImage="url(./img/menu.png)";
     document.querySelector('body').classList.add('bodyc');
     document.querySelector('.app').style.display='none';
@@ -1172,7 +1476,7 @@ async function Hachchange(){
   }
 
   else if (hash && hash.startsWith('#item-')) {
-    
+    window.scrollTo(0, 1);
       document.querySelector('body').style.backgroundImage="url(./img/menu.png)";
     document.querySelector('body').classList.add('bodyc');
       const menuItem = document.querySelector(hash);
@@ -1199,8 +1503,9 @@ async function Hachchange(){
         for (let loadingScreen of loadingScreens) {
           loadingScreen.classList.add('close');
     } 
-    
+        WeekTop();
         Registr();
+        
         loadscreen();
         document.querySelector('.only-item').addEventListener("click", function(e) {
           // Находим родительский элемент с классом .plus-min
@@ -1265,6 +1570,7 @@ async function Hachchange(){
       } 
       // После перезагрузки страницы
       else {
+        window.scrollTo(0, 0);
         console.log(localStorage.getItem("onlyItem"))
         if(localStorage.getItem("onlyItem")){
           let onlyItem=parseInt(hash.replace(/[^0-9]/g,""));
@@ -1277,7 +1583,9 @@ async function Hachchange(){
             contentimg, contentdat.productResponseDTO.description,
              contentdat.productResponseDTO.cookingTime);
           menusect.innerHTML = renderHeader()+renderItem(contentitem)+renderFooter();
-
+          Registr();
+          WeekTop();
+          loadscreen();
           document.querySelector('.only-item').addEventListener("click", function(e) {
             // Находим родительский элемент с классом .plus-min
             const plusmin = e.target.closest(".plus-min");
@@ -1496,10 +1804,13 @@ function loadCachedBackground(url) {
   }
 }
 function Language(){
-  document.getElementById("lang").addEventListener("change", function(event) {
-    console.log("Выбрано:", event.target.value);
-    localStorage.setItem('lang', JSON.stringify(event.target.value));
-});
+  document.querySelectorAll("#lang").forEach(it=>{
+    it.value = JSON.parse(localStorage.getItem('lang'));
+    it.addEventListener("change", function(event) {
+      localStorage.setItem('lang', JSON.stringify(event.target.value));
+      Hachchange();
+  });
+  });
 }
 function loadscreen(){
     const loadingScreens = document.getElementsByClassName('loader');

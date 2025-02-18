@@ -155,7 +155,47 @@ header {
     font-size: 1.1rem;
   }
 }
+/* swiper */
+.swiper-button-prev::after,
+.swiper-button-next::after{
+  content: '';
+}
+.swiper-button-prev,
+.swiper-button-next{
+  font-size: 2rem;
+  color: #63ff47;
+  display: none;
+}
+.swiper-pagination-bullet{
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.swiper-slide:first-child{
+  margin-left: 30px;
+}
+.weektop{
+  margin-top: 150px;
+}
+.weektop h2{
+  font-size: 2rem;
+  text-align: center;
+  font-family: "Comfortaa", serif;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 15px #ffffffe6, 0 0 20px #ffffffe6, 0 0 25px #ffffffe6;
+}
+@keyframes glow {
+  0% { text-shadow: 0 0 5px rgb(255, 255, 255); }
+  50% { text-shadow: 0 0 15px rgb(255, 255, 255); }
+  100% { text-shadow: 0 0 5px rgb(255, 255, 255); }
+}
 
+.weektop h2 {
+    animation: glow 1.5s infinite alternate;
+}
+.weektop .send i{
+  color: #fff;
+}
 /* Menu-burger*/
 .container-fluid {
   margin: 0;
@@ -451,7 +491,7 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 40px;
   border: none;
   background-color: #252525d9;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -795,7 +835,7 @@ input[type="number"]::-webkit-inner-spin-button {
  */
 @media (max-width: 780px) {
   .menu-container .item {
-    width: 145px;
+    width: 165px;
     height: 281px;
     display: flex;
     flex-direction: column;
@@ -809,8 +849,9 @@ input[type="number"]::-webkit-inner-spin-button {
     border-radius: 10px;
     box-shadow: 5px 10px 20px 5px rgba(0, 0, 0, 0.5);
   }
+  
   .menu-container .item .img-cost img {
-    width: 145px;
+    width: 165px;
     height: 190px;
     object-fit: cover;
     border-radius: 4px;
@@ -879,6 +920,7 @@ input[type="number"]::-webkit-inner-spin-button {
   .menu-container {
     overflow: hidden;
   }
+
   .category-content i::before{
     opacity: 1;
     font-size: 1.4rem; /* Увеличиваем размер иконки */

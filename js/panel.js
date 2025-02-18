@@ -123,7 +123,6 @@ async function Notifications() {
                 <label for="schedule">Выберите периодичность:</label>
                 <select id="schedule">
                     <option value="daily">Раз в день</option>
-                    <option value="twice_day">Два раза в день</option>
                     <option value="weekly">Раз в неделю</option>
                     <option value="twice_week">Два раза в неделю</option>
                     <option value="monthly">Раз в месяц</option>
@@ -265,7 +264,9 @@ async function Rumname(id) {
         </div>
         `,
         confirmButtonColor: "#2F9262",
-        confirmButtonText: "OK",
+        confirmButtonText: "Trimite",
+        showCancelButton: true,
+        cancelButtonText:'Anula',
         preConfirm: () => {
             const rumnume = document.getElementById("rumname").value.trim();
             const rumdesc = document.getElementById("rumdescription").value.trim();
@@ -299,7 +300,7 @@ async function Rumname(id) {
                 Swal.fire({
                     title: "Успез!",
                     text: "Перевод добавлен!",
-                    icon: "succes",
+                    icon: "success",
                     customClass: {
                       confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
                     }

@@ -36,10 +36,9 @@ const renderHeader = () => `
             
             <div class="collapse navbar-collapse" id="navbarcont">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item active"><a href="#menu">Меню</a></li>
-                <li class="nav-item"><a href="#about">О нас</a></li>
-                <li class="nav-item"><a href="#">Доставка</a></li>
-                <li class="nav-item"><a href="#Contacts">Контакты</a></li>
+                <li class="nav-item active"><a href="index.html#menu">Меню</a></li>
+                <li class="nav-item"><a href="index.html#about">О нас</a></li>
+                <li class="nav-item"><a href="index.html#about">Контакты</a></li>
               </ul>
             </div>
   
