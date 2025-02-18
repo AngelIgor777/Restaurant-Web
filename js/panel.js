@@ -251,36 +251,73 @@ function getPastDate(days) {
     pastDate.setDate(new Date().getDate() - days);  // Вычитаем дни
     return getFormattedDate(pastDate);
 }
-// async function Rumname() {
-//     // Получение руммынского языка
-//     return Swal.fire({
-//         title: "Alternativă",
-//         html: `
-//         <div class="form-floating mb-3 tovname">
-//             <input type="text" class="form-control" id="rumname" />
-//             <label for="rumname">Nume</label>
-//         </div>
-//         <div class="form-floating mb-3 descr">
-//             <textarea class="form-control" placeholder="Leave a comment here" id="rumdescription"></textarea>
-//             <label for="rumdescription">Descriere</label>
-//         </div>
-//         `,
-//         confirmButtonColor: "#2F9262",
-//         confirmButtonText: "OK",
-//         preConfirm: () => {
-//             const rumnume = document.getElementById("rumname").value.trim();
-//             const rumdesc = document.getElementById("rumdescription").value.trim();
-//             if (!rumdesc || !rumnume) {
-//                 Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-//                 return false;
-//               }
-//             return {
-//                 rumname: document.getElementById("rumname").value,
-//                 rumdescription: document.getElementById("rumdescription").value
-//             };
-//         }
-//     });
-// }
+async function Rumname(id) {
+    Swal.fire({
+        title: "Alternativă",
+        html: `
+        <div class="form-floating mb-3 tovname">
+            <input type="text" class="form-control" id="rumname" />
+            <label for="rumname">Nume</label>
+        </div>
+        <div class="form-floating mb-3 descr">
+            <textarea class="form-control" placeholder="Leave a comment here" id="rumdescription"></textarea>
+            <label for="rumdescription">Descriere</label>
+        </div>
+        `,
+        confirmButtonColor: "#2F9262",
+        confirmButtonText: "OK",
+        preConfirm: () => {
+            const rumnume = document.getElementById("rumname").value.trim();
+            const rumdesc = document.getElementById("rumdescription").value.trim();
+            
+            if (!rumnume || !rumdesc) {
+                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                return false;
+            }
+
+            return { rumname: rumnume, rumdescription: rumdesc };
+        }
+    }).then(async (result) => {
+        if (result.isConfirmed) {  // Если пользователь нажал "OK"
+            try {
+                const response = await fetch("http://46.229.212.34:9091/api/v1/product-translations", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        productId: id,  // Передаём ID продукта
+                        languageCode:'ro',
+                        name: result.value.rumname,
+                        description: result.value.rumdescription
+                    })
+                });
+
+                if (!response.ok) throw new Error("Ошибка при отправке данных");
+
+                Swal.fire({
+                    title: "Успез!",
+                    text: "Перевод добавлен!",
+                    icon: "succes",
+                    customClass: {
+                      confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                    }
+                  })
+            } catch (error) {
+                Swal.fire({
+                    title: "Ошибка!",
+                    text: "Не удалось добавить перевод!",
+                    icon: "error",
+                    customClass: {
+                      confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                    }
+                  });
+            }
+        }
+    });
+}
+
 async function CuponAll() {
     try {
         const response = await fetch(`http://46.229.212.34:9091/api/v1/discounts`, {
@@ -744,7 +781,7 @@ async function Cupon() {
     const table2=document.createElement('div');
     table2.classList.add('one-category');
     table2.innerHTML=`
-    <h3>Купон для всех товаров</h3>
+    <h3>Купон для одного товара</h3>
           <table class="cupons-it table">
               <thead>
                 <tr>
@@ -768,7 +805,7 @@ async function Cupon() {
             </div>
     `;
     categorytable.appendChild(table2);
-    // await CuponItem();
+    await CuponItem();
     
     document.querySelectorAll('.pagging').forEach(el => {
         pagcup(el);
@@ -828,9 +865,10 @@ async function fetchProductTypes() {
                         <th style="text-align: center;">Время готовки</th>
                         <th style="text-align: center;">Изображение</th>
                         <th class="allbuttons">
-                        <button class="delete category-btn btn btn-success" data-bs-toggle="modal" data-bs-target="#Modalwindow" data-category-id=${item.id} ><i class='bx bx-book-add' ></i></button>
+                        <button class="delete category-btn btn btn-success" data-category-id="${item.id}" data-bs-toggle="modal" data-bs-target="#Modalwindow" data-category-id=${item.id} ><i class='bx bx-book-add' ></i></button>
                         <button class="delete category-delete  btn btn-danger" data-delete="${item.id}" data-category-id="${item.id}"><i class='bx bx-trash-alt'></i></button>
                         </th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody class="catlist">
@@ -848,6 +886,18 @@ async function fetchProductTypes() {
         const categoryIds = data.content.map(item => item.id); // Извлекаем IDs
         await Addtable(categoryIds);
         console.log(allitems);
+        document.querySelectorAll('.changelang').forEach(item=>{
+            item.addEventListener('click', function(){
+                const itemId = this.getAttribute("data-id");
+                Rumname(itemId);
+            });
+        })
+        document.querySelectorAll('.history').forEach(item=>{
+            item.addEventListener('click', function(){
+                const itemId = this.getAttribute("data-id");
+                Historyset(itemId);
+            });
+        })
         document.querySelector('.categorylist').addEventListener('click', async (event) => {
             if (event.target.closest('.delete-item')) {
                 Swal.fire({
@@ -881,14 +931,7 @@ async function fetchProductTypes() {
                 });
             }
             
-            if (event.target.closest('.delete')) {
-                const button = event.target.closest('.delete');
-                const typeName = button.getAttribute('data-category-id'); // Получаем categoryId из кнопки
-                console.log('Переданный тип продукта:', typeName);
-        
-                // Заполняем скрытое поле для типа продукта в модальном окне
-                document.getElementById('typename').value = typeName;
-            }
+
             if (event.target.closest('.category-delete')) {
                 Swal.fire({
                     title: "Вы уверены?",
@@ -918,6 +961,12 @@ async function fetchProductTypes() {
                     }
                 });
             }
+            if(event.target.closest('.category-btn')){
+                const button= event.target.closest('.category-btn');
+                const typename=button.getAttribute('data-category-id');
+                document.getElementById('typename').value = typename;
+                console.log(typename);
+            };
             if(event.target.closest('.change-button')){
                 const button= event.target.closest('.change-button');
                 
@@ -934,25 +983,29 @@ async function fetchProductTypes() {
                 document.getElementById('time').value = time;
                 
                 // Получаем id что бы пониманать что за товар
-                const typename=button.closest('table').querySelector('.category-btn').getAttribute('data-category-id');
+                const typename=button.getAttribute('data-type');
                 const itemid=button.getAttribute('data-delete');
                 // проверка на изменение
                 console.log(typename);
                 document.getElementById('ischange').value=`${itemid}`;
                 document.getElementById('typename').value = typename;
             }
+
         });
         let Modal = new bootstrap.Modal(document.getElementById('Modalwindow'), {
             keyboard: false
         });
     //    обнуление входных в модальном окете
-        document.querySelector('.category-btn').addEventListener('click', function(e){
+        document.querySelectorAll('.category-btn').forEach(it=>{
+            it.addEventListener('click', function(e){
                 document.getElementById('name').value = '';
                 document.getElementById('price').value = '';
                 document.getElementById('description').value = '';
                 document.getElementById('time').value = '';
-                document.getElementById('ischange').value=``;
+                document.getElementById('ischange').value='';
+ 
         });
+        })
         
         // Пагинация в меню
         document.querySelectorAll('.pagging').forEach(el => {
@@ -1035,6 +1088,7 @@ document.querySelector('button.confirm').addEventListener('click', async functio
                 price:price,
                 cookingTime:cookingTime
             };
+            console.log(img);
             const formData=new FormData(); 
             formData.append("id",changeproduct.id);
             formData.append("name",changeproduct.name);
@@ -1042,6 +1096,7 @@ document.querySelector('button.confirm').addEventListener('click', async functio
             formData.append("typeId",changeproduct.typeId);
             formData.append("price",changeproduct.price);
             formData.append("cookingTime",changeproduct.cookingTime);
+            formData.append('file', img);
             fetch('http://46.229.212.34:9091/api/v1/products', {
                 method: 'PATCH',
                 headers: {
@@ -1166,14 +1221,66 @@ document.querySelector('button.confirm').addEventListener('click', async functio
     }
 });
 }
+async function Historyset(id) {
+    const response = await fetch(`http://46.229.212.34:9091/api/v1/productHistory/${id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+    });
+
+    if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+
+    const data = await response.json();
+    console.log(data);
+    let tbody = document.querySelector(".ordorlist");
+  tbody.innerHTML = ''; // Очищаем таблицу перед вставкой новых данных
   
+  // Проверяем, что orderList не пустой
+    let j=0
+    for (let i of data) {
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td style="text-align: center;">${j + 1}</td>
+          <td style="text-align: center;">${i.name}</td>
+          <td style="text-align: center;">${i.price}</td>
+          <td style="text-align: center;">${i.description}</td>
+          <td style="text-align: center;">${i.cookingTime}</td>
+          <td style="text-align: center;">${formDate(i.changedAt)}</td>
+          <td style="text-align: center;"><button class="delete recover btn btn-success" data-id='${i.id}' data-history="${i.productHistoryId}"><i class='bx bx-arrow-from-top' ></i></button></td>
+        </tr>
+        
+      `);
+      j+=1;
+    }
+    j=0
+    document.querySelectorAll('.recover').forEach(item => {
+        item.addEventListener('click', async function() {
+            const itemId = this.getAttribute('data-id');
+            const histId=this.getAttribute('data-history');
+            const response = await fetch(`http://46.229.212.34:9091/api/v1/productHistory/${itemId}/${histId}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            console.log(response);
+            if(response.ok){
+                fetchProductTypes();
+                let modalElement = document.getElementById('HistoryModal');
+                let Modal = bootstrap.Modal.getInstance(modalElement); // Получаем уже существующий экземпляр
+                Modal.hide();
+            }
+        });
+    });
+}
 async function Addtable(categoryIds){
     try{
         for(const id of categoryIds){
             const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`);
             const data = await response.json();
             const tableone=document.querySelector(`.item-${id}`);
-            
+            const typename=id;
             const tbody=tableone.querySelector(`.catlist`);
             tbody.innerHTML = '';
             let i=0;
@@ -1189,9 +1296,13 @@ async function Addtable(categoryIds){
                           <td style="text-align: center;">${item.cookingTime}</td>
                           <td style="text-align: center;">Изобржение</td>
                           <td style="text-align: center;" class="allbuttons">
-                          <button class="delete change-button btn btn-success" data-delete="${item.id}" data-bs-toggle="modal" data-bs-target="#Modalwindow"><i class='bx bxs-edit-alt'></i></button>
+                          <button class="delete change-button btn btn-success" data-delete="${item.id}" data-type='${typename}' data-bs-toggle="modal" data-bs-target="#Modalwindow"><i class='bx bxs-edit-alt'></i></button>
                           <button class="delete delete-item btn btn-danger" data-delete="${item.id}"><i class='bx bx-trash-alt'></i></button>
                           </td>
+                          <td class='otherbuttons'>
+                            <button class="delete changelang btn btn-success" data-id="${item.id}"><i class='bx bx-globe'></i> </button>
+                            <button class="delete history btn btn-success" data-id="${item.id}"data-bs-toggle="modal" data-bs-target="#HistoryModal"><i class='bx bx-history'></i></button>
+                        </td>
                           </tr>
                       `);
                       i+=1;

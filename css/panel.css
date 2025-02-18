@@ -43,11 +43,7 @@ textarea{
 .category-items tr{
     width: auto;
 }
-.allbuttons{
-    display: flex;
-    height: 61px;
-    width: 85%;
-}
+
 .category-items th, .category-items td {
     padding: 6px;
     max-height: 40px;
@@ -152,6 +148,41 @@ textarea{
     cursor: pointer;
     padding-left: 20px;
 }
+.otherbuttons{
+    justify-content: center;
+}
+.allbuttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 61px;
+    width: 80%;
+}
+.otherbuttons{
+    display: flex;
+    height: 61px;
+    width: 80%;
+}
+.modal-content{
+    width: 700px;
+}
+
+.ordorlist td{
+    font-size: clamp(0.9rem, 1.2vw, 1.8rem);
+}
+.allbuttons button, .otherbuttons button{
+    padding: 1vw !important;
+    width: 2.2vw;
+    height: 2.2vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    margin: 0 3px !important;
+}
+.allbuttons .delete i,.otherbuttons .delete i{
+    font-size: clamp(0.4rem, 1.4vw, 1.3rem) !important; 
+}
 @media (max-width:980px) {
     .one-category{
         background-color: #ffffff;
@@ -176,14 +207,15 @@ textarea{
         width: auto;
         max-height: 40px;
     }
-    .allbuttons{
+    .allbuttons, .otherbuttons{
         display: flex;
         width: 100%;
         margin: 0;
         max-height: 40px;
         max-width: 90px !important; 
     }
-    .allbuttons button{
+    
+    .allbuttons button, .otherbuttons button{
         padding: 1vw !important;
         width: 3.4vw;
         height: 3.4vw;
@@ -192,11 +224,11 @@ textarea{
         justify-content: center;
         margin: 0 3px !important;
     }
-    .allbuttons button:first-child{
+    .allbuttons button:first-child, .otherbuttons button:first-child{
         margin-left: 10px !important;
     }
-    .allbuttons i{
-        font-size: clamp(0.4rem, 2.6vw, 1.3rem) !important; 
+    .allbuttons .delete i,.otherbuttons .delete i{
+        font-size: clamp(0.4rem, 2.4vw, 1.3rem) !important; 
     }
     .category-items th, .category-items td {
         padding: 3px;

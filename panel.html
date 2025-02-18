@@ -15,6 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Comfortaa:wght@300..700&family=Dancing+Script:wght@400..700&family=Kurale&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
       rel="stylesheet"
     />
+    
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/panel.css" />
     <title>PARKTOWN COFFEE</title>
@@ -263,7 +264,6 @@
                 <input type="text" class="form-control" id="category-name" />
                 <label for="category-name">Название</label>
               </div>
-              <input type="hidden" id="typename" />
               <input type="hidden" id="ischange" />
             </div>
             <div class="modal-footer">
@@ -286,6 +286,68 @@
           </div>
         </div>
       </div>
+      <div
+      class="modal fade orderList"
+      id="HistoryModal"
+      tabindex="-1"
+      aria-labelledby="HistoryModal"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1>История</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            
+            <div class="order">
+              <table class="ord table">
+                <thead>
+                  <tr>
+                    <th style="text-align: center;">№</th>
+                    <th style="text-align: center;">Название</th>
+                    <th style="text-align: center;">Цена</th>
+                    <th style="text-align: center;">Описание</th>
+                    <th style="text-align: center;">Время</th>
+                    <th style="text-align: center;">Изменения</th>
+                    <th></th>
+                    
+                  </tr>
+                </thead>
+                <tbody class="ordorlist">
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              style="font-size: 1.2rem"
+            >
+              Отмена
+            </button>
+            <button
+              type="button"
+              class="btn btn-success historyset"
+              style="font-size: 1.4rem"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              Подтвердить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
       <footer>
         <div class="container-fluid foot">
           <div class="row text-center">
