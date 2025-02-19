@@ -1030,7 +1030,7 @@ async function Hachchange(){
         for (let loadingScreen of loadingScreens) {
           loadingScreen.classList.add('close');
     }
-
+    document.querySelector('.loadcont').style.display='flex';
     
     await fetchProductTypes();
     loadscreen();
@@ -1895,8 +1895,15 @@ function loadscreen(){
 
 window.addEventListener('hashchange', function(){
   const hash = extractHash(window.location.hash);
+  console.log(hash);
   if(hash!=='#Contacts'){
     Hachchange();
   }
 });
-window.addEventListener('load', Hachchange);
+window.addEventListener('load', function(){
+  const hash = extractHash(window.location.hash);
+  if(!hash){
+    console.log(3242);
+  }
+  Hachchange();
+});
