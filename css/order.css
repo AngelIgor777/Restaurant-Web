@@ -17,6 +17,7 @@ body{
     color: #fff;
     justify-content: center;
     gap: 180px;
+    margin-bottom:400px;
 }
 .app{
     display: flex;

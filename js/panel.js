@@ -1435,12 +1435,6 @@ async function getReg(uuid1) {
       }
     }
   }
-function Language(){
-    document.getElementById("lang").addEventListener("change", function(event) {
-      console.log("Выбрано:", event.target.value);
-      localStorage.setItem('lang', JSON.stringify(event.target.value));
-  });
-  }
 
 
 document.querySelector('.cupon').addEventListener('click', Cupon);
@@ -1450,5 +1444,4 @@ document.querySelector('.cattaloge').addEventListener('click', Closepagging);
 // Запуск
 Closepagging();
 Registr();
-Language();
 

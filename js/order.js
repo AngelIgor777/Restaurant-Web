@@ -6,10 +6,6 @@ const renderHeader = () => `
           <div class="container-fluid">
             <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
-            <select class="form-select" id='lang'>
-              <option value="rus"  selected>rus</option>
-              <option value="rum">rum</option>
-            </select>
               <div class="dropdown  singin">
                 
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
@@ -47,10 +43,6 @@ const renderHeader = () => `
             </div>
   
             <span class="buttonsing-2 flex-row">
-            <select class="form-select" id='lang'>
-              <option value="rus"  selected>rus</option>
-              <option value="rum">rum</option>
-            </select>
               <div class="dropdown  singin">
                 
                  <ul class="dropdown-menu text-small shadow dropdown-menu-start">
@@ -418,19 +410,13 @@ async function Registr() {
     }
   }
 }
-function Language(){
-  document.getElementById("lang").addEventListener("change", function(event) {
-    console.log("Выбрано:", event.target.value);
-    localStorage.setItem('lang', JSON.stringify(event.target.value));
-});
-}
+
 
 
 // Автоматическое подключение при загрузке страницы
 window.onload = async function() {
       document.querySelector('.app').innerHTML=renderHeader()+renderBody()+renderFooter();
     Registr(); //Изменение лого
-    Language();
     await connectWebSocket();  // Подключение к WebSocket
     await loadAllOrders();  // Загрузка всех заказов
 };

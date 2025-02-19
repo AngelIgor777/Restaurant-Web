@@ -114,6 +114,10 @@ textarea{
     justify-content: center;
     gap: 50px;
   }
+  .head a{
+    text-decoration: none;
+    color: #fff;
+  }
 /* Время */
 .time{
     display: flex;
@@ -184,6 +188,7 @@ textarea{
     border: none;
     margin: 0 3px !important;
 }
+
 .allbuttons .delete i,.otherbuttons .delete i{
     font-size: clamp(0.4rem, 1.4vw, 1.3rem) !important; 
 }

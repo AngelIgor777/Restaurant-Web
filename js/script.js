@@ -1,3 +1,11 @@
+// Получение токена
+try{
+  const token=JSON.parse(localStorage.getItem('accessToken'));
+}
+catch (error) {
+  console.error("Ошибка запроса:", error);
+}
+
 
 
 // Закрытие меню
@@ -9,7 +17,7 @@ const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
           <div class="container-fluid">
-            <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
+            <h1 class="logo"><a style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
             <select class="form-select" id='lang'>
               <option value="ru">ru</option>
@@ -1031,8 +1039,12 @@ async function Hachchange(){
     ExitButton();
     revealCards();
     Language();
-  console.log("Всё запущено");
-  loadscreen();
+    loadscreen();
+    if(token){
+      document.querySelector('.logo').addEventListener('click', function(){
+        window.location.href = 'http://127.0.0.1:9092/Coffe/panel.html';
+      });
+    }
   let order=JSON.parse(localStorage.getItem('order'));
   const buttosend=document.querySelector("p.colvo");
   buttosend.innerHTML=order.length;
