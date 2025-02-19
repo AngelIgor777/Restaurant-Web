@@ -886,6 +886,7 @@ function initializeIsotope() {
   var itemsPerPage = 10;
   var currentPage = 1;
 
+  shuffleElements($container.find('.item'));
   // Инициализация Isotope
   $container.isotope({
     filter: '*',
@@ -946,9 +947,11 @@ function initializeIsotope() {
           var index = $(this).index(selector);
           return index >= start && index < end;
         }
+        
+
       }
     });
-  
+    
     // Обновляем активную кнопку пагинации
     $('.pagul .pagination-button').removeClass('active');
     $(`.pagul .pagination-button[data-page="${page}"]`).addClass('active');
@@ -966,14 +969,22 @@ function initializeIsotope() {
     var selector = $(this).attr('data-filter') || '*';  
     // Пересчитываем элементы и страницы
     var allItems = selector === '*' ? $container.find('.item') : $container.find(selector);
+
+    if (selector === '*') {
+      shuffleElements(allItems); // Перемешивание элементов
+    }
+
     var totalPages = Math.ceil(allItems.length / itemsPerPage);
-  
     // Инициализируем пагинацию и отображаем первую страницу
     initializePagination(totalPages);
     showPage(1); // Переходим на первую страницу
     return false; // Предотвращаем стандартное поведение ссылки
   });
-
+// Функция перемешивания элементов
+function shuffleElements($elements) {
+  var $parent = $elements.parent();
+  $elements.sort(function () { return 0.5 - Math.random(); }).detach().appendTo($parent);
+}
   // Инициализация при загрузке
   var totalPages = Math.ceil($container.find('.item').length / itemsPerPage);
   initializePagination(totalPages);
@@ -1026,13 +1037,14 @@ async function Hachchange(){
 
     
     await fetchProductTypes();
+    loadscreen();
     // запуск всех нужных функ. после загрузки самого сайта
     Registr();
     Sendchange();
     ExitButton();
     revealCards();
     Language();
-    loadscreen();
+    
     try{
       const token=JSON.parse(localStorage.getItem('accessToken'));
       if(token){
@@ -1042,7 +1054,6 @@ async function Hachchange(){
     }
     }
     catch (error) {
-      console.log(token);
       console.log('')
     }
   let order=JSON.parse(localStorage.getItem('order'));
