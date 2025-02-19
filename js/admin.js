@@ -2,7 +2,7 @@ const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
           <div class="container-fluid">
-            <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
+            <h1 class="logo"><a href="index.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
               <div class="dropdown  singin">
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">

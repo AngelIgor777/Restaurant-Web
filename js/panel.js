@@ -1306,8 +1306,8 @@ async function Addtable(categoryIds){
                           <button class="delete delete-item btn btn-danger" data-delete="${item.id}"><i class='bx bx-trash-alt'></i></button>
                           </td>
                           <td class='otherbuttons'>
-                            <button class="delete changelang btn btn-success" data-id="${item.id}"><i class='bx bx-globe'></i> </button>
-                            <button class="delete history btn btn-success" data-id="${item.id}"data-bs-toggle="modal" data-bs-target="#HistoryModal"><i class='bx bx-history'></i></button>
+                            <button class="delete changelang btn btn-primary" data-id="${item.id}"><i class='bx bx-globe'></i> </button>
+                            <button class="delete history btn btn-secondary" data-id="${item.id}"data-bs-toggle="modal" data-bs-target="#HistoryModal"><i class='bx bx-history'></i></button>
                         </td>
                           </tr>
                       `);

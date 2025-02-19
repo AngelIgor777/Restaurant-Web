@@ -1,10 +1,3 @@
-// Получение токена
-try{
-  const token=JSON.parse(localStorage.getItem('accessToken'));
-}
-catch (error) {
-  console.log('')
-}
 
 
 
@@ -890,7 +883,7 @@ function updateModal(order) {
 
 function initializeIsotope() {
   var $container = $('.menu-container');
-  var itemsPerPage = 20;
+  var itemsPerPage = 10;
   var currentPage = 1;
 
   // Инициализация Isotope
@@ -1041,15 +1034,15 @@ async function Hachchange(){
     Language();
     loadscreen();
     try{
+      const token=JSON.parse(localStorage.getItem('accessToken'));
       if(token){
         document.querySelector('.logo').addEventListener('click', function(){
           window.location.href = 'http://127.0.0.1:9092/Coffe/panel.html';
         });
     }
-    
-    
     }
     catch (error) {
+      console.log(token);
       console.log('')
     }
   let order=JSON.parse(localStorage.getItem('order'));
