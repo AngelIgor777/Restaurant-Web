@@ -3,7 +3,7 @@ try{
   const token=JSON.parse(localStorage.getItem('accessToken'));
 }
 catch (error) {
-  console.error("Ошибка запроса:", error);
+  console.log('')
 }
 
 
@@ -1040,10 +1040,17 @@ async function Hachchange(){
     revealCards();
     Language();
     loadscreen();
-    if(token){
-      document.querySelector('.logo').addEventListener('click', function(){
-        window.location.href = 'http://127.0.0.1:9092/Coffe/panel.html';
-      });
+    try{
+      if(token){
+        document.querySelector('.logo').addEventListener('click', function(){
+          window.location.href = 'http://127.0.0.1:9092/Coffe/panel.html';
+        });
+    }
+    
+    
+    }
+    catch (error) {
+      console.log('')
     }
   let order=JSON.parse(localStorage.getItem('order'));
   const buttosend=document.querySelector("p.colvo");
