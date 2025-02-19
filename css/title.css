@@ -171,6 +171,26 @@ body{
     flex-direction: column;
   }
 }
+/* уведомления */
+.info-box {
+  position: fixed;
+  display: none;
+  top: 100px;
+  right: 10px;
+  background-color: rgb(210, 209, 209);
+  color: rgb(0, 0, 0);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+.info-box {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+.hidden {
+  opacity: 0;
+}
 /* Одиночный */
 
 .item-img img {

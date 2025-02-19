@@ -99,6 +99,9 @@ const renderFooter = () => `
         </div>
       </footer>`;
 const renderBody =()=>`
+<div class="info-box">
+  <p>Ожидайте...</p>
+</div>
 <div class="admininput">
     <h1>Вход</h1>
         <div class="form-floating mb-3">
@@ -118,17 +121,27 @@ async function Chatnum(){
     document.querySelector('.chatbut').addEventListener('click', async function(){
         let input=document.querySelector('#chatnum').value;
         console.log(input)
-        if(document.querySelector('.pot').style.display==='none'){
+        if(input){
+          if(document.querySelector('.pot').style.display==='none'){
             fetch(`http://46.229.212.34:9091/api/v1/otp/generate?chatId=${input}`,{
                 method:'POST'
               }).then(result=>{
-                document.querySelector('.pot').style.display='block'
+                if(result.ok){
+                  document.querySelector(".info-box").style.display = "block";
+                  document.querySelector('.pot').style.display='block';
+                  setTimeout(() => {
+                    document.querySelector(".info-box").classList.add("hidden");
+                  }, 3000);
+                }
+                
               })
               .then(data=>{
+                
                 console.log(data);
               })
               .catch(error=>{
                 console.log(error);
+                document.querySelector('.pot').style.display='none';
               });
         }
         else{
@@ -147,6 +160,8 @@ async function Chatnum(){
                 console.log(error);
               });
         }
+        }
+        
         
     });
 
