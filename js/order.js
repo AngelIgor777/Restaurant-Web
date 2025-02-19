@@ -37,8 +37,7 @@ const renderHeader = () => `
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item active"><a href="index.html#menu">Меню</a></li>
                 <li class="nav-item"><a href="index.html#about">О нас</a></li>
-                <li class="nav-item"><a href="#">Доставка</a></li>
-                <li class="nav-item"><a href="#">Контакты</a></li>
+                <li class="nav-item"><a href="index.html#Contacts">Контакты</a></li>
               </ul>
             </div>
   
@@ -189,6 +188,7 @@ function displayOrderBB(data) {
       <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
       <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'} lei</p>
       <p>${formatAddress(data.addressResponseDTO)}</p>
+      <p>${formatphoen(data.phoneNumber)}</p>
       <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
       <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
       <p class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></p>
@@ -233,6 +233,7 @@ function displayOrder(data) {
         <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
         <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'} lei</p>
         <p>${formatAddress(data.addressResponseDTO)}</p>
+        <p>${formatphoen(data.phoneNumber)}</p>
         <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
         <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
         <p class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></p>
@@ -318,6 +319,14 @@ function formatAddress(address) {
         ${address.street ?? 'Улица не указана'},
         ${address.homeNumber ?? 'Номер дома не указан'}${address.apartmentNumber ? ', Кв. ' + address.apartmentNumber : ''}`
     ;
+}
+
+function formatphoen(tel) {
+  if (!tel) {
+      return '';
+  }
+  return `Номер телефона: ${tel}`
+  ;
 }
 
 function formatTable(table) {

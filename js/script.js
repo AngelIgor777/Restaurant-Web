@@ -46,7 +46,6 @@ const renderHeader = () => `
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item active"><a href="#menu">Меню</a></li>
                 <li class="nav-item"><a href="#about">О нас</a></li>
-                <li class="nav-item"><a href="#">Доставка</a></li>
                 <li class="nav-item"><a href="#Contacts">Контакты</a></li>
               </ul>
             </div>
@@ -256,7 +255,6 @@ const renderTitle = () =>`
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   <li class="nav-item active"><a href="#menu">Меню</a></li>
                   <li class="nav-item"><a href="#about">О нас</a></li>
-                  <li class="nav-item"><a href="#">Доставка</a></li>
                   <li class="nav-item"><a href="#Contacts">Контакты</a></li>
                 </ul>
               </div>
@@ -305,8 +303,8 @@ const renderTitle = () =>`
                     <label for="contact-mail">Электронная почта</label>
                 </div>
                 <div class="form-floating mb-3 col-6">
-                    <input type="text" class="form-control" maxlength="9" id="contact-number" placeholder="Номер телефона" required/>
-                    <label for="contact-number">Номер телефона</label>
+                    <input type="text" class="form-control" maxlength="9" id="phone" data-mdb-input-mask-init data-mdb-input-mask="+48 999-999-999" placeholder="Номер телефона" required/>
+                    <label for="phone">Номер телефона</label>
                 </div>
                 <div class="form-floating mb-3 col-6">
                     <input type="text" class="form-control" id="contact-event" placeholder="Мероприятие" required/>
@@ -417,7 +415,7 @@ async function Sendmes() {
     console.log("Форма не отправлена, но обработана JavaScript");
     let name = document.getElementById("contact-name").value.trim();
     let email = document.getElementById("contact-mail").value.trim();
-    let number = document.getElementById("contact-number").value.trim();
+    let number = document.getElementById("phone").value.trim();
     let eventName = document.getElementById("contact-event").value.trim();
     let message = document.getElementById("contact-message").value.trim();
     fetch(`http://46.229.212.34:9091/api/v1/connection?name=${name}&email=${email}&event=${eventName}&phoneNumber=${number}&message=${message}`,{
@@ -546,7 +544,6 @@ async function WeekTop() {
               </div>
             </div>
             `,
-            background:'rgb(126, 126, 126)',
             showCancelButton: true,
             confirmButtonColor: "#2F9262",
             cancelButtonColor: "#3f3f3f",
@@ -605,7 +602,6 @@ async function WeekTop() {
               </div>
             </div>
             `,
-            background:'rgb(126, 126, 126)',
             showCancelButton: true,
             confirmButtonColor: "#2F9262",
             cancelButtonColor: "#3f3f3f",
@@ -1267,7 +1263,7 @@ async function Hachchange(){
               <label for="home">Дом</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="number" class="form-control" id="tel" placeholder="Номер телефона" />
+                <input type="text" class="form-control" maxlength="9" id="tel" placeholder="Номер телефона" />
                 <label for="tel">Номер телефона</label>
               </div>
           </div>
@@ -1302,7 +1298,6 @@ async function Hachchange(){
             </label>
           </div>
         `,
-        background:rgba(0, 0, 0, 0.6),
         showCancelButton: true,
         confirmButtonColor: "#2F9262",
         cancelButtonColor: "#3f3f3f",
@@ -1422,6 +1417,7 @@ async function Hachchange(){
           existDiscountCodes:(result.value.coupon || result.value.couponIt) ? true : false,
           productDiscountCode:result.value.couponIt || "",
           globalDiscountCode:result.value.coupon || "",
+          phoneNumber:result.value.tel,
           isRegisterUser:restered,
           userId:user,
           addressRequestDTO:adres
@@ -1434,7 +1430,7 @@ async function Hachchange(){
         },
         body: JSON.stringify(book),
         })
-        .then(response => response.json())
+        .then(response => response.text())
         .then(data => {
             // Обрабатываем успешный ответ
             Swal.fire({
@@ -1504,7 +1500,7 @@ async function Hachchange(){
       },
       body: JSON.stringify(book),
       })
-      .then(response => response.json())
+      .then(response => response.text())
       .then(data => {
           // Обрабатываем успешный ответ
           Swal.fire({

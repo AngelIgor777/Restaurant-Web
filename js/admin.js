@@ -34,7 +34,7 @@ const renderHeader = () => `
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item active"><a href="index.html#menu">Меню</a></li>
                 <li class="nav-item"><a href="index.html#about">О нас</a></li>
-                <li class="nav-item"><a href="index.html#about">Контакты</a></li>
+                <li class="nav-item"><a href="index.html#Contacts">Контакты</a></li>
               </ul>
             </div>
   

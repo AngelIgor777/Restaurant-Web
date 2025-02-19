@@ -1,6 +1,6 @@
 try{
     const token=JSON.parse(localStorage.getItem('accessToken'));
-    if(token){
+    if(!token){
         window.location.href = 'http://127.0.0.1:9092/Coffe/index.html';
   }
   }
