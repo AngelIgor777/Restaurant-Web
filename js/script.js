@@ -303,8 +303,8 @@ const renderTitle = () =>`
                     <label for="contact-mail">Электронная почта</label>
                 </div>
                 <div class="form-floating mb-3 col-6">
-                    <input type="text" class="form-control" maxlength="9" id="phone" data-mdb-input-mask-init data-mdb-input-mask="+48 999-999-999" placeholder="Номер телефона" required/>
-                    <label for="phone">Номер телефона</label>
+                    <input type="text" class="form-control" maxlength="9" id="contact-number" placeholder="Номер телефона" required/>
+                    <label for="contact-number">Номер телефона</label>
                 </div>
                 <div class="form-floating mb-3 col-6">
                     <input type="text" class="form-control" id="contact-event" placeholder="Мероприятие" required/>
@@ -415,7 +415,7 @@ async function Sendmes() {
     console.log("Форма не отправлена, но обработана JavaScript");
     let name = document.getElementById("contact-name").value.trim();
     let email = document.getElementById("contact-mail").value.trim();
-    let number = document.getElementById("phone").value.trim();
+    let number = document.getElementById("contact-number").value.trim();
     let eventName = document.getElementById("contact-event").value.trim();
     let message = document.getElementById("contact-message").value.trim();
     fetch(`http://46.229.212.34:9091/api/v1/connection?name=${name}&email=${email}&event=${eventName}&phoneNumber=${number}&message=${message}`,{
