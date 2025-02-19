@@ -140,7 +140,7 @@ async function Chatnum(){
               .then(data=>{
                 console.log(data);
                 localStorage.setItem('accessToken', JSON.stringify(data.accessToken));
-                window.location.href = "http://127.0.0.1:9092/Coffe/panel.html";
+                window.location.href = "panel.html";
 
               })
               .catch(error=>{

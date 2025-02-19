@@ -175,13 +175,13 @@ textarea{
     font-size: clamp(0.9rem, 1.2vw, 1.8rem);
 }
 .allbuttons button, .otherbuttons button{
-    padding: 1vw !important;
+    padding: 10px !important;
     width: 2.2vw;
     height: 2.2vw;
     min-width: 15px;
     min-height: 15px;
-    max-width: 32px;
-    max-height: 32px;
+    max-width: 32px !important;
+    max-height: 32px !important;
     display: flex;
     align-items: center;
     justify-content: center;
