@@ -100,7 +100,7 @@ const renderFooter = () => `
       </footer>`;
 const renderBody =()=>`
 <div class="info-box">
-  <p>Ожидайте...</p>
+  <p>Ожидайте сообщения...</p>
 </div>
 <div class="admininput">
     <h1>Вход</h1>
