@@ -1,3 +1,5 @@
+const token=JSON.parse(localStorage.getItem('accessToken')); // Получаем токен (замени на свой способ хранения)
+console.log(token);
 const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
@@ -113,33 +115,65 @@ const renderFooter = () => `
       </footer>`;
 let stompClient = null;
 function connectWebSocket() {
-          const socket = new SockJS('http://46.229.212.34:9091/ws-orders'); // Подключение к WebSocket
-          stompClient = Stomp.over(socket); // Инициализация STOMP клиента
-  
-          stompClient.connect({}, function (frame) {
-              // Подписка на канал
-              stompClient.subscribe('/topic/orders', function (response) {
-                  const orderData = JSON.parse(response.body); // Парсим ответ
-                  displayOrder(orderData);
-              });
-          }, function (error) {
-              displayMessage("Ошибка подключения: " + error);
+  if (!token) {
+      displayMessage("Ошибка: JWT-токен отсутствует");
+      return;
+  }
+
+  const socket = new SockJS('http://46.229.212.34:9091/ws-orders'); // Подключение к WebSocket
+  stompClient = Stomp.over(socket); // Инициализация STOMP клиента
+
+  stompClient.connect(
+      { Authorization: "Bearer " + token }, // Передача токена в заголовке
+      function (frame) {
+          console.log("Connected to server:", frame); // Выведем frame, чтобы понять, что возвращает сервер
+          // Подписка на канал
+          stompClient.subscribe('/topic/orders', function (response) {
+              const orderData = JSON.parse(response.body); // Парсим ответ
+              displayOrderBB(orderData);
           });
+      },
+      function (error) {
+          console.error("Ошибка подключения:", error); // Выводим ошибку подключения
+          displayMessage("Ошибка подключения: " + error);
+      }
+  );
 }
+
+
 
 // Функция для отображения всех заказов
 function loadAllOrders() {
-    fetch("http://46.229.212.34:9091/api/v1/orders")
-        .then(response => response.json())
-        .then(orders => {
-            orders.reverse().forEach(orderData => {
-                displayOrder(orderData);
-            });
-        })
-        .catch(error => {
-            displayMessage("Ошибка загрузки заказов: " + error);
-        });
+
+  if (!token) {
+      displayMessage("Ошибка: JWT-токен отсутствует");
+      return;
+  }
+  console.log(token);
+  fetch("http://46.229.212.34:9091/api/v1/orders", {
+      method: "GET",
+      headers: {
+          "Authorization": "Bearer " + token,
+      }
+  })
+  .then(response => {
+
+      if (!response.ok) {
+          throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+      }
+      return response.json();
+  })
+  .then(orders => {
+      orders.reverse().forEach(orderData => {
+          displayOrder(orderData);
+      });
+      confirmbut();
+  })
+  .catch(error => {
+      displayMessage("Ошибка загрузки заказов: " + error);
+  });
 }
+
 
 function displayMessage(message) {
           const messageDiv = document.getElementById("messages");
@@ -148,22 +182,66 @@ function displayMessage(message) {
           messageElement.textContent = message;
           messageDiv.appendChild(messageElement);
 }
+function displayOrderBB(data) {
+  const messageDiv = document.getElementById("messages");
+  const messageElement = document.createElement("div");
+  messageElement.className = "order";
+
+  const order = data.orderResponseDTO;
+
+  // Displaying basic order details
+  messageElement.innerHTML = `
+      <h2>Заказ ID: ${order.id ?? 'Не указано'}</h2>
+      <details>
+      <summary>
+      <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
+      <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'} lei</p>
+      <p>${formatAddress(data.addressResponseDTO)}</p>
+      <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
+      <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
+      <p class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></p>
+      </summary>
+      <p><span>Общее время готовки:</span> ${formatTime(order.totalCookingTime)}</p>
+      <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
+      <p><span>Обновлён:</span> ${order.updatedAt ?? 'Не указано'}</p>
+      <p><span>В ресторане:</span> ${data.orderInRestaurant ? 'Да' : 'Нет'}</p>
+      <p><span>Коды скидки:</span> ${data.existDiscountCodes ? 'Есть' : 'Нет'}</p>
+      <p><span>Код продукта скидки:</span> ${data.productDiscountCode ?? 'Нет'}</p>
+      <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
+      </details>
+      <div class="products">
+          <strong>Продукты:</strong>
+          ${formatProducts(order.products)}
+      </div>
+      <div class="buttonsall">
+        <button class="confirm">Подтвердить</button>
+        </div>
+      `
+;
+messageDiv.prepend(messageElement); // Добавить в начало
+
+  // Автопрокрутка вниз
+  messageDiv.scrollTop = messageDiv.scrollHeight;
+}
 
 function displayOrder(data) {
     const messageDiv = document.getElementById("messages");
     const messageElement = document.createElement("div");
-    messageElement.className = "order";
+    
 
     const order = data.orderResponseDTO;
 
+    // Добавление клаасов
+    messageElement.className = `order it-${order.id}`;
     // Displaying basic order details
     messageElement.innerHTML = `
         <h2>Заказ ID: ${order.id ?? 'Не указано'}</h2>
         <details>
         <summary>
-        <p><span>Статус:</span> ${order.status ?? 'Не указано'}</p>
         <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
-        <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'}</p>
+        <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'} lei</p>
+        <p>${formatAddress(data.addressResponseDTO)}</p>
+        <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
         <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
         <p class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></p>
         </summary>
@@ -174,18 +252,49 @@ function displayOrder(data) {
         <p><span>Коды скидки:</span> ${data.existDiscountCodes ? 'Есть' : 'Нет'}</p>
         <p><span>Код продукта скидки:</span> ${data.productDiscountCode ?? 'Нет'}</p>
         <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
-        <p>${formatAddress(data.addressResponseDTO)}</p>
-        <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
         </details>
         <div class="products">
             <strong>Продукты:</strong>
             ${formatProducts(order.products)}
-        </div>`
+        </div>
+        <div class="buttonsall">
+        <button class="confirm" data-id="${order.id}">Подтвердить</button>
+        </div>
+        `
 ;
     messageDiv.appendChild(messageElement);
-
+    
     // Автопрокрутка вниз
     messageDiv.scrollTop = messageDiv.scrollHeight;
+}
+
+function confirmbut() {
+  console.log(document.querySelectorAll('.confirm'));
+  document.querySelectorAll('.confirm').forEach(el => {
+    el.addEventListener('click', function() {
+      const id = el.getAttribute('data-id');
+      if (id) {
+        console.log(`Подтвержден заказ с ID: ${id}`);
+         el.innerHTML = "<i class='bx bx-check'></i>";
+        setTimeout(() => {
+          // Изменяем текст кнопки после 2 секунд
+          el.innerHTML = "Подтверждено"; 
+          fetch(`http://46.229.212.34:9091/api/v1/orders/confirm/${id}`, {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token,
+            }
+          });
+        }, 1000);
+        setTimeout(() => {
+          // Изменяем текст кнопки после 2 секунд
+          document.querySelector(`.it-${id}`).classList.add('confirmed')
+        }, 5000);
+      } else {
+        console.log("data-id не найден");
+      }
+    });
+  });
 }
 
 function formatProducts(products) {
@@ -198,13 +307,11 @@ function formatProducts(products) {
         <summary>
             <p class='prname'><span>${id+1}) Название:</span> <b>${product.name ?? 'Не указано'}</b></p>
             <p><span>Цена:</span> <b>${product.price ?? 'Не указано'}</b></p>
-            <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b><span class='and'style='text-align: right; opacity:0.7; margin-left:60%;'>...</span>
-            <span class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></span></p>
+            <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b>
+            </p>
             
         </summary>
-            <p><span>Тип:</span> <b>${product.typeName ?? 'Не указано'}</b></p>
-            <p><span>Описание:</span> <b>${product.description ?? 'Не указано'}</b></p>
-            <p><span>Время готовки:</span> <b>${product.cookingTime ?? 'Не указано'}</b></p>
+           
             </details>
         </div>`
     ).join('');
@@ -320,11 +427,10 @@ function Language(){
 
 
 // Автоматическое подключение при загрузке страницы
-window.onload = function() {
+window.onload = async function() {
       document.querySelector('.app').innerHTML=renderHeader()+renderBody()+renderFooter();
-    loadAllOrders();  // Загрузка всех заказов
     Registr(); //Изменение лого
     Language();
-    connectWebSocket();  // Подключение к WebSocket
-  
+    await connectWebSocket();  // Подключение к WebSocket
+    await loadAllOrders();  // Загрузка всех заказов
 };

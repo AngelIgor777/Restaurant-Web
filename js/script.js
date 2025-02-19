@@ -168,14 +168,9 @@ const renderMenu = () =>`
           aria-labelledby="Modalwindow"
         >
           <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
+            <div class="modal-content menuorder">
               <div class="modal-header">
                 <h1>Ваш заказ</h1>
-                <h5 class='history'>
-                    <a type="button" data-bs-toggle="" data-bs-target="">
-                      История
-                    </a>
-                </h5>
                 <button
                   type="button"
                   class="btn-close"
@@ -212,7 +207,7 @@ const renderMenu = () =>`
                 </div>
                 <button
                   type="button"
-                  class="btn btn-secondary"
+                  class="btn decline"
                   data-bs-dismiss="modal"
                   style="font-size: 1.2rem"
                 >
@@ -286,56 +281,65 @@ const renderTitle = () =>`
       <div class="aboutourgroup container-fluid">
         <div class="commantname">Наша Команда</div>
         <div class="command-imgs">
-        <div class="command-img">
-          <img src="./img/Наша-команда.jpg" alt="Наша Команда">
-        </div>
-        <div class="command-img">
-          <img src="./img/команда.jpg" alt="Наша Команда">
-        </div>
+            <div class="command-img">
+              <img src="./img/menedjer.png" alt="Наша Команда">
+            </div>
+             <div class="command-img">
+              <img src="./img/Komanda.jpg" alt="Наша Команда">
+            </div>
         </div>
       </div>
       </section>
        <section class="contact-us">
-      <div class="inputs">
-      <h3 class="contactTitle" id='Contacts'>Свяжитесь с нами</h3>
-      <div class='contact-inputs'>
-        <div class="form-floating mb-3 col-6">
-          <input type="text" class="form-control" id="contact-name" placeholder="Имя" />
-          <label for="contact-name">Имя</label>
-        </div>
-        <div class="form-floating mb-3 col-6">
-          <input type="email" class="form-control" id="contact-mail" placeholder="Электронная почта" />
-          <label for="contact-mail">Электронная почта</label>
-        </div>
-        <div class="form-floating mb-3 col-6">
-          <input type="number" class="form-control" id="contact-number" placeholder="Номер телефона" />
-          <label for="contact-number">Номер телефона</label>
-        </div>
-        <div class="form-floating mb-3 col-6">
-          <input type="text" class="form-control" id="contact-event" placeholder="Мероприятие" />
-          <label for="contact-event">Мероприятие</label>
-        </div>
-        <div class="form-group mb-3">
-          <textarea class="form-control" placeholder='Сообщение'id="contact-message" rows="3"></textarea>
-        </div>
-      </div>
-       <button class="contact-button text-end">Отправить</button>
-      </div>
-      <div class="contact-info">
-          <div class="">
-              <h3><b>Время работы</b></h3>
-              <h5>с 8:00 до 22:00</h5>
-              <h5>Кухня до 21:00</h5>
+    <form class='mes'>
+        <div class="inputs">
+            <h3 class="contactTitle" id="Contacts">Свяжитесь с нами</h3>
+            <div class="contact-inputs">
+                <div class="form-floating mb-3 col-6">
+                    <input type="text" class="form-control" id="contact-name" placeholder="Имя" required/>
+                    <label for="contact-name">Имя</label>
+                </div>
+                <div class="form-floating mb-3 col-6">
+                    <input type="email" class="form-control" id="contact-mail" placeholder="Электронная почта" required/>
+                    <label for="contact-mail">Электронная почта</label>
+                </div>
+                <div class="form-floating mb-3 col-6">
+                    <input type="text" class="form-control" maxlength="9" id="contact-number" placeholder="Номер телефона" required/>
+                    <label for="contact-number">Номер телефона</label>
+                </div>
+                <div class="form-floating mb-3 col-6">
+                    <input type="text" class="form-control" id="contact-event" placeholder="Мероприятие" required/>
+                    <label for="contact-event">Мероприятие</label>
+                </div>
+                <div class="form-group mb-3">
+                    <textarea class="form-control" placeholder="Сообщение" id="contact-message" rows="3" required></textarea>
+                </div>
             </div>
-            <div class="">
-              <h3><b>Контактеый адрес</b></h3>
-              <h5><span><i class='bx bxs-location-plus' ></i></span>Lenin 81/a
-Copceac</h5>
-              <h5><span><i class='bx bx-phone' ></i></span> 078299844</h5>
-              <h5><span><i class='bx bxl-instagram'></i></span><a href='https://www.instagram.com/parktown_coffee/'>parktown_coffee</a></span></h5>
-            </div>
-      </div>
-    </section>
+            <button type="submit" class="contact-button text-end">Отправить</button>
+        </div>
+    </form> <!-- Закрываем форму здесь -->
+    <div class="contact-info">
+        <div>
+            <h3><b>Время работы</b></h3>
+            <h5>с 8:00 до 22:00</h5>
+            <h5>Кухня до 21:00</h5>
+        </div>
+        <div>
+            <h3><b>Контактный адрес</b></h3>
+            <h5><span><i class="bx bxs-location-plus"></i></span> Lenin 81/a, Copceac</h5>
+            <h5><span><i class="bx bx-phone"></i></span> 078299844</h5>
+            <h5>
+                <span><i class="bx bxl-instagram"></i></span>
+                <a href="https://www.instagram.com/parktown_coffee/">parktown_coffee</a>
+            </h5>
+            <h5>
+                <span><i class='bx bxl-telegram'></i></span>
+                <a href="https://t.me/PARK_TOWN_BOT" target="_blank">Telegram</a>
+            </h5>
+        </div>
+    </div>
+</section>
+
       </section>
       
 `
@@ -405,6 +409,34 @@ function formatTime(inputTime) {
       formattedTime += `${seconds} сек`;
   }
   return formattedTime.trim(); // Убираем лишние пробелы
+}
+async function Sendmes() {
+  document.querySelector(".mes").addEventListener("submit", function(event) {
+    event.preventDefault(); // Отмена стандартного поведения
+    console.log("Форма не отправлена, но обработана JavaScript");
+    let name = document.getElementById("contact-name").value.trim();
+    let email = document.getElementById("contact-mail").value.trim();
+    let number = document.getElementById("contact-number").value.trim();
+    let eventName = document.getElementById("contact-event").value.trim();
+    let message = document.getElementById("contact-message").value.trim();
+    fetch(`http://46.229.212.34:9091/api/v1/connection?name=${name}&email=${email}&event=${eventName}&phoneNumber=${number}&message=${message}`,{
+      method:'POST',
+      headers: { "Content-Type": "application/json" },
+    }).then(result=>{
+      Swal.fire({
+        title: "Успех!",
+        text: "С вами свяжется наш специалист!",
+        icon: "success",
+        customClass: {
+          confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+        }
+      })  
+    })
+    .catch(error=>{
+      console.log(error);
+    });
+    
+});
 }
 async function WeekTop() {
   const container=document.querySelector('.swiper-wrapper');
@@ -513,9 +545,10 @@ async function WeekTop() {
               </div>
             </div>
             `,
+            background:'rgb(126, 126, 126)',
             showCancelButton: true,
             confirmButtonColor: "#2F9262",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#3f3f3f",
             confirmButtonText: "Отправить",
             cancelButtonText: "Отмена",
             preConfirm: () => {
@@ -571,9 +604,10 @@ async function WeekTop() {
               </div>
             </div>
             `,
+            background:'rgb(126, 126, 126)',
             showCancelButton: true,
             confirmButtonColor: "#2F9262",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#3f3f3f",
             confirmButtonText: "Отправить",
             cancelButtonText: "Отмена",
             preConfirm: () => {
@@ -958,7 +992,12 @@ let totalcost=JSON.parse(localStorage.getItem('totalcost'));
 let quant=0;
 console.log(quant)
 
-
+function roler(){
+  document.getElementById("table").addEventListener("input", function () {
+    document.getElementById("sliderValue").textContent = this.value;
+  });
+  
+}
 
 function extractHash(str) {
   let match = str.match(/#[a-zA-Z0-9_-]+/);
@@ -1030,7 +1069,7 @@ async function Hachchange(){
           `,
           showCancelButton: true,
           confirmButtonColor: "#2F9262",
-          cancelButtonColor: "#d33",
+          cancelButtonColor: "#3f3f3f",
           confirmButtonText: "Отправить",
           cancelButtonText: "Отмена",
           preConfirm: () => {
@@ -1088,7 +1127,7 @@ async function Hachchange(){
           `,
           showCancelButton: true,
           confirmButtonColor: "#2F9262",
-          cancelButtonColor: "#d33",
+          cancelButtonColor: "#3f3f3f",
           confirmButtonText: "Отправить",
           cancelButtonText: "Отмена",
           preConfirm: () => {
@@ -1204,11 +1243,17 @@ async function Hachchange(){
               <input type="text" class="form-control" id="home" placeholder="Дом" />
               <label for="home">Дом</label>
             </div>
+            <div class="form-floating mb-3">
+                <input type="number" class="form-control" id="tel" placeholder="Номер телефона" />
+                <label for="tel">Номер телефона</label>
+              </div>
           </div>
           <div class='inputtab-container' style='display:none;'>
-            <div class="form-floating mb-3">
-              <input type="number" class="form-control tablenum" id="table" placeholder="Номер столика" />
-              <label for="table">Номер столика</label>
+ 
+            <div class="slider-container">
+                  <label for="rangeSlider" class="form-label">Выберите номер столика:</label>
+                  <input type="range" class="form-range" id="table" min="1" max="10" value="5">
+                   <p>Текущий номер столика: <span id="sliderValue">5</span></p>
             </div>
           </div>
            <div class="form-floating mb-3" id="coupon-container1" style="display:none;">
@@ -1234,9 +1279,10 @@ async function Hachchange(){
             </label>
           </div>
         `,
+        background:rgba(0, 0, 0, 0.6),
         showCancelButton: true,
         confirmButtonColor: "#2F9262",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#3f3f3f",
         confirmButtonText: "Отправить",
         cancelButtonText: "Отмена",
         focusConfirm: false,
@@ -1264,6 +1310,7 @@ async function Hachchange(){
             let adress = JSON.parse(localStorage.getItem('addressResponseDTO'));
             let street = document.querySelector("#street");
             let home = document.querySelector("#home");
+            
             if (adress) {
               street.value = adress.street;
               home.value = adress.homeNumber;
@@ -1279,15 +1326,17 @@ async function Hachchange(){
             const street = document.getElementById("street").value.trim();
             const home = document.getElementById("home").value.trim();
             const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+            const tel=document.getElementById("tel").value.trim();
             const coupon = document.getElementById('coupon').value.trim();
             const couponit = document.getElementById('couponIt').value.trim();
-            if (!street || !home || !paymentMethod) {
+            if (!street || !home || !paymentMethod || !tel) {
               Swal.showValidationMessage("Пожалуйста, заполните все поля!");
               return false;
             }
             data = {
               street,
               home,
+              tel,
               paymentMethod: paymentMethod.value,
               coupon: coupon || null,
               couponit:couponit || null  // Если купон пустой, не передаем его
@@ -1297,7 +1346,7 @@ async function Hachchange(){
             const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
             const coupon = document.getElementById('coupon').value.trim();
             const couponit = document.getElementById('couponIt').value.trim();
-            if (!num) {
+            if (!num || !paymentMethod) {
               Swal.showValidationMessage("Пожалуйста, заполните все поля!");
               return false;
             }
@@ -1319,7 +1368,7 @@ async function Hachchange(){
             city:"Copceak",
             street:String(result.value.street),
             homeNumber:String(result.value.home),
-            apartmentNumber:"2"
+            apartmentNumber:"1"
           }
           let book={};
           let order=JSON.parse(localStorage.getItem('order'));
@@ -1333,11 +1382,12 @@ async function Hachchange(){
           })
         // Проверка на регистрацию
         let user=JSON.parse(localStorage.getItem('uuid'));
+        let restered=false
         if(!user){
-          let restered=false;
+          restered=false;
         }
         else{
-          let restered=true;
+          restered=true;
         }
         book={
           orderProductRequestDTO:orderrequest,
@@ -1457,6 +1507,7 @@ async function Hachchange(){
       });
       }
       });
+      roler();
     }
     else{
       Swal.fire({
@@ -1668,6 +1719,7 @@ async function Hachchange(){
           for (let loadingScreen of loadingScreens) {
             loadingScreen.classList.add('close');
       } 
+      Sendmes();
       loadscreen();
       // Добавляем обработчик события клика по документу
       document.addEventListener('click', function (e) {
@@ -1817,9 +1869,15 @@ function loadscreen(){
     for (let loadingScreen of loadingScreens) {
       loadingScreen.classList.remove('close');
     }
+    document.querySelector('.loadcont').style.display='none'
     document.querySelector('.app').style.display='block'  
 }
   
 
-window.addEventListener('hashchange', Hachchange);
+window.addEventListener('hashchange', function(){
+  const hash = extractHash(window.location.hash);
+  if(hash!=='#Contacts'){
+    Hachchange();
+  }
+});
 window.addEventListener('load', Hachchange);

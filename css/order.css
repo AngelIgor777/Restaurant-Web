@@ -23,6 +23,20 @@ body{
     flex-direction: column;
     min-height: 100%;
 }
+.buttonsall{
+    display: flex;
+    justify-content: right;
+}
+.buttonsall button{
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: #adbf6c;
+    font-family: "Kurale", serif;
+  font-weight: 400;
+  font-style: normal;
+  width: 170px;
+}
 .order{
     border: solid 1px rgba(0, 0, 0, 0.341);
     border-radius: 10px;
@@ -38,7 +52,9 @@ body{
     width: 500px;
     height: auto;
 }
-
+.confirmed{
+    display: none;
+}
 .order h2{
     font-family: "Kurale", serif;
     font-weight: 600;

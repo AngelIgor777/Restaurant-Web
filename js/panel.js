@@ -320,98 +320,101 @@ async function Rumname(id) {
 }
 
 async function CuponAll() {
-    try {
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/discounts`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
-        });
-
-        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-
-        const data = await response.json();
-        console.log("Купоны:", data);
-
-        const tableone = document.querySelector(".cuppons-al");
-        const tbody = tableone.querySelector(".catlist");
-
-        if (!tbody) {
-            console.error("Элемент .catlist не найден!");
-            return;
-        }
-
-        tbody.innerHTML = "";
-        let i = 0;
-
-        for (const item of data) {
-            tbody.insertAdjacentHTML("beforeend", `
-                <tr>
-                  <td style="text-align: center;">${i + 1}</td>
-                  <td style="text-align: center;">${item.code}</td>
-                  <td style="text-align: center;">${item.description}</td>
-                  <td style="text-align: center;">${item.discount}</td>
-                  <td style="text-align: center;">${formDate(item.validFrom)}</td>
-                  <td style="text-align: center;">${formDate(item.validTo)}</td>
-                  <td style="text-align: center;" class="allbuttons">
-                      <button class="delete delete-cup btn btn-danger" data-id="${item.id}">
-                          <i class="bx bx-trash-alt"></i>
-                      </button>
-                  </td>
-                </tr>
-            `);
-            i++;
-        }
-
-        // Обработчик удаления купона
-        document.querySelector(".categorylist").addEventListener("click", async (event) => {
-            if (event.target.closest(".delete-cup")) {
-                const button = event.target.closest(".btn-danger");
-                const productId = button.getAttribute("data-id");
-
-                const result = await Swal.fire({
-                    title: "Вы уверены?",
-                    text: "Вы не сможете это восстановить!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#2F9262",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Да, удалить!",
-                    cancelButtonText: "Отмена"
-                });
-
-                if (result.isConfirmed) {
-                    try {
-                        await deleteCupponAl(productId);
-                        button.closest("tr").remove();
-
-                        Swal.fire({
-                            title: "Успех!",
-                            text: "Купон был удален!",
-                            icon: "success",
-                            customClass: {
-                              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-                            }
-                          })
-                    } catch (error) {
-                        Swal.fire({
-                            title: "Ошибка!",
-                            text: "Не удалось удалить!",
-                            icon: "error",
-                            customClass: {
-                              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-                            }
-                          })
+    if(token){
+        try {
+            const response = await fetch(`http://46.229.212.34:9091/api/v1/discounts`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+    
+            if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+    
+            const data = await response.json();
+            console.log("Купоны:", data);
+    
+            const tableone = document.querySelector(".cuppons-al");
+            const tbody = tableone.querySelector(".catlist");
+    
+            if (!tbody) {
+                console.error("Элемент .catlist не найден!");
+                return;
+            }
+    
+            tbody.innerHTML = "";
+            let i = 0;
+    
+            for (const item of data) {
+                tbody.insertAdjacentHTML("beforeend", `
+                    <tr>
+                      <td style="text-align: center;">${i + 1}</td>
+                      <td style="text-align: center;">${item.code}</td>
+                      <td style="text-align: center;">${item.description}</td>
+                      <td style="text-align: center;">${item.discount}</td>
+                      <td style="text-align: center;">${formDate(item.validFrom)}</td>
+                      <td style="text-align: center;">${formDate(item.validTo)}</td>
+                      <td style="text-align: center;" class="allbuttons">
+                          <button class="delete delete-cup btn btn-danger" data-id="${item.id}">
+                              <i class="bx bx-trash-alt"></i>
+                          </button>
+                      </td>
+                    </tr>
+                `);
+                i++;
+            }
+    
+            // Обработчик удаления купона
+            document.querySelector(".categorylist").addEventListener("click", async (event) => {
+                if (event.target.closest(".delete-cup")) {
+                    const button = event.target.closest(".btn-danger");
+                    const productId = button.getAttribute("data-id");
+    
+                    const result = await Swal.fire({
+                        title: "Вы уверены?",
+                        text: "Вы не сможете это восстановить!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#2F9262",
+                        cancelButtonColor: "#3f3f3f",
+                        confirmButtonText: "Да, удалить!",
+                        cancelButtonText: "Отмена"
+                    });
+    
+                    if (result.isConfirmed) {
+                        try {
+                            await deleteCupponAl(productId);
+                            button.closest("tr").remove();
+    
+                            Swal.fire({
+                                title: "Успех!",
+                                text: "Купон был удален!",
+                                icon: "success",
+                                customClass: {
+                                  confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                                }
+                              })
+                        } catch (error) {
+                            Swal.fire({
+                                title: "Ошибка!",
+                                text: "Не удалось удалить!",
+                                icon: "error",
+                                customClass: {
+                                  confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                                }
+                              })
+                        }
                     }
                 }
-            }
-        });
-
-
-    } catch (error) {
-        console.error("Ошибка при загрузке купонов:", error);
-        Swal.fire("Ошибка", "Не удалось загрузить купоны", "error");
+            });
+    
+    
+        } catch (error) {
+            console.error("Ошибка при загрузке купонов:", error);
+            Swal.fire("Ошибка", "Не удалось загрузить купоны", "error");
+        }
     }
+    
 }
 
 async function deleteCupponAl(productId) {
@@ -431,196 +434,198 @@ async function deleteCupponAl(productId) {
     }
 }
 async function CuponItem() {
-    try {
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/product-discounts`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
-        });
-
-        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-
-        const data = await response.json();
-        console.log("Купоны:", data);
-
-        const tableone = document.querySelector(".cupons-it");
-        const tbody = tableone.querySelector(".catlist");
-
-        if (!tbody) {
-            console.error("Элемент .catlist не найден!");
-            return;
-        }
-
-        tbody.innerHTML = "";
-        let i = 0;
-        
-        for (const item of data) {
-            tbody.insertAdjacentHTML("beforeend", `
-                <tr>
-                  <td style="text-align: center;">${i + 1}</td>
-                  <td style="text-align: center;">${item.code}</td>
-                  <td style="text-align: center;">${item.description}</td>
-                  <td style="text-align: center;">${item.discount}</td>
-                  <td style="text-align: center;">${formDate(item.validFrom)}</td>
-                  <td style="text-align: center;">${formDate(item.validTo)}</td>
-                  <td style="text-align: center;" class="allbuttons">
-                      <button class="delete delete-cup btn btn-danger" data-id="${item.id}">
-                          <i class="bx bx-trash-alt"></i>
-                      </button>
-                  </td>
-                </tr>
-            `);
-            i++;
-        }
-
-        // Обработчик удаления купона
-        document.querySelector(".categorylist").addEventListener("click", async (event) => {
-            if (event.target.closest(".delete-cup")) {
-                const button = event.target.closest(".btn-danger");
-                const productId = button.getAttribute("data-id");
-
-                const result = await Swal.fire({
-                    title: "Вы уверены?",
-                    text: "Вы не сможете это восстановить!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#2F9262",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Да, удалить!",
-                    cancelButtonText: "Отмена"
-                });
-
-                if (result.isConfirmed) {
-                    try {
-                        await deleteCupponIt(productId);
-                        button.closest("tr").remove();
-
-                        Swal.fire({
-                            title: "Успех!",
-                            text: "Купон был удален!",
-                            icon: "success",
-                            customClass: {
-                              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-                            }
-                          })
-                    } catch (error) {
-                        Swal.fire({
-                            title: "Ошибка!",
-                            text: "Не удалось удалить!",
-                            icon: "error",
-                            customClass: {
-                              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-                            }
-                          })
-                    }
-                }
+    if(token){
+        try {
+            const response = await fetch(`http://46.229.212.34:9091/api/v1/product-discounts`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+    
+            if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+    
+            const data = await response.json();
+            console.log("Купоны:", data);
+    
+            const tableone = document.querySelector(".cupons-it");
+            const tbody = tableone.querySelector(".catlist");
+    
+            if (!tbody) {
+                console.error("Элемент .catlist не найден!");
+                return;
             }
-        });
-
-        // Открытие формы для создания купона
-        document.querySelector(".cupon-one").addEventListener("click", function () {
-            Swal.fire({
-                html: `
-                <div class="adres">
-                   <h1>Создать купон</h1>
-                   <div class="form-floating mb-3">
-                      <input type="text" class="form-control" id="cupname" placeholder="Название" />
-                      <label for="cupname">Название</label>
-                   </div>
-                   <div class="form-floating mb-3">
-                      <textarea class="form-control" placeholder="Имя товара" id="cupid" rows="3"></textarea>
-                      <label for="cupid">Имя товара</label>
-                   </div>
-                   <div class="form-floating mb-3">
-                      <textarea class="form-control" placeholder="Описание" id="cupdes" rows="3"></textarea>
-                      <label for="cupdes">Описание</label>
-                   </div>
-                   <div class="form-floating mb-3">
-                      <input type="number" class="form-control" id="cupskid" placeholder="Процент скидки" />
-                      <label for="cupskid">Процент скидки</label>
-                   </div>
-                   <div class="form-floating mb-3">
-                      <select class="form-select" id="cupday">
-                          <option value="1" selected>1 день</option>
-                          <option value="7">1 неделя</option>
-                          <option value="14">2 недели</option>
-                          <option value="28">1 месяц</option>
-                      </select>
-                      <label for="cupday">Длительность</label>
-                   </div>
-                </div>
-                `,
-                showCancelButton: true,
-                confirmButtonColor: "#2F9262",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Создать",
-                cancelButtonText: "Отмена",
-                preConfirm: () => {
-                    const name = document.getElementById("cupname").value;
-                    const des = document.getElementById("cupdes").value;
-                    const dis = document.getElementById("cupskid").value;
-                    const cuptime = document.getElementById("cupday").value;
-                    const findid=document.getElementById("cupid").value;
-                    const cupid = allitems.find(item => item.name === findid).id;
-                    if (!name || !dis || !cuptime || !cupid) {
-                        Swal.showValidationMessage("Пожалуйста, заполните все поля или проверьте правильность написания имени!");
-                        return false;
-                    }
-
-                    return { name, des, dis, cuptime, cupid };
-                }
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const { name, des, dis, cuptime, cupid} = result.value;
-
-                    const now = new Date();
-                    const validFrom = now.toISOString().slice(0, 19);
-
-                    now.setDate(now.getDate() + parseInt(cuptime, 10));
-                    const validTo = now.toISOString().slice(0, 19);
-
-                    const cupon = {
-                        code: name,
-                        productId:cupid,
-                        description: des,
-                        discount: parseFloat(dis), // Преобразуем в число
-                        validFrom,
-                        validTo
-                    };
-                    try {
-                        const response = await fetch("http://46.229.212.34:9091/api/v1/product-discounts", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "Authorization": `Bearer ${token}`
-                            },
-                            body: JSON.stringify(cupon)
-                        });
-
-                        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-
-                        const data = await response.json();
-                        console.log("Создан купон:", data);
-                        await CuponItem(); // Перезагружаем список купонов
-                       
-                    } catch (error) {
-                        console.error(error);
+    
+            tbody.innerHTML = "";
+            let i = 0;
+            
+            for (const item of data) {
+                tbody.insertAdjacentHTML("beforeend", `
+                    <tr>
+                      <td style="text-align: center;">${i + 1}</td>
+                      <td style="text-align: center;">${item.code}</td>
+                      <td style="text-align: center;">${item.description}</td>
+                      <td style="text-align: center;">${item.discount}</td>
+                      <td style="text-align: center;">${formDate(item.validFrom)}</td>
+                      <td style="text-align: center;">${formDate(item.validTo)}</td>
+                      <td style="text-align: center;" class="allbuttons">
+                          <button class="delete delete-cup btn btn-danger" data-id="${item.id}">
+                              <i class="bx bx-trash-alt"></i>
+                          </button>
+                      </td>
+                    </tr>
+                `);
+                i++;
+            }
+    
+            // Обработчик удаления купона
+            document.querySelector(".categorylist").addEventListener("click", async (event) => {
+                if (event.target.closest(".delete-cup")) {
+                    const button = event.target.closest(".btn-danger");
+                    const productId = button.getAttribute("data-id");
+    
+                    const result = await Swal.fire({
+                        title: "Вы уверены?",
+                        text: "Вы не сможете это восстановить!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#2F9262",
+                        cancelButtonColor: "#3f3f3f",
+                        confirmButtonText: "Да, удалить!",
+                        cancelButtonText: "Отмена"
+                    });
+    
+                    if (result.isConfirmed) {
+                        try {
+                            await deleteCupponIt(productId);
+                            button.closest("tr").remove();
+    
+                            Swal.fire({
+                                title: "Успех!",
+                                text: "Купон был удален!",
+                                icon: "success",
+                                customClass: {
+                                  confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                                }
+                              })
+                        } catch (error) {
+                            Swal.fire({
+                                title: "Ошибка!",
+                                text: "Не удалось удалить!",
+                                icon: "error",
+                                customClass: {
+                                  confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                                }
+                              })
+                        }
                     }
                 }
             });
-        });
-
-    } catch (error) {
-        console.error("Ошибка при загрузке купонов:", error);
-        Swal.fire({
-            title: "Ошибка!",
-            text: "Не удалось загрузить!",
-            icon: "error",
-            customClass: {
-              confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-            }
-          })
+    
+            // Открытие формы для создания купона
+            document.querySelector(".cupon-one").addEventListener("click", function () {
+                Swal.fire({
+                    html: `
+                    <div class="adres">
+                       <h1>Создать купон</h1>
+                       <div class="form-floating mb-3">
+                          <input type="text" class="form-control" id="cupname" placeholder="Название" />
+                          <label for="cupname">Название</label>
+                       </div>
+                       <div class="form-floating mb-3">
+                          <textarea class="form-control" placeholder="Имя товара" id="cupid" rows="3"></textarea>
+                          <label for="cupid">Имя товара</label>
+                       </div>
+                       <div class="form-floating mb-3">
+                          <textarea class="form-control" placeholder="Описание" id="cupdes" rows="3"></textarea>
+                          <label for="cupdes">Описание</label>
+                       </div>
+                       <div class="form-floating mb-3">
+                          <input type="number" class="form-control" id="cupskid" placeholder="Процент скидки" />
+                          <label for="cupskid">Процент скидки</label>
+                       </div>
+                       <div class="form-floating mb-3">
+                          <select class="form-select" id="cupday">
+                              <option value="1" selected>1 день</option>
+                              <option value="7">1 неделя</option>
+                              <option value="14">2 недели</option>
+                              <option value="28">1 месяц</option>
+                          </select>
+                          <label for="cupday">Длительность</label>
+                       </div>
+                    </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonColor: "#2F9262",
+                    cancelButtonColor: "#3f3f3f",
+                    confirmButtonText: "Создать",
+                    cancelButtonText: "Отмена",
+                    preConfirm: () => {
+                        const name = document.getElementById("cupname").value;
+                        const des = document.getElementById("cupdes").value;
+                        const dis = document.getElementById("cupskid").value;
+                        const cuptime = document.getElementById("cupday").value;
+                        const findid=document.getElementById("cupid").value;
+                        const cupid = allitems.find(item => item.name === findid).id;
+                        if (!name || !dis || !cuptime || !cupid) {
+                            Swal.showValidationMessage("Пожалуйста, заполните все поля или проверьте правильность написания имени!");
+                            return false;
+                        }
+    
+                        return { name, des, dis, cuptime, cupid };
+                    }
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const { name, des, dis, cuptime, cupid} = result.value;
+    
+                        const now = new Date();
+                        const validFrom = now.toISOString().slice(0, 19);
+    
+                        now.setDate(now.getDate() + parseInt(cuptime, 10));
+                        const validTo = now.toISOString().slice(0, 19);
+    
+                        const cupon = {
+                            code: name,
+                            productId:cupid,
+                            description: des,
+                            discount: parseFloat(dis), // Преобразуем в число
+                            validFrom,
+                            validTo
+                        };
+                        try {
+                            const response = await fetch("http://46.229.212.34:9091/api/v1/product-discounts", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${token}`
+                                },
+                                body: JSON.stringify(cupon)
+                            });
+    
+                            if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+    
+                            const data = await response.json();
+                            console.log("Создан купон:", data);
+                            await CuponItem(); // Перезагружаем список купонов
+                           
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }
+                });
+            });
+    
+        } catch (error) {
+            console.error("Ошибка при загрузке купонов:", error);
+            Swal.fire({
+                title: "Ошибка!",
+                text: "Не удалось загрузить!",
+                icon: "error",
+                customClass: {
+                  confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                }
+              })
+        }
     }
 }
 async function deleteCupponIt(productId) {
@@ -684,7 +689,7 @@ async function Addallcup() {
             `,
             showCancelButton: true,
             confirmButtonColor: "#2F9262",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#3f3f3f",
             confirmButtonText: "Создать",
             cancelButtonText: "Отмена",
             preConfirm: () => {
@@ -907,7 +912,7 @@ async function fetchProductTypes() {
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#2F9262",
-                    cancelButtonColor: "#d33",
+                    cancelButtonColor: "#3f3f3f",
                     confirmButtonText: "Да, удалить!",
                     cancelButtonText:"Отмена!"
                 }).then(async (result) => {  // Добавляем async здесь
@@ -940,7 +945,7 @@ async function fetchProductTypes() {
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#2F9262",
-                    cancelButtonColor: "#d33",
+                    cancelButtonColor: "#3f3f3f",
                     confirmButtonText: "Да, удалить!",
                     cancelButtonText:"Отмена!"
                 }).then(async (result) => {  // Добавляем async здесь
