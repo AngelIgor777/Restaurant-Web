@@ -1,12 +1,9 @@
-try{
-    const token=JSON.parse(localStorage.getItem('accessToken'));
+
+const token=JSON.parse(localStorage.getItem('accessToken'));
     if(!token){
         window.location.href = 'http://127.0.0.1:9092/Coffe/index.html';
   }
-  }
-  catch (error) {
-    console.log('')
-  }
+
 let allitems=[];
 async function Statistiktable(start, end) {
     try{
