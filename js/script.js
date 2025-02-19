@@ -282,7 +282,7 @@ const renderTitle = () =>`
         <div class="commantname">Наша Команда</div>
         <div class="command-imgs">
             <div class="command-img">
-              <img src="./img/menedjer.png" alt="Наша Команда">
+              <img src="./img/povara.jpg" alt="Наша Команда">
             </div>
              <div class="command-img">
               <img src="./img/Komanda.jpg" alt="Наша Команда">
