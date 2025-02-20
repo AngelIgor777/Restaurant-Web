@@ -2133,7 +2133,7 @@ function Language(){
   document.querySelectorAll("#lang").forEach(it=>{
     it.value = JSON.parse(localStorage.getItem('lang'));
     it.addEventListener("change", function(event) {
-      // localStorage.setItem('lang', JSON.stringify(event.target.value));
+      localStorage.setItem('lang', JSON.stringify(event.target.value));
       Hachchange();
   });
   if(JSON.parse(localStorage.getItem('lang'))==='ro'){
