@@ -412,7 +412,9 @@ function formatTime(inputTime) {
       formattedTime += `${seconds} сек`;
   }
   if(JSON.parse(localStorage.getItem('lang'))==='ro'){
-    return `Timp: ${formattedTime.trim()}`; // Убираем лишние пробелы
+    formattedTime=''
+    formattedTime+=`${minutes}`
+    return `${formattedTime.trim()}min`; // Убираем лишние пробелы
   }
   return `Время: ${formattedTime.trim()}`; // Убираем лишние пробелы
 }
@@ -485,7 +487,7 @@ async function WeekTop() {
         <div class="description">
         <h3><b>${descr}</b></h3>
             <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
-              ? `Примерное время готовки: <b>${formatTime(item.cookingTime)}</b>` 
+              ? `<span>Примерное время готовки:</span> <b>${formatTime(item.cookingTime)}</b>` 
               : ""}</h5>
         </div>
         </a>
@@ -706,7 +708,7 @@ async function fetchMenuItems(categoryIds) {
             <div class="description">
             <h3><b>${descr}</b></h3>
                 <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
-                  ? `Примерное время готовки: <b>${formatTime(item.cookingTime)}</b>` 
+                  ? `<span>Примерное время готовки: </span><b>${formatTime(item.cookingTime)}</b>` 
                   : ""}</h5>
             </div>
             </a>
@@ -2177,7 +2179,9 @@ function Language(){
     document.querySelector(".category-list li a").textContent='Toate';
     footerRum();
     headerRum();
-    document.querySelector(".description h5 ").textContent='Timp aproximativ de gătire';
+    document.querySelectorAll(".description h5 span").forEach(it=>{
+      it.textContent='Timp aproximativ de gătire: ';
+    })
     
   }
   });

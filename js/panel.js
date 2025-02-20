@@ -362,8 +362,18 @@ async function Rumname(id) {
     }).then(async (result) => {
         if (result.isConfirmed) {  // Если пользователь нажал "OK"
             try {
-                const response = await fetch("http://46.229.212.34:9091/api/v1/product-translations", {
-                    method: "POST",
+                let fet=`http://46.229.212.34:9091/api/v1/product-translations`;
+                let met="POST";
+                const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-type-translations/${id}?lang=ro`, {
+                    method: "GET"
+                });
+                console.log(respo)
+                if (respo.status !== 404) { 
+                    fet=`http://46.229.212.34:9091/api/v1/product-translations/${id}`;
+                    met="PATCH";
+                }
+                const response = await fetch(fet, {
+                    method: met,
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`
