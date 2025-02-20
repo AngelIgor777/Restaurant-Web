@@ -352,7 +352,7 @@ const renderItem= (onlyItem=[]) =>`
           <div class="col-sm-5 col-md-6 col-lg-4 item-descr d-flex flex-column align-items-left">
             <h1 class="item-name">${onlyItem[0]}</h1>
             <h4 class="cost-item">${onlyItem[1]}MDL</h4>
-            <h5 class="weith"><span>Время: </span>${formatTime(onlyItem[4])}</h5>
+            <h5 class="weith">${formatTime(onlyItem[4])}</h5>
             <h5 class="ingredients" style="word-wrap: break-word !important;"><span>Описание: </span> ${onlyItem[3]} </h5>
             <div class="send-but d-flex justify-content-center">
               <div class="plus-min">
@@ -397,7 +397,10 @@ function formatTime(inputTime) {
   const hours = parts[0];
   const minutes = parts[1];
   const seconds = parts[2];
-
+  
+  if(inputTime==='00:00:00'){
+    return '';
+  }
   let formattedTime = '';
   if (hours > 0) {
       formattedTime += `${hours} час `;
@@ -408,7 +411,7 @@ function formatTime(inputTime) {
   if (seconds > 0) {
       formattedTime += `${seconds} сек`;
   }
-  return formattedTime.trim(); // Убираем лишние пробелы
+  return `Время: ${formattedTime.trim()}`; // Убираем лишние пробелы
 }
 async function Sendmes() {
   document.querySelector(".mes").addEventListener("submit", function(event) {
