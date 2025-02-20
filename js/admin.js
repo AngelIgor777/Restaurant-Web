@@ -250,9 +250,9 @@ function headerRum(){
 
       <div class="collapse navbar-collapse" id="navbarcont">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item active"><a href="#menu">Meniu</a></li>
-          <li class="nav-item"><a href="#about">Despre noi</a></li>
-          <li class="nav-item"><a href="#Contacts">Contacte</a></li>
+          <li class="nav-item active"><a href="index.html#menu">Meniu</a></li>
+          <li class="nav-item"><a href="index.html#about">Despre noi</a></li>
+          <li class="nav-item"><a href="index.html#Contacts">Contacte</a></li>
         </ul>
       </div>
 
