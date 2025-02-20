@@ -94,6 +94,7 @@ header {
 .dropdown-toggle::after{
   color: #fff;
 }
+
 .category-content {
   max-width: 100%; /* Элементы не превышают ширину экрана */
   overflow-x: hidden; /* Запрещает содержимому выходить за пределы */

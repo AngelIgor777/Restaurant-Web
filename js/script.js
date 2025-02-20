@@ -122,6 +122,7 @@ const renderMenu = () =>`
               <a
                 data-bs-toggle="collapse"
                 href="#Category"
+                id='menutext'
                 role="button"
                 aria-expanded="false"
                 aria-controls="Category"
@@ -422,9 +423,15 @@ async function Sendmes() {
       method:'POST',
       headers: { "Content-Type": "application/json" },
     }).then(result=>{
+      let titl='Успех!';
+      let tex='С вами свяжется наш специалист!'
+      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+        titl='Succes!';
+        tex='Specialistul nostru te va contacta!'
+      }
       Swal.fire({
-        title: "Успех!",
-        text: "С вами свяжется наш специалист!",
+        title: `${titl}`,
+        text: `${tex}`,
         icon: "success",
         customClass: {
           confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
@@ -455,12 +462,13 @@ async function WeekTop() {
       const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${item.id}?lang=ro`, {
         method: "GET"
     });
-
-    if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
-
     const dat = await respo.json();
     name=dat.name;
     descr=dat.description;
+    console.log(43424);
+    document.querySelector('.weektop h2').textContent='Top 10 feluri de mâncare ale săptămânii';
+    if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
+    
     }
     const menuItem = document.createElement('div');
     menuItem.className = `col-sm-6 col-md-4 col-lg-1 item swiper-slide visible `;
@@ -526,114 +534,7 @@ async function WeekTop() {
           }
         }
       }
-      if(e.target.id==='profile'){
-        const uuid=JSON.parse(localStorage.getItem('uuid'));
-        // Если пользователь зарегестрирован
-        if(uuid){
-          Swal.fire({
-            html:`
-            <div class='adres'>
-               <h1>Ваш постояный адрес</h1>
-               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="street" placeholder="Улица" />
-                <label for="street">Улица</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="num" placeholder="Дом" />
-                <label for="num">Дом</label>
-              </div>
-            </div>
-            `,
-            showCancelButton: true,
-            confirmButtonColor: "#2F9262",
-            cancelButtonColor: "#3f3f3f",
-            confirmButtonText: "Отправить",
-            cancelButtonText: "Отмена",
-            preConfirm: () => {
-              const street = document.getElementById("street").value;
-              const home = document.getElementById("num").value;
-      
-              if (!street || !home) {
-                  Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-                  return false;
-              }
-            }
-          }).then((result)=>{
-            if(result.isConfirmed){
-              const street = document.getElementById("street").value;
-              const home = document.getElementById("num").value;
-              const addres={
-                city:"Copceac",
-                street:street,
-                homeNumber: home,
-                apartmentNumber:1,
-                userUUID:uuid 
-              }
-  
-              fetch('http://46.229.212.34:9091/api/v1/addresses',{
-                method:'POST',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(addres)
-              }).then(result=>result.json())
-              .then(data=>{
-                console.log(data);
-                localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
-              })
-              .catch(error=>{
-                console.log(error);
-              });
-            }
-  
-          });
-        }
-        // Если пользователь не зарегестрирован
-        else{
-          Swal.fire({
-            html:`
-            <div class='adres'>
-               <h1>Ваш постояный адрес</h1>
-               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="street" placeholder="Улица" />
-                <label for="street">Улица</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="num" placeholder="Дом" />
-                <label for="num">Дом</label>
-              </div>
-            </div>
-            `,
-            showCancelButton: true,
-            confirmButtonColor: "#2F9262",
-            cancelButtonColor: "#3f3f3f",
-            confirmButtonText: "Отправить",
-            cancelButtonText: "Отмена",
-            preConfirm: () => {
-              const street = document.getElementById("street").value;
-              const home = document.getElementById("num").value;
-      
-              if (!street || !home) {
-                  Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-                  return false;
-              }
-            }
-          }).then((result)=>{
-            if(result.isConfirmed){
-              const street = document.getElementById("street").value;
-              const home = document.getElementById("num").value;
-              const addres={
-                city:"Copceac",
-                street:street,
-                homeNumber: home,
-                apartmentNumber:1,
-                userUUID:uuid 
-              }
-              localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
-              
-            }
-  
-          });
-        }
-      }
+      Profile(e);
     
     });
   
@@ -715,10 +616,23 @@ async function fetchProductTypes() {
       productList.innerHTML = '<li ><a class="active" data-filter="*">Все</a></li>'; // Очистка списка
 
       // Создаем категории
-      data.content.forEach(item => {
+      data.content.forEach( async item => {
         const listItem = document.createElement('li');
         const link = document.createElement('a');
-        link.textContent = `${item.name}`;
+        
+        // создание рум версии
+        let namerum=item.name;
+        if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+          const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${item.id}?lang=ro`, {
+            method: "GET"
+        });
+    
+        if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
+    
+        const dat = await respo.json();
+        namerum=dat.name;
+        }
+        link.textContent = `${namerum}`;
         link.setAttribute('data-filter', `.${item.id}`); 
         listItem.appendChild(link); // Вставляем ссылку в элемент списка
         productList.appendChild(listItem);
@@ -817,7 +731,7 @@ async function fetchMenuItems(categoryIds) {
 }
 
 // Обновление модального окна заказа
-function updateModal(order) {
+async function updateModal(order) {
   let tbody = document.querySelector(".ordorlist");
   tbody.innerHTML = ''; // Очищаем таблицу перед вставкой новых данных
   
@@ -825,10 +739,21 @@ function updateModal(order) {
   if (order.length > 0) {
     let totalcost=JSON.parse(localStorage.getItem('totalcost'));
     for (let i = 0; i < order.length; i++) {
+      let name=order[i].tovarname;
+      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+        const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${order[i].id}?lang=ro`, {
+          method: "GET"
+      });
+  
+      if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
+  
+      const dat = await respo.json();
+      name=dat.name;
+      }
       tbody.insertAdjacentHTML('beforeend', `
         <tr>
           <td style="text-align: center;">${i + 1}</td>
-          <td style="text-align: center;">${order[i].tovarname}</td>
+          <td style="text-align: center;">${name}</td>
           <td style="text-align: center;">${order[i].price}</td>
           <td style="text-align: center;">${order[i].quantity}</td>
           <td style="text-align: center;"><button class="delete btn btn-danger" data-delete="${order[i].id}"  data-price="${order[i].price}"><i class='bx bx-trash-alt'></i></button></td>
@@ -1011,7 +936,132 @@ function extractHash(str) {
   let match = str.match(/#[a-zA-Z0-9_-]+/);
   return match ? match[0] : "";
 }
+async function Profile(e) {
+  if(e.target.id==='profile'){
+    const uuid=JSON.parse(localStorage.getItem('uuid'));
+    // Если пользователь зарегестрирован
+    if(uuid){
+      let titl='Ваш постояный адрес';
+      let stre='Улица';
+      let casa='Дом';
+  if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+    titl='Adresa dvs. permanentă';
+    stre='Stradă'
+    casa='Casa'
+  }
+      Swal.fire({
+        html:`
+        <div class='adres'>
+           <h1>${titl}</h1>
+           <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="street" placeholder="${stre}" />
+            <label for="street">${stre}</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="num" placeholder="${casa}" />
+            <label for="num">${casa}</label>
+          </div>
+        </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: "#2F9262",
+        cancelButtonColor: "#3f3f3f",
+        confirmButtonText: "Отправить",
+        cancelButtonText: "Отмена",
+        preConfirm: () => {
+          const street = document.getElementById("street").value;
+          const home = document.getElementById("num").value;
+  
+          if (!street || !home) {
+              Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+              return false;
+          }
+        }
+      }).then((result)=>{
+        if(result.isConfirmed){
+          const street = document.getElementById("street").value;
+          const home = document.getElementById("num").value;
+          const addres={
+            city:"Copceac",
+            street:street,
+            homeNumber: home,
+            apartmentNumber:1,
+            userUUID:uuid 
+          }
 
+          fetch('http://46.229.212.34:9091/api/v1/addresses',{
+            method:'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(addres)
+          }).then(result=>result.json())
+          .then(data=>{
+            console.log(data);
+            localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
+          })
+          .catch(error=>{
+            console.log(error);
+          });
+        }
+
+      });
+    }
+    // Если пользователь не зарегестрирован
+    else{
+      let titl='Ваш постояный адрес';
+      let stre='Улица';
+      let casa='Дом';
+  if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+    titl='Adresa dvs. permanentă';
+    stre='Stradă!'
+    casa='Casa'
+  }
+      Swal.fire({
+        html:`
+        <div class='adres'>
+           <h1>${titl}</h1>
+           <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="street" placeholder="${stre}" />
+            <label for="street">${stre}</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="num" placeholder="${casa}" />
+            <label for="num">${casa}</label>
+          </div>
+        </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: "#2F9262",
+        cancelButtonColor: "#3f3f3f",
+        confirmButtonText: "Отправить",
+        cancelButtonText: "Отмена",
+        preConfirm: () => {
+          const street = document.getElementById("street").value;
+          const home = document.getElementById("num").value;
+  
+          if (!street || !home) {
+              Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+              return false;
+          }
+        }
+      }).then((result)=>{
+        if(result.isConfirmed){
+          const street = document.getElementById("street").value;
+          const home = document.getElementById("num").value;
+          const addres={
+            city:"Copceac",
+            street:street,
+            homeNumber: home,
+            apartmentNumber:1,
+            userUUID:uuid 
+          }
+          localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
+          
+        }
+
+      });
+    }
+  }
+}
 // Вызываем функцию при изменения хэша это основа не забываеми
 async function Hachchange(){
 
@@ -1068,114 +1118,7 @@ async function Hachchange(){
         }
       }
     }
-    if(e.target.id==='profile'){
-      const uuid=JSON.parse(localStorage.getItem('uuid'));
-      // Если пользователь зарегестрирован
-      if(uuid){
-        Swal.fire({
-          html:`
-          <div class='adres'>
-             <h1>Ваш постояный адрес</h1>
-             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="street" placeholder="Улица" />
-              <label for="street">Улица</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="num" placeholder="Дом" />
-              <label for="num">Дом</label>
-            </div>
-          </div>
-          `,
-          showCancelButton: true,
-          confirmButtonColor: "#2F9262",
-          cancelButtonColor: "#3f3f3f",
-          confirmButtonText: "Отправить",
-          cancelButtonText: "Отмена",
-          preConfirm: () => {
-            const street = document.getElementById("street").value;
-            const home = document.getElementById("num").value;
-    
-            if (!street || !home) {
-                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-                return false;
-            }
-          }
-        }).then((result)=>{
-          if(result.isConfirmed){
-            const street = document.getElementById("street").value;
-            const home = document.getElementById("num").value;
-            const addres={
-              city:"Copceac",
-              street:street,
-              homeNumber: home,
-              apartmentNumber:1,
-              userUUID:uuid 
-            }
-
-            fetch('http://46.229.212.34:9091/api/v1/addresses',{
-              method:'POST',
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(addres)
-            }).then(result=>result.json())
-            .then(data=>{
-              console.log(data);
-              localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
-            })
-            .catch(error=>{
-              console.log(error);
-            });
-          }
-
-        });
-      }
-      // Если пользователь не зарегестрирован
-      else{
-        Swal.fire({
-          html:`
-          <div class='adres'>
-             <h1>Ваш постояный адрес</h1>
-             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="street" placeholder="Улица" />
-              <label for="street">Улица</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="num" placeholder="Дом" />
-              <label for="num">Дом</label>
-            </div>
-          </div>
-          `,
-          showCancelButton: true,
-          confirmButtonColor: "#2F9262",
-          cancelButtonColor: "#3f3f3f",
-          confirmButtonText: "Отправить",
-          cancelButtonText: "Отмена",
-          preConfirm: () => {
-            const street = document.getElementById("street").value;
-            const home = document.getElementById("num").value;
-    
-            if (!street || !home) {
-                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
-                return false;
-            }
-          }
-        }).then((result)=>{
-          if(result.isConfirmed){
-            const street = document.getElementById("street").value;
-            const home = document.getElementById("num").value;
-            const addres={
-              city:"Copceac",
-              street:street,
-              homeNumber: home,
-              apartmentNumber:1,
-              userUUID:uuid 
-            }
-            localStorage.setItem('addressResponseDTO', JSON.stringify(addres));
-            
-          }
-
-        });
-      }
-    }
+    Profile(e);
   
   });
 
@@ -1250,51 +1193,75 @@ async function Hachchange(){
     let order=JSON.parse(localStorage.getItem('order'));
     if(order.length>0){
       console.log(order);
+      let titl='Введите данные';
+      let stre='Улица';
+      let casa='Дом';
+      let tel='Номер телефона';
+      let stol='Текущий номер столика: '
+      let vibstol='Выберите номер столика:'
+      let cupall='Купон для всего заказов';
+      let cupone='Купон для товара';
+      let ifcup='Есть купон?';
+      let car='Карта';
+      let cash='Наличные'
+    if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+      titl='Introduceți detalii';
+      stre='Stradă';
+      casa='Casa';
+      tel='Număr de telefon';
+      stol='Numărul curent al tabelului:';
+      vibstol='Selectați numărul tabelului:'
+      cupall='Cupon pentru toate comenzile';
+      cupone='Cupon de produs'
+      ifcup='Ai un cupon?';
+      car='Hartă';
+      cash='Numerar';
+  }
       Swal.fire({
-        title: "Введите данные",
+        title: `${titl}`,
         html: `
           <div class='inputad-container' style='display:none;'>
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="street" placeholder="Улица" />
-              <label for="street">Улица</label>
+              <input type="text" class="form-control" id="street" placeholder="${stre}" />
+              <label for="street">${stre}</label>
             </div>
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="home" placeholder="Дом" />
-              <label for="home">Дом</label>
+              <input type="text" class="form-control" id="home" placeholder="${casa}" />
+              <label for="home">${casa}</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" maxlength="9" id="tel" placeholder="Номер телефона" />
-                <label for="tel">Номер телефона</label>
+                <input type="text" class="form-control" maxlength="9" id="tel" placeholder="${tel}" />
+                <label for="tel">${tel}</label>
               </div>
           </div>
           <div class='inputtab-container' style='display:none;'>
  
             <div class="slider-container">
-                  <label for="rangeSlider" class="form-label">Выберите номер столика:</label>
+                  <label for="rangeSlider" class="form-label">${vibstol}</label>
                   <input type="range" class="form-range" id="table" min="1" max="10" value="5">
-                   <p>Текущий номер столика: <span id="sliderValue">5</span></p>
+                   <p>${stol} <span id="sliderValue">5</span></p>
             </div>
           </div>
            <div class="form-floating mb-3" id="coupon-container1" style="display:none;">
-              <input type="text" class="form-control" id="coupon" placeholder="Купон для всего заказов" />
-              <label for="coupon">Купон для всего заказов</label>
+              <input type="text" class="form-control" id="coupon" placeholder="${cupall}" />
+              <label for="coupon">${cupall}</label>
             </div>
             <div class="form-floating mb-3" id="coupon-container2" style="display:none;">
-              <input type="text" class="form-control" id="couponIt" placeholder="Купон для товара" />
-              <label for="coupon">Купон для товара</label>
+              <input type="text" class="form-control" id="couponIt" placeholder="${cupone}" />
+              <label for="coupon">${cupone}</label>
             </div>
           <div class="form-check couponch">
               <input type="checkbox" class="form-check-input" id="couponCheckbox" />
-              <label class="form-check-label" for="couponCheckbox">Есть купон?</label>
+              <label class="form-check-label" for="couponCheckbox">${ifcup}</label>
             </div>
           <div class="mb-3">
             <label>
               <input type="radio" id="Cash" name="paymentMethod" value="CASH" />
-              Наличные
+              ${cash}
             </label>
             <label style="margin-left: 15px;">
               <input type="radio" id="Card" name="paymentMethod" value="CARD" />
-              Карта
+              ${car}
             </label>
           </div>
         `,
@@ -1432,10 +1399,16 @@ async function Hachchange(){
         })
         .then(response => response.text())
         .then(data => {
+          let titl='Успех!';
+      let tex='Ваш заказ принят!'
+      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+        titl='Succes!';
+        tex='Comanda dvs. a fost acceptată!'
+      }
             // Обрабатываем успешный ответ
             Swal.fire({
-              title: "Успех!",
-              text: "Ваш заказ принят!",
+              title: `${titl}`,
+              text: `${tex}`,
               icon: "success",
               customClass: {
                 confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
@@ -1443,10 +1416,16 @@ async function Hachchange(){
             })
         })
         .catch(error => {
+          let titl='Ошибка!';
+          let tex='Не удалось принять заказ!'
+      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+        titl='Eroare!';
+        tex='Nu s-a acceptat comanda!'
+      }
             // Обрабатываем ошибку при отправке
             Swal.fire({
-              title: "Ошибка!",
-              text: "Не удалось принять заказ!",
+              title: `${titl}`,
+              text: `${tex}`,
               icon: "error",
               customClass: {
                 confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
@@ -1502,10 +1481,16 @@ async function Hachchange(){
       })
       .then(response => response.text())
       .then(data => {
+        let titl='Успех!';
+      let tex='Ваш заказ принят!'
+      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+        titl='Succes!';
+        tex='Comanda dvs. a fost acceptată!'
+      }
           // Обрабатываем успешный ответ
           Swal.fire({
-            title: "Успех!",
-            text: "Ваш заказ принят!",
+            title: `${titl}`,
+            text: `${tex}`,
             icon: "success",
             customClass: {
               confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
@@ -1513,10 +1498,16 @@ async function Hachchange(){
           })
       })
       .catch(error => {
+        let titl='Ошибка!';
+          let tex='Не удалось принять заказ!'
+      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+        titl='Eroare!';
+        tex='Nu s-a acceptat comanda!'
+      }
           // Обрабатываем ошибку при отправке
           Swal.fire({
-            title: "Ошибка!",
-            text: "Не удалось принять заказ!",
+            title: `${titl}`,
+            text: `${tex}`,
             icon: "error",
             customClass: {
               confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
@@ -1529,8 +1520,12 @@ async function Hachchange(){
       roler();
     }
     else{
+      let titl='Вы ничего не выбрали!';
+      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+        titl='Nu ai ales nimic';
+      }
       Swal.fire({
-        title: "Вы ничего не выбрали!",
+        title: `${titl}`,
         icon: "error",
         confirmButtonColor: "#2F9262"
       });
@@ -1562,6 +1557,21 @@ async function Hachchange(){
         let contentfetch= await fetch(`http://46.229.212.34:9091/api/v1/products/${onlyItem}`);
         let contentdat=await contentfetch.json();
         let contentimg=contentdat.photoResponseDTOList[0].url;
+
+        let name=contentdat.productResponseDTO.name;
+          let descr=contentdat.productResponseDTO.description;
+        if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+          const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${onlyItem}?lang=ro`, {
+            method: "GET"
+        });
+    
+        if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
+    
+        const dat = await respo.json();
+        name=dat.name;
+        descr=dat.description;
+        
+        }
         let contentitem=[];
         contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
           contentimg, contentdat.productResponseDTO.description,
@@ -1573,10 +1583,15 @@ async function Hachchange(){
         for (let loadingScreen of loadingScreens) {
           loadingScreen.classList.add('close');
     } 
+    if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+      // Функции когда по руммынскому
+      headerRum();
+      footerRum();
+    }
         WeekTop();
         Registr();
-        
         loadscreen();
+        Language();
         document.querySelector('.only-item').addEventListener("click", function(e) {
           // Находим родительский элемент с классом .plus-min
           const plusmin = e.target.closest(".plus-min");
@@ -1648,14 +1663,32 @@ async function Hachchange(){
           let contentdat=await contentfetch.json();
           let contentimg=contentdat.photoResponseDTOList[0].url;
           console.log(contentimg);
+          let name=contentdat.productResponseDTO.name;
+          let descr=contentdat.productResponseDTO.description;
+        if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+          const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${onlyItem}?lang=ro`, {
+            method: "GET"
+        });
+    
+        if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
+    
+        const dat = await respo.json();
+        name=dat.name;
+        descr=dat.description;
+        }
           let contentitem=[];
-          contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
-            contentimg, contentdat.productResponseDTO.description,
+          contentitem.push(name, contentdat.productResponseDTO.price,
+            contentimg, descr,
              contentdat.productResponseDTO.cookingTime);
           menusect.innerHTML = renderHeader()+renderItem(contentitem)+renderFooter();
+          if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+            // Функции когда по руммынскому
+            headerRum();
+            footerRum();
+          }
           Registr();
           WeekTop();
-          loadscreen();
+          loadscreen(); 
           document.querySelector('.only-item').addEventListener("click", function(e) {
             // Находим родительский элемент с классом .plus-min
             const plusmin = e.target.closest(".plus-min");
@@ -1740,6 +1773,11 @@ async function Hachchange(){
       } 
       Sendmes();
       loadscreen();
+      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+        ChangeTitlerum();
+        footerRum();
+
+      }
       // Добавляем обработчик события клика по документу
       document.addEventListener('click', function (e) {
         var navbarToggler = document.querySelector('.navbar-toggler'); // Кнопка меню
@@ -1864,7 +1902,210 @@ function cacheBackground(url) {
       })
       .catch(err => console.error("Ошибка загрузки:", err));
 }
+function footerRum(){
+  document.querySelector('footer').innerHTML=`
+  <div class="container-fluid foot">
+          <div class="row text-center">
+            <h1 class="col-12" id="about"><b>PARKTOWN COFFEE</b></h1>
+          </div>
+          <div class="row text-center">
+            <div class="col-md-4 part">
+              <h3>Adresă</h3>
+              <h5>Lenin 81/a</h5>
+              <h5>Copceac</h5>
+            </div>
+            <div class="col-md-4 part">
+              <h3>Orar</h3>
+              <h5>de la 8:00 până la 22:00</h5>
+              <h5>Bucătăria până la 21:00</h5>
+            </div>
+            <div class="col-md-4 part">
+              <h3>Contacte</h3>
+              <h5>tel: 078299844</h5>
+            </div>
+          </div>
+          <p>Acest website a fost realizat în cadrul
+          competiției „Tekwill Junior Ambassadors” organizată de proiectul „Tekwill în Fiecare
+          Școală” și nu reflectă neapărat opinia proiectului.</p>
+        </div>
+  `;
+}
+function ChangeTitlerum(){
+  document.querySelector('.aboutmenu').innerHTML=`
+   <header class="title">
+          <nav class="navbar navbar-expand-md navcont">
+            <div class="container-fluid">
+              <div class="logoimg">
+              <img src="./css/Park.png" alt="" /> 
+              </div>
+              
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarcont"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span><i class="bx bx-menu"></i></span>
+              </button>
+    
+              <div class="collapse navbar-collapse" id="navbarcont">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item active"><a href="#menu">Meniu</a></li>
+                  <li class="nav-item"><a href="#about">Despre noi</a></li>
+                  <li class="nav-item"><a href="#Contacts">Contacte</a></li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+        </header>
+        <h1 class='parktitle' id='about'>PARKTOWN <span>COFFEE<span></h1>
+        <div class="aboutrestoran">
+        
+        <p class="restdescr">
+        Un restaurant care te cufundă într-o atmosferă de plăcere gastronomică. 
+        Oferim un meniu de autor, combinând tradițiile cu tendințele culinare moderne. 
+        Interiorul confortabil și atmosfera primitoare fac din PARKTOWN COFFEE locul ideal 
+        pentru momente speciale și întâlniri. Bucătarii noștri folosesc ingrediente proaspete și de calitate, 
+        creând preparate inspiraționale. Vino să descoperi un gust unic și emoții de neuitat.
+        </p>
+        
+        <button class="ourmenu">
+        <a href="#menu">Meniul nostru</a></button>
+      </div>
+      
+      <section class='menuContainer'>
+      <div class="aboutourgroup container-fluid">
+        <div class="commantname">Echipa noastră</div>
+        <div class="command-imgs">
+            <div class="command-img">
+              <img src="./img/povara.jpg" alt="Echipa noastră">
+            </div>
+             <div class="command-img">
+              <img src="./img/Komanda.jpg" alt="Echipa noastră">
+            </div>
+        </div>
+      </div>
+      </section>
+      
+      <section class="contact-us">
+    <form class='mes'>
+        <div class="inputs">
+            <h3 class="contactTitle" id="Contacts">Contactați-ne</h3>
+            <div class="contact-inputs">
+                <div class="form-floating mb-3 col-6">
+                    <input type="text" class="form-control" id="contact-name" placeholder="Nume" required/>
+                    <label for="contact-name">Nume</label>
+                </div>
+                <div class="form-floating mb-3 col-6">
+                    <input type="email" class="form-control" id="contact-mail" placeholder="Email" required/>
+                    <label for="contact-mail">Email</label>
+                </div>
+                <div class="form-floating mb-3 col-6">
+                    <input type="text" class="form-control" maxlength="9" id="contact-number" placeholder="Număr de telefon" required/>
+                    <label for="contact-number">Număr de telefon</label>
+                </div>
+                <div class="form-floating mb-3 col-6">
+                    <input type="text" class="form-control" id="contact-event" placeholder="Eveniment" required/>
+                    <label for="contact-event">Eveniment</label>
+                </div>
+                <div class="form-group mb-3">
+                    <textarea class="form-control" placeholder="Mesaj" id="contact-message" rows="3" required></textarea>
+                </div>
+            </div>
+            <button type="submit" class="contact-button text-end">Trimite</button>
+        </div>
+    </form> 
+    
+    <div class="contact-info">
+        <div>
+            <h3><b>Program de lucru</b></h3>
+            <h5>de la 8:00 la 22:00</h5>
+            <h5>Bucătăria până la 21:00</h5>
+        </div>
+        <div>
+            <h3><b>Adresă de contact</b></h3>
+            <h5><span><i class="bx bxs-location-plus"></i></span> Lenin 81/a, Copceac</h5>
+            <h5><span><i class="bx bx-phone"></i></span> 078299844</h5>
+            <h5>
+                <span><i class="bx bxl-instagram"></i></span>
+                <a href="https://www.instagram.com/parktown_coffee/">parktown_coffee</a>
+            </h5>
+            <h5>
+                <span><i class='bx bxl-telegram'></i></span>
+                <a href="https://t.me/PARK_TOWN_BOT" target="_blank">Telegram</a>
+            </h5>
+        </div>
+    </div>
+</section>
+  `;
+}
+function headerRum(){
+  document.querySelector('header').innerHTML=`
+  <nav class="navbar navbar-expand-lg navcont">
+    <div class="container-fluid">
+      <h1 class="logo">
+        <a style="text-decoration:none">
+          <img src="./css/Park.png" alt="" />
+        </a>
+      </h1>
+      <span class="buttonsing-1 d-flex flex-row">
+        <select class="form-select" id="lang">
+          <option value="ru">ru</option>
+          <option value="ro">ro</option>
+        </select>
+        <div class="dropdown singin">
+          <ul class="dropdown-menu text-small shadow dropdown-menu-start">
+            <li><a class="dropdown-item" id="profile" style="color: black;">Profil</a></li>
+            <li><a class="dropdown-item" id="notification" style="color: black;">Notificări</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item exit" style="color: black;">Ieșire</a></li>
+          </ul>
+          <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class='bx bxs-user-circle singinuser'></i>
+          </a>
+        </div>
 
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarcont" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span><i class="bx bx-menu"></i></span>
+        </button>
+      </span>
+
+      <div class="collapse navbar-collapse" id="navbarcont">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item active"><a href="#menu">Meniu</a></li>
+          <li class="nav-item"><a href="#about">Despre noi</a></li>
+          <li class="nav-item"><a href="#Contacts">Contacte</a></li>
+        </ul>
+      </div>
+
+      <span class="buttonsing-2 flex-row">
+        <select class="form-select" id="lang">
+          <option value="ru">ru</option>
+          <option value="ro">ro</option>
+        </select>
+        <div class="dropdown singin">
+          <ul class="dropdown-menu text-small shadow dropdown-menu-start">
+            <li><a class="dropdown-item" id="profile" style="color: black;">Profil</a></li>
+            <li><a class="dropdown-item" id="notification" style="color: black;">Notificări</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item exit" style="color: black;">Ieșire</a></li>
+          </ul>
+          <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class='bx bxs-user-circle singinuser'></i>
+          </a>
+        </div>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarcont" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span><i class="bx bx-menu"></i></span>
+        </button>
+      </span>
+    </div>
+  </nav>
+`;
+}
 function loadCachedBackground(url) {
   const cachedImage = localStorage.getItem("backgroundImage");
   if (cachedImage) {
@@ -1881,6 +2122,48 @@ function Language(){
       localStorage.setItem('lang', JSON.stringify(event.target.value));
       Hachchange();
   });
+  if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+    
+    const observer = new MutationObserver(() => {
+      document.querySelectorAll('.swal2-confirm').forEach(it => {
+        it.textContent = 'Confirma';
+      });
+      document.querySelectorAll('.swal2-cancel').forEach(it => {
+        it.textContent = 'Anulare';
+      });
+      document.querySelectorAll('.swal2-validation-message').forEach(it => {
+        it.textContent = 'Vă rugăm să completați toate câmpurile!';
+      });
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+      
+
+      document.querySelectorAll('.btn-success').forEach(it=>{
+      it.textContent='Confirma';
+    });
+    document.querySelectorAll('.decline').forEach(it=>{
+      it.textContent='Anulare';
+    });
+    document.querySelector('.modal-header h1').textContent='Comanda ta';
+    document.querySelector('.check-box label').textContent='Comanda la domiciliu';
+    document.querySelector('.ord thead').innerHTML=`
+    <tr>
+                        <th style="text-align: center;">№</th>
+                        <th style="text-align: center;">Nume</th>
+                        <th style="text-align: center;">Preţ</th>
+                        <th style="text-align: center;">Cantitate</th>
+                        <th></th>
+                        
+                      </tr>
+    `;
+    document.querySelector("ul li").textContent='Toate';
+    footerRum();
+    headerRum();
+  }
   });
 }
 function loadscreen(){
@@ -1898,12 +2181,15 @@ window.addEventListener('hashchange', function(){
   console.log(hash);
   if(hash!=='#Contacts'){
     Hachchange();
+    localStorage.setItem('hesh', JSON.stringify(hash));
   }
+  if(JSON.parse(localStorage.getItem('hesh'))!=='#about' && hash==='#Contacts'){
+    Hachchange();
+    document.getElementById("Contacts").scrollIntoView({ behavior: "smooth" });
+
+  }
+  
 });
 window.addEventListener('load', function(){
-  const hash = extractHash(window.location.hash);
-  if(!hash){
-    console.log(3242);
-  }
   Hachchange();
 });

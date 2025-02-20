@@ -255,6 +255,71 @@ function getPastDate(days) {
     pastDate.setDate(new Date().getDate() - days);  // Вычитаем дни
     return getFormattedDate(pastDate);
 }
+// Получение румынской версии
+// для категории
+async function Rumcat(id) {
+    Swal.fire({
+        title: "Alternativă",
+        html: `
+        <div class="form-floating mb-3 tovname">
+            <input type="text" class="form-control" id="rumname" />
+            <label for="rumname">Nume</label>
+        </div>
+        `,
+        confirmButtonColor: "#2F9262",
+        confirmButtonText: "Trimite",
+        showCancelButton: true,
+        cancelButtonText:'Anula',
+        preConfirm: () => {
+            const rumnume = document.getElementById("rumname").value.trim();
+            
+            if (!rumnume) {
+                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                return false;
+            }
+
+            return { rumname: rumnume};
+        }
+    }).then(async (result) => {
+        if (result.isConfirmed) {  // Если пользователь нажал "OK"
+            try {
+                const response = await fetch("http://46.229.212.34:9091/api/v1/product-translations", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        productId: id,  // Передаём ID продукта
+                        languageCode:'ro',
+                        name: result.value.rumname,
+                    })
+                });
+
+                if (!response.ok) throw new Error("Ошибка при отправке данных");
+
+                Swal.fire({
+                    title: "Успез!",
+                    text: "Перевод добавлен!",
+                    icon: "success",
+                    customClass: {
+                      confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                    }
+                  })
+            } catch (error) {
+                Swal.fire({
+                    title: "Ошибка!",
+                    text: "Не удалось добавить перевод!",
+                    icon: "error",
+                    customClass: {
+                      confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                    }
+                  });
+            }
+        }
+    });
+}
+// для товара
 async function Rumname(id) {
     Swal.fire({
         title: "Alternativă",
@@ -865,7 +930,11 @@ async function fetchProductTypes() {
           table.classList.add('one-category');
           table.classList.add(`item-${item.id}`);
           table.innerHTML=`
-          <h3>${item.name}</h3>
+          <div class='catTitle'>
+            <h3>${item.name}</h3>
+          <button class="delete changecatlang btn btn-primary" data-id="${item.id}"><i class='bx bx-globe'></i> </button>
+          </div>
+          
                 <table class="category-items table">
                     <thead>
                       <tr>
@@ -901,6 +970,12 @@ async function fetchProductTypes() {
             item.addEventListener('click', function(){
                 const itemId = this.getAttribute("data-id");
                 Rumname(itemId);
+            });
+        })
+        document.querySelectorAll('.changecatlang').forEach(item=>{
+            item.addEventListener('click', function(){
+                const itemId = this.getAttribute("data-id");
+                Rumcat(itemId);
             });
         })
         document.querySelectorAll('.history').forEach(item=>{
