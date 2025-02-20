@@ -1573,8 +1573,8 @@ async function Hachchange(){
         
         }
         let contentitem=[];
-        contentitem.push(contentdat.productResponseDTO.name, contentdat.productResponseDTO.price,
-          contentimg, contentdat.productResponseDTO.description,
+        contentitem.push(name, contentdat.productResponseDTO.price,
+          contentimg, descr,
            contentdat.productResponseDTO.cookingTime);
         console.log(contentimg);
         localStorage.setItem("onlyItem", JSON.stringify(onlyItem));
