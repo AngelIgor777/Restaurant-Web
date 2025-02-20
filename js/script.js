@@ -1375,6 +1375,7 @@ async function Hachchange(){
           }
           orderrequest.push(todo);
           })
+          
         // Проверка на регистрацию
         let user=JSON.parse(localStorage.getItem('uuid'));
         let restered=false
@@ -1423,7 +1424,9 @@ async function Hachchange(){
               customClass: {
                 confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
               }
-            })
+            });
+            localStorage.setItem("order", JSON.stringify([]))
+          localStorage.setItem("totalcost", JSON.stringify(0.0))
         })
         .catch(error => {
           let titl='Ошибка!';
@@ -1505,7 +1508,9 @@ async function Hachchange(){
             customClass: {
               confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
             }
-          })
+          });
+          localStorage.setItem("order", JSON.stringify([]))
+          localStorage.setItem("totalcost", JSON.stringify(0.0))
       })
       .catch(error => {
         let titl='Ошибка!';
