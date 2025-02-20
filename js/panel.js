@@ -283,14 +283,25 @@ async function Rumcat(id) {
     }).then(async (result) => {
         if (result.isConfirmed) {  // Если пользователь нажал "OK"
             try {
-                const response = await fetch("http://46.229.212.34:9091/api/v1/product-translations", {
-                    method: "POST",
+                let fet=`http://46.229.212.34:9091/api/v1/product-type-translations/`;
+                let met="POST";
+                const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-type-translations/${id}?lang=ro`, {
+                    method: "GET"
+                });
+                console.log(respo)
+                if (respo.status !== 404) { 
+                    fet=`http://46.229.212.34:9091/api/v1/product-type-translations/${id}`;
+                    met="PATCH";
+                }
+                console.log(met, id);
+                const response = await fetch(fet, {
+                    method: met,
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        productId: id,  // Передаём ID продукта
+                        productTypeId: id,  // Передаём ID продукта
                         languageCode:'ro',
                         name: result.value.rumname,
                     })

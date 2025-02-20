@@ -411,6 +411,9 @@ function formatTime(inputTime) {
   if (seconds > 0) {
       formattedTime += `${seconds} сек`;
   }
+  if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+    return `Timp: ${formattedTime.trim()}`; // Убираем лишние пробелы
+  }
   return `Время: ${formattedTime.trim()}`; // Убираем лишние пробелы
 }
 async function Sendmes() {
@@ -465,13 +468,13 @@ async function WeekTop() {
       const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${item.id}?lang=ro`, {
         method: "GET"
     });
+    
+    if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
     const dat = await respo.json();
     name=dat.name;
     descr=dat.description;
     console.log(43424);
     document.querySelector('.weektop h2').textContent='Top 10 feluri de mâncare ale săptămânii';
-    if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
-    
     }
     const menuItem = document.createElement('div');
     menuItem.className = `col-sm-6 col-md-4 col-lg-1 item swiper-slide visible `;
@@ -483,7 +486,7 @@ async function WeekTop() {
         <h3><b>${descr}</b></h3>
             <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
               ? `Примерное время готовки: <b>${formatTime(item.cookingTime)}</b>` 
-              : "Сразу"}</h5>
+              : ""}</h5>
         </div>
         </a>
         <img src="${imageUrl}" alt="${item.name}" />
@@ -619,14 +622,15 @@ async function fetchProductTypes() {
       productList.innerHTML = '<li ><a class="active" data-filter="*">Все</a></li>'; // Очистка списка
 
       // Создаем категории
-      data.content.forEach( async item => {
+      for (const item of data.content) {
         const listItem = document.createElement('li');
         const link = document.createElement('a');
         
         // создание рум версии
         let namerum=item.name;
+        console.log(namerum);
         if(JSON.parse(localStorage.getItem('lang'))==='ro'){
-          const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${item.id}?lang=ro`, {
+          const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-type-translations/${item.id}?lang=ro`, {
             method: "GET"
         });
     
@@ -634,12 +638,13 @@ async function fetchProductTypes() {
     
         const dat = await respo.json();
         namerum=dat.name;
+        console.log(namerum);
         }
         link.textContent = `${namerum}`;
         link.setAttribute('data-filter', `.${item.id}`); 
         listItem.appendChild(link); // Вставляем ссылку в элемент списка
         productList.appendChild(listItem);
-      });
+      };
 
       // После загрузки категорий загружаем меню
       const categoryIds = data.content.map(item => item.id); // Извлекаем IDs
@@ -702,7 +707,7 @@ async function fetchMenuItems(categoryIds) {
             <h3><b>${descr}</b></h3>
                 <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
                   ? `Примерное время готовки: <b>${formatTime(item.cookingTime)}</b>` 
-                  : "Сразу"}</h5>
+                  : ""}</h5>
             </div>
             </a>
             <img src="${imageUrl}" alt="${item.name}" />
@@ -1574,6 +1579,7 @@ async function Hachchange(){
         name=dat.name;
         descr=dat.description;
         
+        
         }
         let contentitem=[];
         contentitem.push(name, contentdat.productResponseDTO.price,
@@ -1590,6 +1596,8 @@ async function Hachchange(){
       // Функции когда по руммынскому
       headerRum();
       footerRum();
+      document.querySelector('.ingredients span').textContent='Descriere';
+    
     }
         WeekTop();
         Registr();
@@ -1678,6 +1686,7 @@ async function Hachchange(){
         const dat = await respo.json();
         name=dat.name;
         descr=dat.description;
+       
         }
           let contentitem=[];
           contentitem.push(name, contentdat.productResponseDTO.price,
@@ -1688,10 +1697,12 @@ async function Hachchange(){
             // Функции когда по руммынскому
             headerRum();
             footerRum();
+            document.querySelector('.ingredients span').textContent='Descriere';
           }
           Registr();
           WeekTop();
           loadscreen(); 
+          Language();
           document.querySelector('.only-item').addEventListener("click", function(e) {
             // Находим родительский элемент с классом .plus-min
             const plusmin = e.target.closest(".plus-min");
@@ -2166,6 +2177,8 @@ function Language(){
     document.querySelector(".category-list li a").textContent='Toate';
     footerRum();
     headerRum();
+    document.querySelector(".description h5 ").textContent='Timp aproximativ de gătire';
+    
   }
   });
 }
