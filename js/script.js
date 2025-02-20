@@ -628,7 +628,7 @@ async function fetchProductTypes() {
         
         // создание рум версии
         let namerum=item.name;
-        console.log(namerum);
+        console.log(namerum, item.id);
         if(JSON.parse(localStorage.getItem('lang'))==='ro'){
           const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-type-translations/${item.id}?lang=ro`, {
             method: "GET"
@@ -638,7 +638,7 @@ async function fetchProductTypes() {
     
         const dat = await respo.json();
         namerum=dat.name;
-        console.log(namerum);
+        console.log(dat);
         }
         link.textContent = `${namerum}`;
         link.setAttribute('data-filter', `.${item.id}`); 
