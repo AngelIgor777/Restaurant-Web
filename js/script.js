@@ -2160,7 +2160,7 @@ function Language(){
                         
                       </tr>
     `;
-    document.querySelector("ul li").textContent='Toate';
+    document.querySelector(".category-list li a").textContent='Toate';
     footerRum();
     headerRum();
   }
