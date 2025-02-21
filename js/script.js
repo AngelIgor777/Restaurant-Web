@@ -628,7 +628,7 @@ async function fetchProductTypes() {
         const listItem = document.createElement('li');
         const link = document.createElement('a');
         
-        // создание рум версии
+        // создание рум версии категорий
         let namerum=item.name;
         console.log(namerum, item.id);
         if(JSON.parse(localStorage.getItem('lang'))==='ro'){
