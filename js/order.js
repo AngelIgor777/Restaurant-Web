@@ -176,9 +176,10 @@ function displayMessage(message) {
 function displayOrderBB(data) {
   const messageDiv = document.getElementById("messages");
   const messageElement = document.createElement("div");
-  messageElement.className = "order";
 
   const order = data.orderResponseDTO;
+  messageElement.className = `order it-${order.id}`;
+
 
   // Displaying basic order details
   messageElement.innerHTML = `
@@ -206,12 +207,12 @@ function displayOrderBB(data) {
           ${formatProducts(order.products)}
       </div>
       <div class="buttonsall">
-        <button class="confirm">Подтвердить</button>
+        <button class="confirm" data-id="${order.id}">Подтвердить</button>
         </div>
       `
 ;
 messageDiv.prepend(messageElement); // Добавить в начало
-
+confirmbut();
   // Автопрокрутка вниз
   messageDiv.scrollTop = messageDiv.scrollHeight;
 }

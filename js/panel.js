@@ -365,12 +365,13 @@ async function Rumname(id) {
             try {
                 let fet=`http://46.229.212.34:9091/api/v1/product-translations`;
                 let met="POST";
-                const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-type-translations/${id}?lang=ro`, {
+                const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${id}?lang=ro`, {
                     method: "GET"
                 });
                 console.log(respo)
                 if (respo.status !== 404) { 
-                    fet=`http://46.229.212.34:9091/api/v1/product-translations/${id}`;
+                    const dat = await respo.json();
+                    fet=`http://46.229.212.34:9091/api/v1/product-translations/${dat.id}?lang=ro`;
                     met="PATCH";
                 }
                 const response = await fetch(fet, {

@@ -1436,8 +1436,10 @@ async function Hachchange(){
                 confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
               }
             });
-            localStorage.setItem("order", JSON.stringify([]))
-          localStorage.setItem("totalcost", JSON.stringify(0.0))
+          localStorage.setItem("order", JSON.stringify([]));
+          localStorage.setItem("totalcost", JSON.stringify(0.0));
+          const buttosend=document.querySelector("p.colvo");
+          buttosend.textContent='0';
         })
         .catch(error => {
           let titl='Ошибка!';
@@ -1520,8 +1522,10 @@ async function Hachchange(){
               confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
             }
           });
-          localStorage.setItem("order", JSON.stringify([]))
-          localStorage.setItem("totalcost", JSON.stringify(0.0))
+          localStorage.setItem("order", JSON.stringify([]));
+          localStorage.setItem("totalcost", JSON.stringify(0.0));
+          const buttosend=document.querySelector("p.colvo");
+          buttosend.textContent='0';
       })
       .catch(error => {
         let titl='Ошибка!';
