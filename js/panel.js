@@ -289,8 +289,9 @@ async function Rumcat(id) {
                     method: "GET"
                 });
                 console.log(respo)
-                if (respo.status !== 404) { 
-                    fet=`http://46.229.212.34:9091/api/v1/product-type-translations/${id}`;
+                if (respo.status !== 404) {
+                    const dat = await respo.json();
+                    fet=`http://46.229.212.34:9091/api/v1/product-type-translations/${dat.id}?lang=ro`;
                     met="PATCH";
                 }
                 console.log(met, id);
