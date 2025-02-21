@@ -778,9 +778,13 @@ async function updateModal(order) {
       `);
       
     }
+    let total='Всего:';
+    if(JSON.parse(localStorage.getItem('lang'))){
+      total='Total:';
+    }
     tbody.insertAdjacentHTML('beforeend', `
       <br>
-      <h6 class="itog-cost">Всего: ${totalcost}<h6>
+      <h6 class="itog-cost">${total} ${totalcost}<h6>
       `);
     // Важно: добавляем обработчик события для кнопок удаления
     const deleteButtons = document.querySelectorAll(".delete");
