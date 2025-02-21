@@ -793,11 +793,11 @@ input[type="number"]::-webkit-inner-spin-button {
 .buttonsing-2{
   display: flex;
 }
-#lang{
+.lang{
   background-color: rgba(0, 0, 0, 0.4);
   color: #fff;
 }
-#lang option{
+.lang option{
   background-color: rgba(0, 0, 0, 0.6);
   color: #fff;
 }

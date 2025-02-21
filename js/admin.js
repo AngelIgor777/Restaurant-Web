@@ -4,7 +4,7 @@ const renderHeader = () => `
           <div class="container-fluid">
             <h1 class="logo"><a style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
-            <select class="form-select" id='lang'>
+            <select class="form-select lang" >
               <option value="ru">ru</option>
               <option value="ro">ro</option>
             </select>
@@ -43,7 +43,7 @@ const renderHeader = () => `
             </div>
   
             <span class="buttonsing-2 flex-row">
-            <select class="form-select" id='lang'>
+            <select class="form-select lang" >
               <option value="ru">ru</option>
               <option value="ro">ro</option>
             </select>
@@ -125,18 +125,6 @@ const renderBody =()=>`
 `
 function start(){
   document.querySelector('body').innerHTML=renderHeader()+renderBody()+renderFooter();
-  if(JSON.parse(localStorage.getItem('lang'))==='ro'){
-    document.querySelector('.chatbut').textContent='Trimite';
-    document.querySelector('label[for=chatpot]').textContent='Introdu codul de verificare';
-    document.querySelector('#chatpot').textContent='Introdu codul de verificare';
-    document.querySelector('#chatnum').textContent='Număr de chat';
-    document.querySelector('label[for=chatnum]').textContent='Număr de chat';
-    document.querySelector('.admininput h1').textContent='Intrare';
-    document.querySelector('.info-box p').textContent='Așteptați mesajele...';
-    
-    footerRum();
-    headerRum();
-  }
 }
 
 
@@ -227,7 +215,7 @@ function headerRum(){
         </a>
       </h1>
       <span class="buttonsing-1 d-flex flex-row">
-        <select class="form-select" id="lang">
+        <select class="form-select lang" >
           <option value="ru">ru</option>
           <option value="ro">ro</option>
         </select>
@@ -257,7 +245,7 @@ function headerRum(){
       </div>
 
       <span class="buttonsing-2 flex-row">
-        <select class="form-select" id="lang">
+        <select class="form-select lang" >
           <option value="ru">ru</option>
           <option value="ro">ro</option>
         </select>
@@ -282,11 +270,29 @@ function headerRum(){
 `;
 }
 function Language(){
-  document.querySelectorAll("#lang").forEach(it=>{
+  
+  document.querySelectorAll(".lang").forEach(it=>{
+    console.log(it);
     it.value = JSON.parse(localStorage.getItem('lang'));
     it.addEventListener("change", function(event) {
+      console.log(3);
       localStorage.setItem('lang', JSON.stringify(event.target.value));
-      start();
+      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+        document.querySelector('.chatbut').textContent='Trimite';
+        document.querySelector('label[for=chatpot]').textContent='Introdu codul de verificare';
+        document.querySelector('#chatpot').textContent='Introdu codul de verificare';
+        document.querySelector('#chatnum').textContent='Număr de chat';
+        document.querySelector('label[for=chatnum]').textContent='Număr de chat';
+        document.querySelector('.admininput h1').textContent='Intrare';
+        document.querySelector('.info-box p').textContent='Așteptați mesajele...';
+        
+        footerRum();
+        headerRum();
+        Language();
+      }
+      if(JSON.parse(localStorage.getItem('lang'))==='ru'){
+        start();
+      }
   });
   
   });

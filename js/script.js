@@ -12,7 +12,7 @@ const renderHeader = () => `
           <div class="container-fluid">
             <h1 class="logo"><a style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
             <span class="buttonsing-1 d-flex flex-row">
-            <select class="form-select" id='lang'>
+            <select class="form-select lang" >
               <option value="ru">ru</option>
               <option value="ro">ro</option>
             </select>
@@ -51,7 +51,7 @@ const renderHeader = () => `
             </div>
   
             <span class="buttonsing-2 flex-row">
-            <select class="form-select" id='lang'>
+            <select class="form-select lang">
               <option value="ru">ru</option>
               <option value="ro">ro</option>
             </select>
@@ -353,7 +353,7 @@ const renderItem= (onlyItem=[]) =>`
             <h1 class="item-name">${onlyItem[0]}</h1>
             <h4 class="cost-item">${onlyItem[1]}MDL</h4>
             <h5 class="weith">${formatTime(onlyItem[4])}</h5>
-            <h5 class="ingredients" style="word-wrap: break-word !important;"><span>Описание: </span> ${onlyItem[3]} </h5>
+            <h5 class="ingredients" style="word-wrap: break-word !important;">${formatDescr(onlyItem[3])}</h5>
             <div class="send-but d-flex justify-content-center">
               <div class="plus-min">
                 <p class="min"><i class="bx bx-minus-circle"></i></p>
@@ -392,6 +392,12 @@ const renderItem= (onlyItem=[]) =>`
   
     </div>
 `
+function formatDescr(inputDescr){
+  if(!inputDescr){
+    return '';
+  }
+  return `<span>Описание: </span> ${inputDescr} `
+}
 function formatTime(inputTime) {
   const parts = inputTime.split(':').map(Number); // Разделяем строку и преобразуем части в числа
   const hours = parts[0];
@@ -414,9 +420,9 @@ function formatTime(inputTime) {
   if(JSON.parse(localStorage.getItem('lang'))==='ro'){
     formattedTime=''
     formattedTime+=`${minutes}`
-    return `${formattedTime.trim()}min`; // Убираем лишние пробелы
+    return `<span>Timp aproximativ de gătire: </span> ${formattedTime.trim()}min`; // Убираем лишние пробелы
   }
-  return `Время: ${formattedTime.trim()}`; // Убираем лишние пробелы
+  return `<span>Примерное время готовки: </span>${formattedTime.trim()}`; // Убираем лишние пробелы
 }
 async function Sendmes() {
   document.querySelector(".mes").addEventListener("submit", function(event) {
@@ -487,7 +493,7 @@ async function WeekTop() {
         <div class="description">
         <h3><b>${descr}</b></h3>
             <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
-              ? `<span>Примерное время готовки:</span> <b>${formatTime(item.cookingTime)}</b>` 
+              ? `${formatTime(item.cookingTime)}</b>` 
               : ""}</h5>
         </div>
         </a>
@@ -708,7 +714,7 @@ async function fetchMenuItems(categoryIds) {
             <div class="description">
             <h3><b>${descr}</b></h3>
                 <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
-                  ? `<span>Примерное время готовки: </span><b>${formatTime(item.cookingTime)}</b>` 
+                  ? `${formatTime(item.cookingTime)}</b>` 
                   : ""}</h5>
             </div>
             </a>
@@ -1085,13 +1091,18 @@ async function Hachchange(){
     document.querySelector('.app').style.display='none';
     menusect.innerHTML='';
     menusect.innerHTML=renderHeader()+renderMenu()+renderFooter();
-    
+
+  
+   
+   
     const loadingScreens = document.getElementsByClassName('loader');
         for (let loadingScreen of loadingScreens) {
           loadingScreen.classList.add('close');
     }
     document.querySelector('.loadcont').style.display='flex';
     
+    
+    // загрузка товаров
     await fetchProductTypes();
     loadscreen();
     // запуск всех нужных функ. после загрузки самого сайта
@@ -1606,10 +1617,13 @@ async function Hachchange(){
       document.querySelector('.ingredients span').textContent='Descriere';
     
     }
+
         WeekTop();
         Registr();
         loadscreen();
-        Language();
+        document.addEventListener("DOMContentLoaded", function() {
+          Language();
+       });
         document.querySelector('.only-item').addEventListener("click", function(e) {
           // Находим родительский элемент с классом .plus-min
           const plusmin = e.target.closest(".plus-min");
@@ -1706,10 +1720,13 @@ async function Hachchange(){
             footerRum();
             document.querySelector('.ingredients span').textContent='Descriere';
           }
+          document.addEventListener("DOMContentLoaded", function() {
+   Language();
+});
           Registr();
           WeekTop();
           loadscreen(); 
-          Language();
+          
           document.querySelector('.only-item').addEventListener("click", function(e) {
             // Находим родительский элемент с классом .plus-min
             const plusmin = e.target.closest(".plus-min");
@@ -2073,7 +2090,7 @@ function headerRum(){
         </a>
       </h1>
       <span class="buttonsing-1 d-flex flex-row">
-        <select class="form-select" id="lang">
+        <select class="form-select lang" >
           <option value="ru">ru</option>
           <option value="ro">ro</option>
         </select>
@@ -2103,7 +2120,7 @@ function headerRum(){
       </div>
 
       <span class="buttonsing-2 flex-row">
-        <select class="form-select" id="lang">
+        <select class="form-select lang" >
           <option value="ru">ru</option>
           <option value="ro">ro</option>
         </select>
@@ -2137,7 +2154,8 @@ function loadCachedBackground(url) {
   }
 }
 function Language(){
-  document.querySelectorAll("#lang").forEach(it=>{
+  
+  document.querySelectorAll(".lang").forEach(it=>{
     it.value = JSON.parse(localStorage.getItem('lang'));
     it.addEventListener("change", function(event) {
       localStorage.setItem('lang', JSON.stringify(event.target.value));
@@ -2186,7 +2204,17 @@ function Language(){
     headerRum();
     document.querySelectorAll(".description h5 span").forEach(it=>{
       it.textContent='Timp aproximativ de gătire: ';
-    })
+    });
+    document.querySelector('.category-content h1.title').innerHTML=`
+    <a
+                data-bs-toggle="collapse"
+                href="#Category"
+                id='menutext'
+                role="button"
+                aria-expanded="false"
+                aria-controls="Category"
+                > <i class="bi bi-chevron-down"></i>Meniu</a
+              >`
     
   }
   });
