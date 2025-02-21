@@ -1103,6 +1103,7 @@ async function Hachchange(){
     
     
     // загрузка товаров
+    
     await fetchProductTypes();
     loadscreen();
     // запуск всех нужных функ. после загрузки самого сайта
@@ -1616,8 +1617,9 @@ async function Hachchange(){
     } 
     if(JSON.parse(localStorage.getItem('lang'))==='ro'){
       // Функции когда по руммынскому
-      headerRum();
+      await headerRum();
       footerRum();
+      Language();
       document.querySelector('.ingredients span').textContent='Descriere';
     
     }
@@ -1625,9 +1627,7 @@ async function Hachchange(){
         WeekTop();
         Registr();
         loadscreen();
-        document.addEventListener("DOMContentLoaded", function() {
-          Language();
-       });
+        Language();
         document.querySelector('.only-item').addEventListener("click", function(e) {
           // Находим родительский элемент с классом .plus-min
           const plusmin = e.target.closest(".plus-min");
@@ -1722,14 +1722,14 @@ async function Hachchange(){
             // Функции когда по руммынскому
             headerRum();
             footerRum();
+            Language();
             document.querySelector('.ingredients span').textContent='Descriere';
           }
-          document.addEventListener("DOMContentLoaded", function() {
-   Language();
-});
+          loadscreen(); 
+          Language();
           Registr();
           WeekTop();
-          loadscreen(); 
+          
           
           document.querySelector('.only-item').addEventListener("click", function(e) {
             // Находим родительский элемент с классом .plus-min
@@ -1919,7 +1919,7 @@ function revealCards() {
     if (position < windowHeight - 50) { 
       setTimeout(() => {
         card.classList.add("visible");
-      }, index * 300); // Добавляем задержку для плавного появления
+      }, index * 200); // Добавляем задержку для плавного появления
     }
   });
 }
@@ -2147,6 +2147,16 @@ function headerRum(){
     </div>
   </nav>
 `;
+const selects = document.querySelectorAll('select.form-select.lang');
+selects.forEach(it=>{
+    
+  it.value = JSON.parse(localStorage.getItem('lang'));
+  it.addEventListener("change", function(event) {
+    localStorage.setItem('lang', JSON.stringify(event.target.value));
+    Hachchange();
+});
+
+});
 }
 function loadCachedBackground(url) {
   const cachedImage = localStorage.getItem("backgroundImage");
@@ -2158,70 +2168,76 @@ function loadCachedBackground(url) {
   }
 }
 function Language(){
-  
-  document.querySelectorAll(".lang").forEach(it=>{
-    it.value = JSON.parse(localStorage.getItem('lang'));
-    it.addEventListener("change", function(event) {
-      localStorage.setItem('lang', JSON.stringify(event.target.value));
-      Hachchange();
-  });
-  if(JSON.parse(localStorage.getItem('lang'))==='ro'){
+  setTimeout(function() {
+    const selects = document.querySelectorAll('select.form-select.lang');
+    console.log(selects);
+    selects.forEach(it=>{
     
-    const observer = new MutationObserver(() => {
-      document.querySelectorAll('.swal2-confirm').forEach(it => {
-        it.textContent = 'Confirma';
-      });
-      document.querySelectorAll('.swal2-cancel').forEach(it => {
-        it.textContent = 'Anulare';
-      });
-      document.querySelectorAll('.swal2-validation-message').forEach(it => {
-        it.textContent = 'Vă rugăm să completați toate câmpurile!';
-      });
+      it.value = JSON.parse(localStorage.getItem('lang'));
+      it.addEventListener("change", function(event) {
+        localStorage.setItem('lang', JSON.stringify(event.target.value));
+        Hachchange();
     });
-    
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    if(JSON.parse(localStorage.getItem('lang'))==='ro'){
       
+      const observer = new MutationObserver(() => {
+        document.querySelectorAll('.swal2-confirm').forEach(it => {
+          it.textContent = 'Confirma';
+        });
+        document.querySelectorAll('.swal2-cancel').forEach(it => {
+          it.textContent = 'Anulare';
+        });
+        document.querySelectorAll('.swal2-validation-message').forEach(it => {
+          it.textContent = 'Vă rugăm să completați toate câmpurile!';
+        });
+      });
+      
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+        
+  
+        document.querySelectorAll('.btn-success').forEach(it=>{
+        it.textContent='Confirma';
+      });
+      document.querySelectorAll('.decline').forEach(it=>{
+        it.textContent='Anulare';
+      });
+      document.querySelector('.modal-header h1').textContent='Comanda ta';
+      document.querySelector('.check-box label').textContent='Comanda la domiciliu';
+      document.querySelector('.ord thead').innerHTML=`
+      <tr>
+                          <th style="text-align: center;">№</th>
+                          <th style="text-align: center;">Nume</th>
+                          <th style="text-align: center;">Preţ</th>
+                          <th style="text-align: center;">Cantitate</th>
+                          <th></th>
+                          
+                        </tr>
+      `;
+      document.querySelector(".category-list li a").textContent='Toate';
+      footerRum();
+      headerRum();
+      
+      document.querySelectorAll(".description h5 span").forEach(it=>{
+        it.textContent='Timp aproximativ de gătire: ';
+      });
+      document.querySelector('.category-content h1.title').innerHTML=`
+      <a
+                  data-bs-toggle="collapse"
+                  href="#Category"
+                  id='menutext'
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="Category"
+                  > <i class="bi bi-chevron-down"></i>Meniu</a
+                >`
+      
+    }
+    });
+}, 1000);  // Задержка 1 секунда
 
-      document.querySelectorAll('.btn-success').forEach(it=>{
-      it.textContent='Confirma';
-    });
-    document.querySelectorAll('.decline').forEach(it=>{
-      it.textContent='Anulare';
-    });
-    document.querySelector('.modal-header h1').textContent='Comanda ta';
-    document.querySelector('.check-box label').textContent='Comanda la domiciliu';
-    document.querySelector('.ord thead').innerHTML=`
-    <tr>
-                        <th style="text-align: center;">№</th>
-                        <th style="text-align: center;">Nume</th>
-                        <th style="text-align: center;">Preţ</th>
-                        <th style="text-align: center;">Cantitate</th>
-                        <th></th>
-                        
-                      </tr>
-    `;
-    document.querySelector(".category-list li a").textContent='Toate';
-    footerRum();
-    headerRum();
-    document.querySelectorAll(".description h5 span").forEach(it=>{
-      it.textContent='Timp aproximativ de gătire: ';
-    });
-    document.querySelector('.category-content h1.title').innerHTML=`
-    <a
-                data-bs-toggle="collapse"
-                href="#Category"
-                id='menutext'
-                role="button"
-                aria-expanded="false"
-                aria-controls="Category"
-                > <i class="bi bi-chevron-down"></i>Meniu</a
-              >`
-    
-  }
-  });
 }
 function loadscreen(){
     const loadingScreens = document.getElementsByClassName('loader');
