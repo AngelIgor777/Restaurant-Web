@@ -601,6 +601,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 .pagul{
   display: flex;
+  flex-wrap:wrap;
   list-style: none;
   border: solid 3px #0000008e;
   padding: 20px;
