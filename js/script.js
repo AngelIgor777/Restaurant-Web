@@ -522,7 +522,7 @@ async function WeekTop() {
       slidesPerView: "auto", // Автоматическая ширина слайдов
       centeredSlides: false,
       autoplay: {
-        delay: 4000, // Автоматическое пролистывание каждые 3 секунды
+        delay: 3000, // Автоматическое пролистывание каждые 3 секунды
         disableOnInteraction: false, // Автопрокрутка не останавливается при взаимодействии
     }, 
       pagination: {
@@ -2172,6 +2172,9 @@ function loadCachedBackground(url) {
   }
 }
 function Language(){
+  if(!localStorage.getItem('lang')){
+    localStorage.setItem('lang', JSON.stringify('ru'));
+  }
   setTimeout(function() {
     const selects = document.querySelectorAll('select.form-select.lang');
     console.log(selects);

@@ -94,7 +94,9 @@ header {
 .dropdown-toggle::after{
   color: #fff;
 }
-
+.dropdown-menu.show li:hover a{
+  color: #000000 !important;
+}
 .category-content {
   max-width: 100%; /* Элементы не превышают ширину экрана */
   overflow-x: hidden; /* Запрещает содержимому выходить за пределы */
@@ -797,6 +799,7 @@ input[type="number"]::-webkit-inner-spin-button {
 .lang{
   background-color: rgba(0, 0, 0, 0.4);
   color: #fff;
+  margin: 0 10px;
 }
 .lang option{
   background-color: rgba(0, 0, 0, 0.6);
