@@ -896,6 +896,13 @@ input[type="number"]::-webkit-inner-spin-button {
   .menu-container .item h3 {
     margin-top: 20px;
   }
+  .menu-container .item .img-cost img {
+    width: 165px;
+    height: 190px !important;
+    object-fit: cover;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
 
 }
 /* 
@@ -919,7 +926,7 @@ input[type="number"]::-webkit-inner-spin-button {
   
   .menu-container .item .img-cost img {
     width: 165px;
-    height: 190px;
+    height: 220px;
     object-fit: cover;
     border-radius: 4px;
     transition: all 0.3s;
@@ -1023,7 +1030,20 @@ input[type="number"]::-webkit-inner-spin-button {
   .singin {
     padding-right: 10px;
   }
- 
+  .menu-container .send-plus-min button {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 0;
+    height: 30px;
+    width: 30px;
+    border: none;
+    background-color: #252525d9;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
   
 }
 @media (min-width: 992px) {

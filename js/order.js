@@ -74,7 +74,29 @@ const renderHeader = () => `
       </header>
       `;
 const renderBody= () =>`
-        <div id="messages"></div>
+        <div class='ordertop'>
+        <div class='topcont swiper'>
+            <div class="card-cont menu-container">
+                <div class="swiper-wrapper" id='messages'>
+
+
+                </div>
+             </div>
+               
+            <div class="swiper-button-prev">
+            <i class='bx bx-left-arrow-alt'></i>
+            </div>
+            <div class="swiper-button-next">
+            <i class='bx bx-left-arrow-alt bx-rotate-180' ></i>
+            </div>
+
+            <div class="swiper-pagination"></div>
+        </div>
+        
+
+
+  
+    </div>
 
 `
 const renderFooter = () => `
@@ -169,7 +191,7 @@ function loadAllOrders() {
 function displayMessage(message) {
           const messageDiv = document.getElementById("messages");
           const messageElement = document.createElement("p");
-          messageElement.className = "message";
+          messageElement.className = "message ";
           messageElement.textContent = message;
           messageDiv.appendChild(messageElement);
 }
@@ -178,8 +200,7 @@ function displayOrderBB(data) {
   const messageElement = document.createElement("div");
 
   const order = data.orderResponseDTO;
-  messageElement.className = `order it-${order.id}`;
-
+  messageElement.className = `order it-${order.id} swiper-slide`;
 
   // Displaying basic order details
   messageElement.innerHTML = `
@@ -212,9 +233,12 @@ function displayOrderBB(data) {
       `
 ;
 messageDiv.prepend(messageElement); // Добавить в начало
+Swip();
 confirmbut();
+
   // Автопрокрутка вниз
   messageDiv.scrollTop = messageDiv.scrollHeight;
+
 }
 
 function displayOrder(data) {
@@ -225,7 +249,7 @@ function displayOrder(data) {
     const order = data.orderResponseDTO;
 
     // Добавление клаасов
-    messageElement.className = `order it-${order.id}`;
+    messageElement.className = `order it-${order.id} swiper-slide`;
     // Displaying basic order details
     messageElement.innerHTML = `
         <h2>Заказ ID: ${order.id ?? 'Не указано'}</h2>
@@ -420,13 +444,67 @@ async function Registr() {
     }
   }
 }
+let swiper;
 
+function Swip() {
+  swiper = new Swiper('.card-cont', {
+    loop: false,  // Если элементы дублируются, зацикливание включено
+    spaceBetween: 32,  // Уменьшаем расстояние между карточками
+    slidesPerView: "auto",  // Автоматическая ширина слайдов (убедитесь, что слайды одинаковы по размеру)
+    centeredSlides: true,  // Центрируем слайды
+    loopAdditionalSlides: 5,  // Увеличиваем количество дополнительных слайдов для зацикливания
+    pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+        dynamicBullets: true,
+    },
+    navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+    },
+  });
 
+  // Обновляем Swiper после загрузки изображений (если они есть)
+  swiper.on('imagesReady', function () {
+    swiper.update();
+  });
+
+  // Переход к первому слайду после задержки
+  setTimeout(() => {
+    swiper.slideTo(0);  // Переход к первому слайду
+  }, 100);
+}
+
+function Swipto(id) {
+  // Убедитесь, что swiper инициализирован
+  if (!swiper) {
+    console.error('Swiper не был инициализирован!');
+    return;
+  }
+
+  const targetSlide = document.getElementById(id);
+  
+  // Проверка, существует ли элемент с данным id
+  if (!targetSlide) {
+    console.error(`Элемент с id ${id} не найден.`);
+    return;
+  }
+  
+  // Получаем индекс слайда
+  const targetIndex = Array.from(targetSlide.parentElement.children).indexOf(targetSlide);
+
+  // Переход к слайду с нужным id
+  console.log(targetIndex);
+  console.log(id);
+  swiper.slideTo(1);
+}
 
 // Автоматическое подключение при загрузке страницы
 window.onload = async function() {
       document.querySelector('.app').innerHTML=renderHeader()+renderBody()+renderFooter();
+      
     Registr(); //Изменение лого
     await connectWebSocket();  // Подключение к WebSocket
     await loadAllOrders();  // Загрузка всех заказов
+    Swip();
 };

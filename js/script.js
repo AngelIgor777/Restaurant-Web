@@ -1116,7 +1116,7 @@ async function Hachchange(){
     ExitButton();
     revealCards();
     Language();
-    
+    // scrol();
     try{
       const token=JSON.parse(localStorage.getItem('accessToken'));
       if(token){
@@ -2254,7 +2254,36 @@ function loadscreen(){
     document.querySelector('.loadcont').style.display='none'
     document.querySelector('.app').style.display='block'  
 }
-  
+function scrol(){
+  const scrollContainer = document.querySelector(".menu-container");
+
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  scrollContainer.addEventListener("mousedown", (e) => {
+    isDown = true;
+    scrollContainer.classList.add("active");
+    startX = e.pageX - scrollContainer.offsetLeft;
+    scrollLeft = scrollContainer.scrollLeft;
+  });
+
+  scrollContainer.addEventListener("mouseleave", () => {
+    isDown = false;
+  });
+
+  scrollContainer.addEventListener("mouseup", () => {
+    isDown = false;
+  });
+
+  scrollContainer.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainer.offsetLeft;
+    const walk = (x - startX) * 2; // Ускорение движения
+    scrollContainer.scrollLeft = scrollLeft - walk;
+  });
+}
 
 window.addEventListener('hashchange', function(){
   const hash = extractHash(window.location.hash);
