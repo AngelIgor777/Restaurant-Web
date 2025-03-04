@@ -19,7 +19,6 @@ const renderHeader = () => `
               <div class="dropdown  singin">
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
                   <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
-                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item exit" style="color: black;">Выход</a></li>
                 </ul>
@@ -60,7 +59,6 @@ const renderHeader = () => `
                  <ul class="dropdown-menu text-small shadow dropdown-menu-start">
                  
                   <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
-                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item exit" style="color: black;">Выход</a></li>
                 </ul>
@@ -1375,12 +1373,7 @@ async function Hachchange(){
         const check=document.querySelector('.check-box input');
         if (result.isConfirmed && check.checked) {
           console.log("Введенные данные:", result.value);
-          let adres={
-            city:"Copceak",
-            street:String(result.value.street),
-            homeNumber:String(result.value.home),
-            apartmentNumber:"1"
-          }
+          
           let book={};
           let order=JSON.parse(localStorage.getItem('order'));
           let orderrequest=[];
@@ -1401,6 +1394,13 @@ async function Hachchange(){
         else{
           restered=true;
         }
+        let adres={
+          city:"Copceak",
+          street:String(result.value.street),
+          homeNumber:String(result.value.home),
+          apartmentNumber:"1",
+          userUUID:user||""
+        }
         book={
           orderProductRequestDTO:orderrequest,
           paymentMethod: result.value.paymentMethod,
@@ -1410,10 +1410,10 @@ async function Hachchange(){
           },
           existDiscountCodes:(result.value.coupon || result.value.couponIt) ? true : false,
           productDiscountCode:result.value.couponIt || "",
-          globalDiscountCode:result.value.coupon || "",
           phoneNumber:result.value.tel,
-          isRegisterUser:restered,
-          userId:user,
+          globalDiscountCode:result.value.coupon || "",
+          userRegistered:restered,
+          userUUID:user||"",
           addressRequestDTO:adres
       }
       console.log(JSON.stringify(book));
@@ -1497,9 +1497,10 @@ async function Hachchange(){
         },
         existDiscountCodes:(result.value.coupon || result.value.couponIt) ? true : false,
         productDiscountCode:result.value.couponIt || "",
+        phoneNumber:result.value.tel,
         globalDiscountCode:result.value.coupon || "",
-        isRegisterUser:restered,
-        userId:user||0,
+        userRegistered:restered,
+        userUUID:user||"",
         addressRequestDTO:null
     }
     console.log(JSON.stringify(book));

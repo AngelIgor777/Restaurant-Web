@@ -11,7 +11,6 @@ const renderHeader = () => `
               <div class="dropdown  singin">
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
                   <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
-                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item exit" style="color: black;">Выход</a></li>
                 </ul>
@@ -52,7 +51,6 @@ const renderHeader = () => `
                  <ul class="dropdown-menu text-small shadow dropdown-menu-start">
                  
                   <li><a class="dropdown-item" id='profile' style="color: black;">Профиль</a></li>
-                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item exit" style="color: black;">Выход</a></li>
                 </ul>
