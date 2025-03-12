@@ -462,7 +462,7 @@ async function GetHistory() {
     $('#HistoryModal').modal('show');
     let user=JSON.parse(localStorage.getItem('uuid'));
     if(user){
-      const response = await fetch(`http://46.229.212.34:9091/api/v1/orders/user?userUUID=${user}&page=0&size=10`);
+      const response = await fetch(`http://46.229.212.34:9091/api/v1/orders/user?userUUID=${user}&page=0&size=40`);
       const data = await response.json();
       console.log(data);
       const container=document.querySelector('.histmod .modal-body');
