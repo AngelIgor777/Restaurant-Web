@@ -243,7 +243,7 @@ const renderMenu = () =>`
   <div class="modal-dialog modal-dialog-centered modal-fullscreen" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="HistoryModalTitle">История</h5>
+        <h2 class="modal-title" id="HistoryModalTitle">История</h2>
         <button
           type="button"
           class="btn-close histclose"

@@ -380,6 +380,7 @@ function displayOrderBB(data) {
       </div>
       <div class="buttonsall">
         <button class="confirm" data-id="${order.id}">Подтвердить</button>
+        <button class="close" data-id="${order.id}">Отмена</button>
         </div>
       `
 ;
@@ -428,6 +429,7 @@ function displayOrder(data) {
         </div>
         <div class="buttonsall">
         <button class="confirm" data-id="${order.id}">Подтвердить</button>
+        <button class="close" data-id="${order.id}">Отмена</button>
         </div>
         `
 ;
@@ -459,6 +461,36 @@ function confirmbut() {
           // Изменяем текст кнопки после 2 секунд
           document.querySelector(`.it-${id}`).classList.add('confirmed')
         }, 5000);
+      } else {
+        console.log("data-id не найден");
+      }
+    });
+  });
+  document.querySelectorAll('.close').forEach(el => {
+    el.addEventListener('click', async function() {
+      const id = el.getAttribute('data-id');
+      if (id) {
+        const result = await Swal.fire({
+          title: "Вы уверены?",
+          text: "Вы не сможете это восстановить!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#2F9262",
+          cancelButtonColor: "#3f3f3f",
+          confirmButtonText: "Да, удалить!",
+          cancelButtonText: "Отмена"
+      });
+
+      if (result.isConfirmed) {
+        const response =await fetch(`http://46.229.212.34:9091/api/v1/orders/${id}`, {
+          method: 'DELETE',
+          headers: {
+              "Authorization": `Bearer ${token}`
+          }
+          });
+          console.log(response);
+          document.querySelector(`.it-${id}`).style.display='none';
+        }
       } else {
         console.log("data-id не найден");
       }
