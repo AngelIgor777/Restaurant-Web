@@ -1198,3 +1198,76 @@ input[type="number"]::-webkit-inner-spin-button {
     font-size: 1.4rem !important;
   }
 }
+
+
+
+
+
+
+
+
+
+.order-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order-item {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.order-info {
+  flex-direction: column;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  flex-wrap: wrap; /* Allow wrapping for smaller screens */
+}
+
+.order-date,
+.order-price {
+  flex: 1;
+  text-align: center;
+  min-width: 120px; /* Prevent text from squeezing too much */
+}
+
+.product-images {
+  display: flex;
+  flex-wrap: wrap; /* Wrap images when needed */
+  gap: 15px;
+  justify-content: center;
+}
+
+.product-image {
+  width: 130px;
+  height: 130px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.product-images {
+  justify-content: left;
+}
+/* Mobile styles */
+@media (max-width: 600px) {
+  .order-info {
+    font-size: 16px;
+  }
+
+  .product-images {
+    justify-content: center;
+  }
+
+  .product-image {
+    width: 80px;
+    height: 80px;
+  }
+}

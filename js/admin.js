@@ -104,7 +104,7 @@ const renderFooter = () => `
           Școală” și nu reflectă neapărat opinia proiectului.</p>
         </div>
       </footer>`;
-const renderBody =()=>`
+const renderBody = () => `
 <div class="info-box">
   <p>Ожидайте сообщения...</p>
 </div>
@@ -121,62 +121,63 @@ const renderBody =()=>`
           <button class='chatbut'>Отправить</button>
      </div>
 `
-function start(){
-  document.querySelector('body').innerHTML=renderHeader()+renderBody()+renderFooter();
+
+function start() {
+    document.querySelector('body').innerHTML = renderHeader() + renderBody() + renderFooter();
 }
 
 
-async function Chatnum(){
-    document.querySelector('.chatbut').addEventListener('click', async function(){
-        let input=document.querySelector('#chatnum').value;
+async function Chatnum() {
+    document.querySelector('.chatbut').addEventListener('click', async function () {
+        let input = document.querySelector('#chatnum').value;
         console.log(input)
-        if(input){
-          if(document.querySelector('.pot').style.display==='none'){
-            fetch(`http://46.229.212.34:9091/api/v1/otp/generate?chatId=${input}`,{
-                method:'POST'
-              }).then(result=>{
-                if(result.ok){
-                  document.querySelector(".info-box").style.display = "block";
-                  document.querySelector('.pot').style.display='block';
-                  setTimeout(() => {
-                    document.querySelector(".info-box").classList.add("hidden");
-                  }, 3000);
-                }
-                
-              })
-              .then(data=>{
-                
-                console.log(data);
-              })
-              .catch(error=>{
-                console.log(error);
-                document.querySelector('.pot').style.display='none';
-              });
-        }
-        else{
-            let pot=document.querySelector('#chatpot').value;
-            fetch(`http://46.229.212.34:9091/api/v1/otp/verify?chatId=${input}&otp=${pot}`,{
-                method:'POST'
-              }).then(result=>
-                result.json())
-              .then(data=>{
-                console.log(data);
-                localStorage.setItem('accessToken', JSON.stringify(data.accessToken));
-                window.location.href = "panel.html";
+        if (input) {
+            if (document.querySelector('.pot').style.display === 'none') {
+                fetch(`http://46.229.212.34:9091/api/v1/otp/generate?chatId=${input}`, {
+                    method: 'POST'
+                }).then(result => {
+                    if (result.ok) {
+                        document.querySelector(".info-box").style.display = "block";
+                        document.querySelector('.pot').style.display = 'block';
+                        setTimeout(() => {
+                            document.querySelector(".info-box").classList.add("hidden");
+                        }, 3000);
+                    }
 
-              })
-              .catch(error=>{
-                console.log(error);
-              });
+                })
+                    .then(data => {
+
+                        console.log(data);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        document.querySelector('.pot').style.display = 'none';
+                    });
+            } else {
+                let pot = document.querySelector('#chatpot').value;
+                fetch(`http://46.229.212.34:9091/api/v1/otp/verify?chatId=${input}&otp=${pot}`, {
+                    method: 'POST'
+                }).then(result =>
+                    result.json())
+                    .then(data => {
+                        console.log(data);
+                        localStorage.setItem('accessToken', JSON.stringify(data.accessToken));
+                        window.location.href = "panel.html";
+
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }
         }
-        }
-        
-        
+
+
     });
 
 }
-function footerRum(){
-  document.querySelector('footer').innerHTML=`
+
+function footerRum() {
+    document.querySelector('footer').innerHTML = `
   <div class="container-fluid foot">
           <div class="row text-center">
             <h1 class="col-12" id="about"><b>PARKTOWN COFFEE</b></h1>
@@ -203,8 +204,9 @@ function footerRum(){
         </div>
   `;
 }
-function headerRum(){
-  document.querySelector('header').innerHTML=`
+
+function headerRum() {
+    document.querySelector('header').innerHTML = `
   <nav class="navbar navbar-expand-lg navcont">
     <div class="container-fluid">
       <h1 class="logo">
@@ -267,37 +269,39 @@ function headerRum(){
   </nav>
 `;
 }
-function Language(){
-  
-  document.querySelectorAll(".lang").forEach(it=>{
-    console.log(it);
-    it.value = JSON.parse(localStorage.getItem('lang'));
-    it.addEventListener("change", function(event) {
-      console.log(3);
-      localStorage.setItem('lang', JSON.stringify(event.target.value));
-      if(JSON.parse(localStorage.getItem('lang'))==='ro'){
-        document.querySelector('.chatbut').textContent='Trimite';
-        document.querySelector('label[for=chatpot]').textContent='Introdu codul de verificare';
-        document.querySelector('#chatpot').textContent='Introdu codul de verificare';
-        document.querySelector('#chatnum').textContent='Număr de chat';
-        document.querySelector('label[for=chatnum]').textContent='Număr de chat';
-        document.querySelector('.admininput h1').textContent='Intrare';
-        document.querySelector('.info-box p').textContent='Așteptați mesajele...';
-        
-        footerRum();
-        headerRum();
-        Language();
-      }
-      if(JSON.parse(localStorage.getItem('lang'))==='ru'){
-        start();
-      }
-  });
-  
-  });
+
+function Language() {
+
+    document.querySelectorAll(".lang").forEach(it => {
+        console.log(it);
+        it.value = JSON.parse(localStorage.getItem('lang'));
+        it.addEventListener("change", function (event) {
+            console.log(3);
+            localStorage.setItem('lang', JSON.stringify(event.target.value));
+            if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+                document.querySelector('.chatbut').textContent = 'Trimite';
+                document.querySelector('label[for=chatpot]').textContent = 'Introdu codul de verificare';
+                document.querySelector('#chatpot').textContent = 'Introdu codul de verificare';
+                document.querySelector('#chatnum').textContent = 'Număr de chat';
+                document.querySelector('label[for=chatnum]').textContent = 'Număr de chat';
+                document.querySelector('.admininput h1').textContent = 'Intrare';
+                document.querySelector('.info-box p').textContent = 'Așteptați mesajele...';
+
+                footerRum();
+                headerRum();
+                Language();
+            }
+            if (JSON.parse(localStorage.getItem('lang')) === 'ru') {
+                start();
+            }
+        });
+
+    });
 }
-  window.addEventListener('load',function(e){
+
+window.addEventListener('load', function (e) {
     start();
     Chatnum();
     Language();
-    document.querySelector('body').style.backgroundImage="url(./img/about.png)";
-  });
+    document.querySelector('body').style.backgroundImage = "url(./img/about.png)";
+});
