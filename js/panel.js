@@ -177,7 +177,7 @@ async function Notifications() {
     
             let [hours, minutes] = time.split(":");
             let cronExpression = "";
-    
+            hours = (parseInt(hours) - 2 + 24) % 24;
             if (schedule === "daily") {
                 cronExpression = `0 ${minutes} ${hours} * * *`;
             } else if (schedule === "twice_day") {
@@ -236,6 +236,41 @@ async function Notifications() {
                 alert("Ошибка при отправке данных.");
             }
         });  
+        // Создание окна отправки сообщения
+        const messageForm = document.createElement('div');
+        messageForm.classList.add('messageform');
+        messageForm.innerHTML = `
+        <div class="mesform">
+        <div class="mb-3">
+          <label for="messageSend" class="form-label"><h2>Сообщение</h2></label>
+          <textarea class="form-control" id="messageSend" rows="3"></textarea>
+        </div>
+        <button class="submit-mes">Отправить</button>
+      </div>
+
+        `
+        container.appendChild(messageForm);
+        document.querySelector('.submit-mes').addEventListener('click', function() {
+            let mestext = document.querySelector('#messageSend').value.trim();
+            let mas={
+                "message":mestext
+            }
+            if (mestext) {
+                console.log(token);
+                fetch('http://46.229.212.34:9091/api/v1/tg',{
+                    method:'POST',
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                     },
+                    body: JSON.stringify(mas)
+                  }).then(result=>result.text())
+                  .catch(error=>{
+                    console.log(error);
+                  });
+            }
+        });
+        
 }
 
 // получение времени
@@ -1521,7 +1556,7 @@ async function getReg(uuid1) {
     }
   }
   
-  async function Registr() {
+async function Registr() {
     // let params = new URLSearchParams(window.location.search);
     let uuid = getUUIDFromURL();
     console.log(uuid);

@@ -251,7 +251,12 @@ header {
 .swal2-popup h1{
   color:#000000;
 }
-/* ч */
+/* Кнопка избранное */
+.chosen{
+  font-size: 1.9rem;
+  margin-left: 10px;
+}
+/* Топ недели в одиночных товарах */
 .weektop h2 {
     animation: glow 1.5s infinite alternate;
 }
@@ -690,6 +695,83 @@ input[type="number"]::-webkit-inner-spin-button {
   height: 100%;
   z-index: 200;
 }
+/* History button */
+.buthistory{
+  position: fixed;
+  background-color: #fff;
+  right: 30px;
+  bottom: 130px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  text-align: center;
+  font-size: 1.6rem;
+  transition: all 0.15s;
+  z-index: 1000;
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+}
+.buthistory i {
+  margin-top: 10px;
+  margin-right: 7px;
+  width: 20px;
+  height: 20px;
+}
+/* histmod */
+.histmod .modal-content {
+  background-color: #00000078;
+  color: #fff;
+  overflow: hidden; 
+}
+.histmod .modal-body{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.histclose{
+  background-color: #ffffff;
+}
+.histmod .item{
+  width: 227px;
+  height: 380px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  margin-bottom: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #000000a4;
+  border-radius: 10px;
+  box-shadow: 5px 10px 20px 5px rgba(0, 0, 0, 0.5);
+  overflow-y: hidden;
+  font-size: 1.4rem;
+  font-family: "Kurale", serif;
+  font-weight: 400;
+  font-style: normal;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.448);
+}
+.histmod .item .histsend{
+  margin-top: auto;
+  background-color: #ffffff11;
+  color: #fff;
+  font-size: 1.4rem;
+  font-family: "Kurale", serif;
+  font-weight: 400;
+  font-style: normal;
+  border-radius: 5px 5px 0 0;
+  border: none;
+}
+.histmod .item img {
+  width: 227px;
+  height: 253px;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
 /* Модальное окно */
 .delete {
   width: 70px;
@@ -698,9 +780,17 @@ input[type="number"]::-webkit-inner-spin-button {
   justify-content: center;
   align-items: center;
   border-radius: 10px;
+  border: none;
 }
 .delete i {
   font-size: 1.3rem;
+}
+/* появление топ недели */
+.swiper-wrapper{
+  transition: all 0.6s ease-in-out;
+}
+.swiper-wrapper.nothing{
+  opacity: 0;
 }
 /* modal checkbox */
 .check-box{
@@ -791,6 +881,37 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 .custom-confirm-button{
   background-color:#2F9262;
+}
+/* Поиска */
+.searchgroup{
+  max-width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+.searchgroup input{
+  background-color: #0000005a;
+  max-width: 382px;
+}
+.searchgroup input:focus{
+  background-color: #0000005a;
+  outline: none; /* Убираем стандартное выделение */
+  box-shadow: none; /* Убираем синее свечение */
+  border-color: #0000005a;
+  color: #fff;
+}
+.searchgroup button{
+  background-color: #00000067;
+  margin-left: 10px !important;
+  margin: 0 10 !important;
+}
+.searchgroup button i{
+  color: #fff;
+}
+.searchgroup button i::before{
+  opacity: 1;
 }
 /* кнопка с юзером */
 .buttonsing-2{

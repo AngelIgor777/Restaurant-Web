@@ -4,7 +4,7 @@
 // Закрытие меню
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
-
+let ishist=false;
 // части html для меню
 const renderHeader = () => `
 <header>
@@ -116,6 +116,11 @@ const renderMenu = () =>`
 <div class="container-fluid cat">
         <div class="row">
           <div class="col-12 category-content">
+          
+          <div class="input-group searchgroup">
+             <input class="form-control" type="search" id='search-input' placeholder="Введите запрос..." aria-label="Поиск">
+             <button class="btn btn-secondary" type="button" id='search-button'><i class='bx bx-search' ></i></button>
+          </div>
             <h1 class="title">
               <a
                 data-bs-toggle="collapse"
@@ -158,7 +163,13 @@ const renderMenu = () =>`
           </a>
           <p class="colvo">0</p>
         </div>
-
+        <!--Кнопка истории -->
+        <div class="buthistory">
+          <a type="button" data-bs-toggle="modal" data-bs-target="#HistoryModal">
+            <i class='bx bx-history'></i>
+          </a>
+        </div>
+          
         <!-- Модальное окно -->
         <div
           class="modal fade orderList"
@@ -169,7 +180,8 @@ const renderMenu = () =>`
           <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content menuorder">
               <div class="modal-header">
-                <h1>Ваш заказ</h1>
+                <h1>Ваш заказ<span class='chosen'><i class='bx bx-star' ></i></span></h1>
+                
                 <button
                   type="button"
                   class="btn-close"
@@ -226,6 +238,29 @@ const renderMenu = () =>`
           </div>
         </div>
       </div>
+      <!-- history -->
+<div class="modal fade histmod" id="HistoryModal" tabindex="-1" role="dialog" aria-labelledby="HistoryModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="HistoryModalTitle">История</h5>
+        <button
+          type="button"
+          class="btn-close histclose"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+
 `
 // часть О нас
 const renderTitle = () =>`
@@ -422,6 +457,69 @@ function formatTime(inputTime) {
   }
   return `<span>Примерное время готовки: </span>${formattedTime.trim()}`; // Убираем лишние пробелы
 }
+async function GetHistory() {
+  document.querySelector('.buthistory').addEventListener('click', async function(){
+    $('#HistoryModal').modal('show');
+    let user=JSON.parse(localStorage.getItem('uuid'));
+    if(user){
+      const response = await fetch(`http://46.229.212.34:9091/api/v1/orders/user?userUUID=${user}&page=0&size=10`);
+      const data = await response.json();
+      console.log(data);
+      const container=document.querySelector('.histmod .modal-body');
+      container.innerHTML='';
+      data.forEach(async el=>{
+        console.log(el.orderResponseDTO);
+
+        // Получение фото
+        const imagefirs = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${el.orderResponseDTO.products[0].id}`)
+          .then(res => res.json())
+          .then(photoData => photoData[0]?.url || 'path/to/default-image.jpg');
+
+          let otpElement = '';
+          if (el.otp != null) {
+            otpElement = `<h3 class="otp">Номер: ${el.otp}</h3>`;
+          }
+          
+          const menuItem = document.createElement('div');
+          menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${el.orderResponseDTO.id}`;
+          menuItem.id = `item-${el.orderResponseDTO.id}`;
+          menuItem.innerHTML = `
+            <div class="img-cost">
+              <img src="${imagefirs}" alt="${el.orderResponseDTO.products[0].name}" />
+              <p class="histcost">${el.orderResponseDTO.totalPrice} MDL</p>
+            </div>
+            ${otpElement} <!-- Добавляем элемент с OTP, если он существует -->
+            <button class="histsend" data-id='${el.orderResponseDTO.id}'>Детали</button>
+          </div>
+          `;
+          
+          container.appendChild(menuItem);
+          
+      });
+      document.querySelector('.histmod .modal-body').addEventListener('click', function(e) {
+        // Проверяем, что клик был по кнопке .histsend
+        
+        if (e.target && e.target.classList.contains('histsend')) {
+          const orderId = e.target.getAttribute('data-id'); // Получаем id из data-id кнопки
+          
+          // Находим заказ с этим id
+          const order = data.find(order => order.orderResponseDTO.id == orderId);
+          console.log(order);
+          // Выводим все продукты этого заказа
+          if (order) {
+            console.log('Все продукты для заказа:', order.orderResponseDTO.products);
+            $('#Modalwindow').modal('show');
+            ishist=true;
+            localStorage.setItem('totalhist', JSON.stringify(order.orderResponseDTO.totalPrice));
+            updateModal(order.orderResponseDTO.products);  // Предполагается, что функция updateModal существует
+          }
+        }
+      });
+    }
+    
+  });
+}
+
 async function Sendmes() {
   document.querySelector(".mes").addEventListener("submit", function(event) {
     event.preventDefault(); // Отмена стандартного поведения
@@ -458,7 +556,10 @@ async function Sendmes() {
 }
 async function WeekTop() {
   const container=document.querySelector('.swiper-wrapper');
- 
+  // Скрываем все пока не загрузится
+  container.classList.add('nothing');
+  
+  
   const response = await fetch(`http://46.229.212.34:9091/api/v1/products/top-weekly?page=0&size=10`);
   const data = await response.json();
   console.log(data);
@@ -479,7 +580,6 @@ async function WeekTop() {
     const dat = await respo.json();
     name=dat.name;
     descr=dat.description;
-    console.log(43424);
     document.querySelector('.weektop h2').textContent='Top 10 feluri de mâncare ale săptămânii';
     }
     const menuItem = document.createElement('div');
@@ -533,6 +633,8 @@ async function WeekTop() {
           prevEl: ".swiper-button-prev",
       },
   });
+  // появление контейнера уже со всем топом
+   container.classList.remove('nothing');
     // Добавляем обработчик события клика по документу
     document.addEventListener('click', function (e) {
       var navbarToggler = document.querySelector('.navbar-toggler'); // Кнопка меню
@@ -654,6 +756,7 @@ async function fetchProductTypes() {
 
       // После загрузки категорий загружаем меню
       const categoryIds = data.content.map(item => item.id); // Извлекаем IDs
+      localStorage.setItem('cat', JSON.stringify(categoryIds));
       await fetchMenuItems(categoryIds);
       setTimeout(function(){
         document.querySelector('.containe').style.height = 'auto';
@@ -671,89 +774,105 @@ async function fetchProductTypes() {
 async function fetchMenuItems(categoryIds) {
   try {
     const menuContainer = document.querySelector('.menu-container');
-    const allitems=[];
-    const ids=[];
-    for (const id of categoryIds) {
-      const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`);
-      const data = await response.json();
-      if(data.content && Array.isArray(data.content)){
-      allitems.push(data.content);
-      ids.push(id);
-      }
-    }
-    let shet=0;
-    if (allitems && Array.isArray(allitems)) {
-      for (const it of allitems) {  
-        for (const item of it){
-        // Запрос URL картинки
-        const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${item.id}`);
-        const photoData = await photoResponse.json();
-        const imageUrl = photoData[0].url; // Если нет URL, используем картинку по умолчанию
-        // Создаем элемент меню
-        let name=item.name;
-        let descr=item.description;
-        if(JSON.parse(localStorage.getItem('lang'))==='ro'){
-          const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${item.id}?lang=ro`, {
-            method: "GET"
-        });
-    
-        if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
-    
-        const dat = await respo.json();
-        name=dat.name;
-        descr=dat.description;
+    menuContainer.innerHTML='';
+    // 1. Запрашиваем все товары по категориям параллельно
+    const productRequests = categoryIds.map(id =>
+      fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`)
+        .then(response => response.json())
+        .then(data => ({ id, products: data.content || [] }))
+    );
+
+    const categoriesWithProducts = await Promise.all(productRequests);
+
+    //2. Загружаем фото и переводы параллельно
+    const productDetailsRequests = categoriesWithProducts.flatMap(({ id, products }) =>
+      products.map(async (product) => {
+        // Запрос фото товара
+        const photoPromise = fetch(`http://46.229.212.34:9091/api/v1/photos/product/${product.id}`)
+          .then(res => res.json())
+          .then(photoData => photoData[0]?.url || 'path/to/default-image.jpg');
+
+        // Запрос перевода (если выбран румынский язык)
+        let translationPromise = Promise.resolve(null);
+        if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+          translationPromise = fetch(`http://46.229.212.34:9091/api/v1/product-translations/${product.id}?lang=ro`)
+            .then(res => res.ok ? res.json() : null);
         }
-        const menuItem = document.createElement('div');
-        menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${ids[shet]} `;
-        menuItem.id= `item-${item.id}`;
-        menuItem.innerHTML = `
-          <div class="img-cost">
+
+        const [imageUrl, translation] = await Promise.all([photoPromise, translationPromise]);
+
+        return {
+          ...product,
+          categoryId: id,
+          imageUrl,
+          name: translation?.name || product.name,
+          description: translation?.description || product.description
+        };
+      })
+    );
+
+    const productsWithDetails = await Promise.all(productDetailsRequests);
+
+    // 3. Создаём HTML элементы
+    const fragment = document.createDocumentFragment();
+
+    productsWithDetails.forEach(item => {
+      const menuItem = document.createElement('div');
+      menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${item.categoryId}`;
+      menuItem.id = `item-${item.id}`;
+      menuItem.innerHTML = `
+        <div class="img-cost">
           <a href="#item-${item.id}">
             <div class="description">
-            <h3><b>${descr}</b></h3>
-                <h5>${item.cookingTime && item.cookingTime !== '00:00:00' 
-                  ? `${formatTime(item.cookingTime)}</b>` 
-                  : ""}</h5>
+              <h3><b>${item.description}</b></h3>
+              <h5>${item.cookingTime && item.cookingTime !== '00:00:00' ? `${formatTime(item.cookingTime)}</b>` : ""}</h5>
             </div>
-            </a>
-            <img src="${imageUrl}" alt="${item.name}" />
-            <p class="cost">${item.price} MDL</p>
-            
+          </a>
+          <img src="${item.imageUrl}" alt="${item.name}" />
+          <p class="cost">${item.price} MDL</p>
+        </div>
+        <h3 class="name">${item.name}</h3>
+        <div class="send-plus-min">
+          <div class="plus-min">
+            <p class="min"><i class="bx bx-minus-circle"></i></p>
+            <input type="number" value="1" maxlength="2" min="0" disabled/>
+            <p class="plus"><i class="bx bx-plus-circle"></i></p>
           </div>
-          <h3 class="name">${name}</h3>
-          <div class="send-plus-min">
-            <div class="plus-min">
-              <p class="min"><i class="bx bx-minus-circle"></i></p>
-              <input type="number" value="1" maxlength="2" min="0" disabled/>
-              <p class="plus"><i class="bx bx-plus-circle"></i></p>
-            </div>
-            <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
-          </div>
-        `;
+          <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+        </div>
+      `;
+      fragment.appendChild(menuItem);
+    });
 
-        // Добавляем элемент в контейнер
-        menuContainer.appendChild(menuItem);
-       
-        }
-        shet+=1;
-      }
-    }
-    initializeIsotope();
+    // 4. Добавляем товары в контейнер
+    menuContainer.appendChild(fragment);
+
+    // 5. Ждём загрузки изображений перед обновлением Isotope
+    imagesLoaded(menuContainer, function () {
+      initializeIsotope();
+    });
+
   } catch (error) {
     console.error('Ошибка при запросе данных меню:', error);
   }
 }
 
+
 // Обновление модального окна заказа
 async function updateModal(order) {
   let tbody = document.querySelector(".ordorlist");
   tbody.innerHTML = ''; // Очищаем таблицу перед вставкой новых данных
-  
+  $('#HistoryModal').modal('hide');
   // Проверяем, что orderList не пустой
   if (order.length > 0) {
     let totalcost=JSON.parse(localStorage.getItem('totalcost'));
+    if(ishist){
+      totalcost=JSON.parse(localStorage.getItem('totalhist'));
+      ishist=false;
+    }
+    
     for (let i = 0; i < order.length; i++) {
-      let name=order[i].tovarname;
+      let name=order[i].tovarname||order[i].name;
       if(JSON.parse(localStorage.getItem('lang'))==='ro'){
         const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${order[i].id}?lang=ro`, {
           method: "GET"
@@ -777,13 +896,27 @@ async function updateModal(order) {
       
     }
     let total='Всего:';
-    if(JSON.parse(localStorage.getItem('lang'))){
+    if(JSON.parse(localStorage.getItem('lang'))==='ro'){
       total='Total:';
     }
     tbody.insertAdjacentHTML('beforeend', `
       <br>
       <h6 class="itog-cost">${total} ${totalcost}<h6>
       `);
+    // добавление в избранное
+    const star=document.querySelector('.chosen');
+    star.addEventListener('click', function(){
+      // добавление класс active
+      if(!star.classList.contains('active')){
+        star.classList.add('active');
+        star.innerHTML=`<i class='bx bxs-star' ></i>`;
+      }
+      // удаление класс active
+      else{
+        star.classList.remove('active');
+        star.innerHTML=`<i class='bx bx-star' ></i>`;
+      }
+    });
     // Важно: добавляем обработчик события для кнопок удаления
     const deleteButtons = document.querySelectorAll(".delete");
     deleteButtons.forEach(button => {
@@ -824,113 +957,200 @@ function initializeIsotope() {
   var $container = $('.menu-container');
   var itemsPerPage = 10;
   var currentPage = 1;
+  var searchClicked = false;
+  var first = true;
+  
+  async function loadProducts(page, query) {
+    const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page - 1}&size=${itemsPerPage}&query=${query}`;
 
-  shuffleElements($container.find('.item'));
-  // Инициализация Isotope
-  $container.isotope({
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        $container.empty();
+
+        // Загружаем фото параллельно
+        const photoRequests = data.content.map(async (product) => {
+            const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${product.id}`);
+            const photoData = await photoResponse.json();
+            return { ...product, imageUrl: photoData[0]?.url || 'path/to/default-image.jpg' };
+        });
+
+        const productsWithPhotos = await Promise.all(photoRequests);
+
+        // Генерируем HTML
+        const menuItems = productsWithPhotos.map((product) => {
+            const menuItem = document.createElement('div');
+            menuItem.className = `col-sm-6 col-md-4 col-lg-1 item visible`;
+            menuItem.id = `item-${product.id}`;
+            menuItem.innerHTML = `
+              <div class="img-cost">
+                <a href="#item-${product.id}">
+                  <div class="description">
+                    <h3><b>${product.description}</b></h3>
+                    <h5>${product.cookingTime && product.cookingTime !== '00:00:00' ? formatTime(product.cookingTime) : ''}</h5>
+                  </div>
+                </a>
+                <img src="${product.imageUrl}" alt="${product.name}" />
+                <p class="cost">${product.price} MDL</p>
+              </div>
+              <h3 class="name">${product.name}</h3>
+              <div class="send-plus-min">
+                <div class="plus-min">
+                  <p class="min"><i class="bx bx-minus-circle"></i></p>
+                  <input type="number" value="1" maxlength="2" min="0" readonly/>
+                  <p class="plus"><i class="bx bx-plus-circle"></i></p>
+                </div>
+                <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+              </div>
+            `;
+            return menuItem;
+        });
+
+        $container.append(menuItems);
+
+        // Ждём загрузки изображений перед запуском Isotope
+        $container.find('img').on('load', function () {
+          $container.isotope({
+              filter: '*',
+              layoutMode: 'masonry',
+              masonry: { gutter: 10 },
+              transitionDuration: 0
+          });
+      });
+
+        // Обновление пагинации
+        const totalPages = Math.ceil(data.totalElements / itemsPerPage);
+        if (first) {
+            initializePagination(totalPages);
+            first = false; // Выключаем первый запуск
+        }
+
+        // Исправленный `arrangeComplete`
+        $container.on('arrangeComplete', function () {
+            $container.find('.item').css('position', 'static');
+            revealCards();
+        });
+
+    } catch (error) {
+        console.error('Ошибка при загрузке товаров:', error);
+    }
+}
+var query;
+$('#search-button').on('click', function () {
+    searchClicked = true;  // Устанавливаем флаг, что кнопка поиска была нажата
+    first = true;  // Сброс флага для загрузки пагинации при новом поиске
+    query = $('#search-input').val(); // Получаем значение из поля ввода
+    
+    loadProducts(1, query); // Загружаем товары с API по запросу
+});
+
+shuffleElements($container.find('.item'));
+
+// Инициализация Isotope
+$container.isotope({
     filter: '*',
     layoutMode: 'masonry',
-    masonry: {
-      gutter: 10
-    },
+    masonry: { gutter: 10 },
     transitionDuration: 0
-  });
+});
 
-
-  $container.on('arrangeComplete', function () {
+$container.on('arrangeComplete', function () {
     $container.find('.item').css('position', 'static');
     revealCards();
-  });
+});
 
-  // Инициализация пагинации
-  function initializePagination(totalPages) {
-    
+// Инициализация пагинации
+function initializePagination(totalPages) {
     var $pagination = $('.pagul');
     $pagination.empty();
 
     for (var i = 1; i <= totalPages; i++) {
-      var $li = $('<li>').addClass('page-item');
-      var $button = $('<button>')
-        .text(i)
-        .addClass('page-link pagination-button')
-        .attr('data-page', i)
-        .on('click', function () {
-          var page = parseInt($(this).attr('data-page'));
-          showPage(page);
-        });
+        var $li = $('<li>').addClass('page-item');
+        var $button = $('<button>')
+            .text(i)
+            .addClass('page-link pagination-button')
+            .attr('data-page', i)
+            .on('click', function () {
+                var page = parseInt($(this).attr('data-page'));
+                showPage(page);
+            });
 
-      $li.append($button);
-      $pagination.append($li);
+        $li.append($button);
+        $pagination.append($li);
     }
 
     $pagination.find(`.page-item:first-child .pagination-button`).addClass('active');
-  }
+}
 
-  // Показ страницы
-  function showPage(page) {
+// Показ страницы
+function showPage(page) {
     currentPage = page;
     var start = (page - 1) * itemsPerPage;
     var end = start + itemsPerPage;
-  
+   if(searchClicked){
+    loadProducts(page, query);
+   }
+   else{
     // Получаем текущий фильтр
     var selector = $('.category-list .active').attr('data-filter') || '*';
   
     $container.isotope({
-      filter: function () {
-        if (selector === '*') {
-          // Если фильтр "все", используем индекс без селектора
-          var index = $(this).index();
-          return index >= start && index < end;
-        } else {
-          // Если есть фильтр, учитываем только отфильтрованные элементы
-          var index = $(this).index(selector);
-          return index >= start && index < end;
+        filter: function () {
+            if (selector === '*') {
+                var index = $(this).index();
+                return index >= start && index < end;
+            } else {
+                var index = $(this).index(selector);
+                return index >= start && index < end;
+            }
         }
-        
-
-      }
     });
+  }
     
     // Обновляем активную кнопку пагинации
     $('.pagul .pagination-button').removeClass('active');
     $(`.pagul .pagination-button[data-page="${page}"]`).addClass('active');
+    
     // поднимаем экран вверх
     $('html, body').animate({ scrollTop: 0 }, 'fast');
-  }
+}
 
-  // Обработчик фильтрации
-  $('.category-list a').on('click', function () {
-    // Убираем активный класс у всех и добавляем на текущий фильтр
+// Обработчик фильтрации
+$('.category-list a').on('click', function () {
     $('.category-list .active').removeClass('active');
     $(this).addClass('active');
     
-    // Получаем текущий фильтр
     var selector = $(this).attr('data-filter') || '*';  
-    // Пересчитываем элементы и страницы
     var allItems = selector === '*' ? $container.find('.item') : $container.find(selector);
 
     if (selector === '*') {
-      shuffleElements(allItems); // Перемешивание элементов
+        shuffleElements(allItems);
     }
+    if (searchClicked) {
+      // это что бы перезагрузить страницу 
 
+        Hachchange();
+      // если что в localstorage есть cat и можно реальзвать загрузку
+
+    }
     var totalPages = Math.ceil(allItems.length / itemsPerPage);
-    // Инициализируем пагинацию и отображаем первую страницу
     initializePagination(totalPages);
-    showPage(1); // Переходим на первую страницу
-    return false; // Предотвращаем стандартное поведение ссылки
-  });
+    showPage(1);
+    return false;
+});
+
 // Функция перемешивания элементов
 function shuffleElements($elements) {
-  var $parent = $elements.parent();
-  $elements.sort(function () { return 0.5 - Math.random(); }).detach().appendTo($parent);
-}
-  // Инициализация при загрузке
-  var totalPages = Math.ceil($container.find('.item').length / itemsPerPage);
-  initializePagination(totalPages);
-  showPage(1);
-
+    var $parent = $elements.parent();
+    $elements.sort(function () { return 0.5 - Math.random(); }).detach().appendTo($parent);
 }
 
+var totalPages = Math.ceil($container.find('.item').length / itemsPerPage);
+initializePagination(totalPages);
+showPage(1);
+
+}
 if(!localStorage.getItem("order")){
   localStorage.setItem("order", JSON.stringify([]))
 }
@@ -1080,6 +1300,22 @@ async function Profile(e) {
     }
   }
 }
+// функция избранное
+async function ChosenOne() {
+  // тут код для отправки заказа в избранное
+  const star=document.querySelector('.chosen');
+  if(star.classList.contains('active')){
+    // отправляем на сервер весь заказ
+  }
+  // а тут очистка заказа
+  localStorage.setItem("order", JSON.stringify([]));
+  localStorage.setItem("totalcost", JSON.stringify(0.0));
+  const buttosend=document.querySelector("p.colvo");
+  buttosend.textContent='0';
+  // убираем из избранного после отправки
+  star.classList.remove('active');
+  star.innerHTML=`<i class='bx bx-star' ></i>`;
+}
 // Вызываем функцию при изменения хэша это основа не забываеми
 async function Hachchange(){
 
@@ -1109,6 +1345,7 @@ async function Hachchange(){
     await fetchProductTypes();
     loadscreen();
     // запуск всех нужных функ. после загрузки самого сайта
+    GetHistory();
     Registr();
     Sendchange();
     ExitButton();
@@ -1424,13 +1661,13 @@ async function Hachchange(){
         },
         body: JSON.stringify(book),
         })
-        .then(response => response.text())
+        .then(response => response.json())
         .then(data => {
           let titl='Успех!';
-      let tex='Ваш заказ принят!'
+      let tex=`Номер вашего заказа: ${data.otp}!`
       if(JSON.parse(localStorage.getItem('lang'))==='ro'){
         titl='Succes!';
-        tex='Comanda dvs. a fost acceptată!'
+        tex=`Numărul dvs. de comandă: ${data.otp}!`
       }
             // Обрабатываем успешный ответ
             Swal.fire({
@@ -1441,10 +1678,8 @@ async function Hachchange(){
                 confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
               }
             });
-          localStorage.setItem("order", JSON.stringify([]));
-          localStorage.setItem("totalcost", JSON.stringify(0.0));
-          const buttosend=document.querySelector("p.colvo");
-          buttosend.textContent='0';
+            // кнопка избранное
+            ChosenOne();
         })
         .catch(error => {
           let titl='Ошибка!';
@@ -1511,13 +1746,13 @@ async function Hachchange(){
       },
       body: JSON.stringify(book),
       })
-      .then(response => response.text())
-      .then(data => {
-        let titl='Успех!';
-      let tex='Ваш заказ принят!'
+      .then(response => response.json())
+        .then(data => {
+          let titl='Успех!';
+      let tex=`Номер вашего заказа: ${data.otp}!`
       if(JSON.parse(localStorage.getItem('lang'))==='ro'){
         titl='Succes!';
-        tex='Comanda dvs. a fost acceptată!'
+        tex=`Numărul dvs. de comandă: ${data.otp}!`
       }
           // Обрабатываем успешный ответ
           Swal.fire({
@@ -1528,10 +1763,8 @@ async function Hachchange(){
               confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
             }
           });
-          localStorage.setItem("order", JSON.stringify([]));
-          localStorage.setItem("totalcost", JSON.stringify(0.0));
-          const buttosend=document.querySelector("p.colvo");
-          buttosend.textContent='0';
+          // сюда функция для избранного
+          ChosenOne();
       })
       .catch(error => {
         let titl='Ошибка!';
@@ -1916,16 +2149,11 @@ setInterval(()=>{
 }
 function revealCards() {
   let item = document.querySelectorAll(".item");
-  let windowHeight = window.innerHeight; // Высота окна просмотра
-
   item.forEach((card, index) => {
-    let position = card.getBoundingClientRect().top; // Расстояние до верха экрана
 
-    if (position < windowHeight - 50) { 
       setTimeout(() => {
         card.classList.add("visible");
       }, index * 200); // Добавляем задержку для плавного появления
-    }
   });
 }
 function ExitButton(){
@@ -2285,7 +2513,6 @@ function scrol(){
     scrollContainer.scrollLeft = scrollLeft - walk;
   });
 }
-
 window.addEventListener('hashchange', function(){
   const hash = extractHash(window.location.hash);
   console.log(hash);

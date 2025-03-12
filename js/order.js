@@ -92,11 +92,13 @@ const renderBody= () =>`
 
             <div class="swiper-pagination"></div>
         </div>
-        
-
-
-  
     </div>
+    <!-- Кнопка отправки -->
+        <div class="buttonsend">
+          <a class='addbutton'>
+            <i class='bx bx-plus'></i>
+          </a>
+        </div>
 
 `
 const renderFooter = () => `
@@ -153,7 +155,156 @@ function connectWebSocket() {
   );
 }
 
+async function FindTovar() {
+  document.querySelector(".buttonsend").addEventListener('click', function(){
+    Swal.fire({
+      title: `Добавить заказ`,
+      html: `
+        <div>
+          <div class='findinput'>
+            <form>
+              <div class="form-floating input-group mb-3">
+                <input type="text" class="form-control" placeholder="Поиск" id='search'required/>
+                <span class="input-group-text"><button type="submit" class='sendsearch'><i class='bx bx-search'></i></button></span>
+                <label for="search">Поиск</label>
+              </div>
+            </form>
+          </div>
+          <div class='result_table'>
+            <table class="table" style='display:none;'>
+                    <thead>
+                      <tr>
+                        <th style="text-align: center;">Название</th>
+                        <th style="text-align: center;">Цена</th>
+                        <th class="colich">
 
+                        </th>
+                        <th class="allbuttons">
+
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="findres">
+  
+                    </tbody>
+                  </table>
+          </div>
+        </div>
+      `,
+      didOpen:()=>{
+        document.querySelector("form").addEventListener("submit", function(event) {
+          event.preventDefault(); // Отмена стандартного поведения
+        });
+        // добавление товаров по запросу
+        document.querySelector('.sendsearch').addEventListener('click', async function(){
+          const search=document.querySelector('#search');
+          console.log(search);
+          const tableone = document.querySelector('.table');
+          tableone.style.display='flex';
+          const response = await fetch(``);
+          const data = await response.json();
+          const tbody=tableone.querySelector(`.findres`);
+          tbody.innerHTML = '';
+          if (data.content && Array.isArray(data.content)) {
+              for(const item of data.content){
+                  tbody.insertAdjacentHTML('beforeend', `
+                      <tr id="item-${id}">
+                        <td style="text-align: center;" class='name'>${item.name}</td>
+                        <td style="text-align: center;" class='cost'>${item.price}</td>
+                        <td style="text-align: center;">
+                          <div class="send-plus-min">
+                            <div class="plus-min">
+                              <p class="min"><i class="bx bx-minus-circle"></i></p>
+                              <input type="number" value="1" maxlength="2" min="0" disabled/>
+                              <p class="plus"><i class="bx bx-plus-circle"></i></p>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="text-align: center;" class="allbuttons">
+                       <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+                        </td>
+                        </tr>
+                    `);
+              }
+          }
+        });
+
+
+        // отслеживание нажатий кнопок
+        document.querySelector('.table').addEventListener("click", function(e) {
+      
+          // Находим родительский элемент с классом .plus-min
+          const plusmin = e.target.closest(".plus-min");
+          
+          // Если элемент .plus-min существует, работаем с ним
+          if (plusmin) {
+            const input = plusmin.querySelector("input");
+            
+            // Кнопки для увеличения и уменьшения количества товаров
+            if (e.target && (e.target.matches("p.plus") || e.target.closest("p.plus"))) {
+              let value = parseInt(input.value, 10);
+              input.value = value + 1;
+            }
+            
+            if (e.target && (e.target.matches("p.min") || e.target.closest("p.min"))) {
+              let value = parseInt(input.value, 10);
+              if (value > 1) {
+                input.value = value - 1;
+              }
+            }
+
+            if (e.target && (e.target.matches(".send") || e.target.closest(".send"))) {
+              const but = e.target.closest(".send");
+              if (but) {
+                if(!localStorage.getItem("order")){
+                  localStorage.setItem("order", JSON.stringify([]))
+                }
+                if(!localStorage.getItem("totalcost")){
+                  localStorage.setItem("totalcost", JSON.stringify(0.0))
+                }
+                let order=JSON.parse(localStorage.getItem('order'));
+                let totalcost=JSON.parse(localStorage.getItem('totalcost'));
+                console.log(order);
+                // Находим поле ввода количества
+                const input = but.closest(".send-plus-min").querySelector("input");
+                let quantity = parseInt(input.value, 10);
+        
+                // Находим данные товара
+                const tovarname = but.closest("tr").querySelector('.name').textContent;
+                const tovarid =parseInt(but.closest("tr").id.replace(/[^0-9]/g,""));
+                console.log(tovarid);
+                const price=parseFloat(but.closest("tr").querySelector('.cost').textContent)*quantity;
+                quant+=quantity;
+                // Добавляем заказ в массив
+                totalcost +=price;
+                if(order.some(item=>item.tovarname===tovarname)){
+                  let index=order.findIndex(item => item.tovarname === tovarname);
+                  console.log(order[index]);
+                  order[index].price+=price;
+                  order[index].quantity+=quantity;
+                }
+                else{
+                  // Добавляем заказ в массив
+                  order.push({ id:tovarid, tovarname:tovarname, quantity:quantity, price:price});
+                }
+                localStorage.setItem('order', JSON.stringify(order));
+                localStorage.setItem('totalcost', JSON.stringify(totalcost));
+              }
+            }
+          }
+        });
+      },
+      showCancelButton: true,
+      confirmButtonColor: "#2F9262",
+      cancelButtonColor: "#3f3f3f",
+      confirmButtonText: "Отправить",
+      cancelButtonText: "Отмена",
+      focusConfirm: false,
+    })
+  });
+
+
+}
 
 // Функция для отображения всех заказов
 function loadAllOrders() {
@@ -507,4 +658,5 @@ window.onload = async function() {
     await connectWebSocket();  // Подключение к WebSocket
     await loadAllOrders();  // Загрузка всех заказов
     Swip();
+    FindTovar();
 };
