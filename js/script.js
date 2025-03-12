@@ -457,6 +457,19 @@ function formatTime(inputTime) {
   }
   return `<span>Примерное время готовки: </span>${formattedTime.trim()}`; // Убираем лишние пробелы
 }
+function formDate(longDate){
+  const date=new Date(longDate);
+  const day =date.getDate();
+  const months=[
+    "января", "февраля", "марта", "апреля", "мая", "июня",
+    "июля", "августа", "сентября", "октября", "ноября", "декабря"
+];
+const month=months[date.getMonth()];
+let hours = date.getHours()+2;
+hours.toString().padStart(2, "0");
+let minutes = date.getMinutes().toString().padStart(2, "0");
+return `${day} ${month} ${hours}:${minutes}`;
+}
 async function GetHistory() {
   document.querySelector('.buthistory').addEventListener('click', async function(){
     $('#HistoryModal').modal('show');
@@ -487,6 +500,7 @@ async function GetHistory() {
             <div class="img-cost">
               <img src="${imagefirs}" alt="${el.orderResponseDTO.products[0].name}" />
               <p class="histcost">${el.orderResponseDTO.totalPrice} MDL</p>
+              <h3 class="histda">${formDate(el.orderResponseDTO.createdAt)}</h3>
             </div>
             ${otpElement} <!-- Добавляем элемент с OTP, если он существует -->
             <button class="histsend" data-id='${el.orderResponseDTO.id}'>Детали</button>
