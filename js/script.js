@@ -474,77 +474,93 @@ function formDate(longDate) {
 async function GetHistory() {
     document.getElementById("orderHistoryBtn").addEventListener("click", async function () {
         let userUUID = JSON.parse(localStorage.getItem('uuid'));
-        try {
-            const response = await fetch(`http://46.229.212.34:9091/api/v1/orders/user?userUUID=${userUUID}&page=0&size=40`);
-            const data = await response.json();
-            console.log("Response from user order history:", data);
-
-            const modalBody = document.getElementById("historyBody");
-            modalBody.innerHTML = ""; // Clear previous content
-
-            if (!data || data.length === 0) {
-                modalBody.innerHTML = "<p>No order history available.</p>";
-                return;
-            }
-
-            const orderList = document.createElement("ul");
-            orderList.classList.add("order-list");
-
-            data.forEach(order => {
-                const { orderResponseDTO } = order;
-                const orderItem = document.createElement("li");
-                orderItem.classList.add("order-item");
-
-                // Order info (Date & Total Price)
-                const orderInfo = document.createElement("div");
-                orderInfo.classList.add("order-info");
-                orderInfo.innerHTML = `
-                    <button class='histsend' data-id='${orderResponseDTO.id}'>Повторить заказ</button>
-                    <span class="order-date">Дата заказа: ${formDate(orderResponseDTO.createdAt)}</span>
-                    <span class="order-price">Сумма: ${orderResponseDTO.totalPrice.toFixed(2)} lei</span>
-                `;
-
-                // Product Images
-                const productImages = document.createElement("div");
-                productImages.classList.add("product-images");
-                orderResponseDTO.products.forEach(product => {
-                    const img = document.createElement("img");
-                    img.src = product.photoUrl;
-                    img.alt = "Product";
-                    img.classList.add("product-image");
-                    productImages.appendChild(img);
-                });
-
-                orderItem.appendChild(orderInfo);
-                orderItem.appendChild(productImages);
-                orderList.appendChild(orderItem);
-            });
-
-            modalBody.appendChild(orderList);
-            document.querySelector('.histmod .order-list').addEventListener('click', function(e) {
-              // Проверяем, что клик был по кнопке .histsend
-              
-              if (e.target && e.target.classList.contains('histsend')) {
-                const orderId = e.target.getAttribute('data-id'); // Получаем id из data-id кнопки
-                
-                // Находим заказ с этим id
-                const order = data.find(order => order.orderResponseDTO.id == orderId);
-                // Выводим все продукты этого заказа
-                if (order) {
-                  console.log('Все продукты для заказа:', order.orderResponseDTO.products);
-                  $('#Modalwindow').modal('show');
-                  ishist=true;
-                  isorder=true;
-                  // Сохраняю итоговую стоимость и список товаров для дальнейшей работы
-                  localStorage.setItem('historder', JSON.stringify(order.orderResponseDTO.products));
-                  localStorage.setItem('totalhist', JSON.stringify(order.orderResponseDTO.totalPrice));
-                  updateModal(order.orderResponseDTO.products);  // Предполагается, что функция updateModal существует
+        if(userUUID){
+            try {
+                const response = await fetch(`http://46.229.212.34:9091/api/v1/orders/user?userUUID=${userUUID}&page=0&size=40`);
+                const data = await response.json();
+                console.log("Response from user order history:", data);
+    
+                const modalBody = document.getElementById("historyBody");
+                modalBody.innerHTML = ""; // Clear previous content
+    
+                if (!data || data.length === 0) {
+                    modalBody.innerHTML = "<p>No order history available.</p>";
+                    return;
                 }
-              }
-            });
-        } catch (error) {
-            console.error("Error fetching order history:", error);
-            modalBody.innerHTML = "<p>Error loading order history.</p>";
+    
+                const orderList = document.createElement("ul");
+                orderList.classList.add("order-list");
+    
+                data.forEach(order => {
+                    const { orderResponseDTO } = order;
+                    const orderItem = document.createElement("li");
+                    orderItem.classList.add("order-item");
+    
+                    // Order info (Date & Total Price)
+                    const orderInfo = document.createElement("div");
+                    orderInfo.classList.add("order-info");
+                    orderInfo.innerHTML = `
+                        <button class='histsend' data-id='${orderResponseDTO.id}'>Повторить заказ</button>
+                        <span class="order-date">Дата заказа: ${formDate(orderResponseDTO.createdAt)}</span>
+                        <span class="order-price">Сумма: ${orderResponseDTO.totalPrice.toFixed(2)} lei</span>
+                    `;
+    
+                    // Product Images
+                    const productImages = document.createElement("div");
+                    productImages.classList.add("product-images");
+                    orderResponseDTO.products.forEach(product => {
+                        const img = document.createElement("img");
+                        img.src = product.photoUrl;
+                        img.alt = "Product";
+                        img.classList.add("product-image");
+                        productImages.appendChild(img);
+                    });
+    
+                    orderItem.appendChild(orderInfo);
+                    orderItem.appendChild(productImages);
+                    orderList.appendChild(orderItem);
+                });
+    
+                modalBody.appendChild(orderList);
+                document.querySelector('.histmod .order-list').addEventListener('click', function(e) {
+                  // Проверяем, что клик был по кнопке .histsend
+                  
+                  if (e.target && e.target.classList.contains('histsend')) {
+                    const orderId = e.target.getAttribute('data-id'); // Получаем id из data-id кнопки
+                    
+                    // Находим заказ с этим id
+                    const order = data.find(order => order.orderResponseDTO.id == orderId);
+                    // Выводим все продукты этого заказа
+                    if (order) {
+                      console.log('Все продукты для заказа:', order.orderResponseDTO.products);
+                      $('#Modalwindow').modal('show');
+                      ishist=true;
+                      isorder=true;
+                      // Сохраняю итоговую стоимость и список товаров для дальнейшей работы
+                      localStorage.setItem('historder', JSON.stringify(order.orderResponseDTO.products));
+                      localStorage.setItem('totalhist', JSON.stringify(order.orderResponseDTO.totalPrice));
+                      updateModal(order.orderResponseDTO.products);  // Предполагается, что функция updateModal существует
+                    }
+                  }
+                });
+            } catch (error) {
+                console.error("Error fetching order history:", error);
+                modalBody.innerHTML = "<p>Error loading order history.</p>";
+            }
+        }
+        else{
+            let text="Ox... вы не зарегистрированы!"
+            let tele='Зарегестрироваться!';
+            if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+                text = 'Ox... nu sunteti înregistrat!';
+                tele = 'Înregistrare!'
+            }
+            if(loc)
+            Swal.fire({
+                icon: "error",
+                title: text,
+                footer: `<a href="https://t.me/PARK_TOWN_BOT">${tele}</a>`
+              });
         }
     });
 }
