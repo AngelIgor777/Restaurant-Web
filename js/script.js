@@ -1,7 +1,10 @@
 // Закрытие меню
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
+// для всей суммы
 let ishist = false;
+// для заказа
+let isorder=false;
 // части html для меню
 const renderHeader = () => `
 <header>
@@ -496,6 +499,7 @@ async function GetHistory() {
                 const orderInfo = document.createElement("div");
                 orderInfo.classList.add("order-info");
                 orderInfo.innerHTML = `
+                    <button class='histsend' data-id='${orderResponseDTO.id}'>Повторить заказ</button>
                     <span class="order-date">Дата заказа: ${formDate(orderResponseDTO.createdAt)}</span>
                     <span class="order-price">Сумма: ${orderResponseDTO.totalPrice.toFixed(2)} lei</span>
                 `;
@@ -517,6 +521,27 @@ async function GetHistory() {
             });
 
             modalBody.appendChild(orderList);
+            document.querySelector('.histmod .order-list').addEventListener('click', function(e) {
+              // Проверяем, что клик был по кнопке .histsend
+              
+              if (e.target && e.target.classList.contains('histsend')) {
+                const orderId = e.target.getAttribute('data-id'); // Получаем id из data-id кнопки
+                
+                // Находим заказ с этим id
+                const order = data.find(order => order.orderResponseDTO.id == orderId);
+                // Выводим все продукты этого заказа
+                if (order) {
+                  console.log('Все продукты для заказа:', order.orderResponseDTO.products);
+                  $('#Modalwindow').modal('show');
+                  ishist=true;
+                  isorder=true;
+                  // Сохраняю итоговую стоимость и список товаров для дальнейшей работы
+                  localStorage.setItem('historder', JSON.stringify(order.orderResponseDTO.products));
+                  localStorage.setItem('totalhist', JSON.stringify(order.orderResponseDTO.totalPrice));
+                  updateModal(order.orderResponseDTO.products);  // Предполагается, что функция updateModal существует
+                }
+              }
+            });
         } catch (error) {
             console.error("Error fetching order history:", error);
             modalBody.innerHTML = "<p>Error loading order history.</p>";
@@ -1432,6 +1457,13 @@ async function Hachchange() {
         // Кнопка отправки
         document.querySelector('.ordersend').addEventListener('click', function () {
             let order = JSON.parse(localStorage.getItem('order'));
+            if(isorder){
+              order=JSON.parse(localStorage.getItem('historder'));
+              localStorage.removeItem("historder");
+              isorder=false;
+              console.log(3453453);
+            }
+            
             if (order.length > 0) {
                 console.log(order);
                 let titl = 'Введите данные';
@@ -1590,7 +1622,7 @@ async function Hachchange() {
                         console.log("Введенные данные:", result.value);
 
                         let book = {};
-                        let order = JSON.parse(localStorage.getItem('order'));
+                        
                         let orderrequest = [];
                         order.forEach(item => {
                             let todo = {
@@ -1673,7 +1705,7 @@ async function Hachchange() {
                     if (result.isConfirmed && !check.checked) {
                         const num = document.getElementById("table").value.trim();
                         let book = {};
-                        let order = JSON.parse(localStorage.getItem('order'));
+                        
                         let orderrequest = [];
                         order.forEach(item => {
                             let todo = {

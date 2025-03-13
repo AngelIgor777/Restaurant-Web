@@ -758,15 +758,18 @@ input[type="number"]::-webkit-inner-spin-button {
   height: 30px;
   color:#fff;
 }
-.histmod .item .histsend{
-  margin-top: auto;
-  background-color: #ffffff11;
+.order-info .histsend{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px !important;
+  background-color: #ffffff35;
   color: #fff;
   font-size: 1.4rem;
   font-family: "Kurale", serif;
   font-weight: 400;
   font-style: normal;
-  border-radius: 5px 5px 0 0;
+  border-radius: 5px;
   border: none;
 }
 .histmod .item img {
@@ -1205,12 +1208,13 @@ input[type="number"]::-webkit-inner-spin-button {
 
 
 
-
+/* History modal */
 
 .order-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
 }
 
 .order-item {
@@ -1219,6 +1223,7 @@ input[type="number"]::-webkit-inner-spin-button {
   border-bottom: 1px solid #ddd;
   padding: 10px;
   margin-bottom: 10px;
+  position: relative;
 }
 
 .order-info {
