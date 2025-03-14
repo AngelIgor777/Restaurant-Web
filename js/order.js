@@ -396,7 +396,7 @@ confirmbut();
 function displayOrder(data) {
     const messageDiv = document.getElementById("messages");
     const messageElement = document.createElement("div");
-    
+    console.log(data)
 
     const order = data.orderResponseDTO;
 
@@ -407,6 +407,7 @@ function displayOrder(data) {
         <h2>Заказ ID: ${order.id ?? 'Не указано'}</h2>
         <details>
         <summary>
+        <p>${data.otp ? `Проверочный код: ${data.otp}` : ''}</p>
         <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
         <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'} lei</p>
         <p>${formatAddress(data.addressResponseDTO)}</p>
