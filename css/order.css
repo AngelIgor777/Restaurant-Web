@@ -127,6 +127,11 @@ b {
     height: 100%; /* или конкретную высоту */
     overflow: hidden; /* Скрывает контент, который выходит за пределы */
 }
+.addbody{
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .result_table {
   display: flex;
   flex-direction: column;
@@ -135,6 +140,7 @@ b {
   place-items: flex-start; /* Исправлено на начало для корректного выравнивания */
   margin-bottom: 20px;
   width: 100%;
+  height: 800px;
   flex-grow: 1; /* Позволяет контейнеру растягиваться */
   gap: 20px 40px;
   overflow-y: auto; /* Для обеспечения прокрутки */
