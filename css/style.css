@@ -901,6 +901,7 @@ input[type="number"]::-webkit-inner-spin-button {
 .searchgroup input{
   background-color: #0000005a;
   max-width: 382px;
+  color: #fff;
 }
 .searchgroup input:focus{
   background-color: #0000005a;

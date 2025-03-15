@@ -1477,7 +1477,6 @@ async function Hachchange() {
               order=JSON.parse(localStorage.getItem('historder'));
               localStorage.removeItem("historder");
               isorder=false;
-              console.log(3453453);
             }
             
             if (order.length > 0) {
