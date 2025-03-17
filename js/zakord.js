@@ -36,6 +36,7 @@ const renderHeader = () => `
                 <li class="nav-item active"><a href="index.html#menu">Меню</a></li>
                 <li class="nav-item"><a href="index.html#about">О нас</a></li>
                 <li class="nav-item"><a href="index.html#Contacts">Контакты</a></li>
+                <li class="nav-item"><a href="order.html">Заказы</a></li>
               </ul>
             </div>
   
@@ -590,6 +591,7 @@ async function FindTovar() {
             console.error("Ошибка: не найдены необходимые элементы.");
             return;
         }
+        loadProducts("");
         // поле для ввода данных
         Addsendform();  
         // Запрещаем стандартное поведение формы

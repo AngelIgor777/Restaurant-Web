@@ -209,7 +209,7 @@ const renderBody= () =>`
 
     <!-- Кнопка отправки -->
         <div class="buttonsend">
-          <a class='addbutton' type="button" data-bs-toggle="modal" data-bs-target="#Modalsearch">
+          <a class='addbutton' type="button"  href='zakord.html'>
             <i class='bx bx-plus'></i>
           </a>
         </div>
