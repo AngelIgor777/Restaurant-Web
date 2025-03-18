@@ -401,6 +401,7 @@ header {
   width: 100%;
   height: auto !important;
   gap: 100px 40px;
+  flex:1;
 }
 .menu-container .item{
   opacity: 0;

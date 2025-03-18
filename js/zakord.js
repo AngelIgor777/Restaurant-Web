@@ -1,3 +1,33 @@
+function checkAdminAccess() {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+      console.warn("No token found! Redirecting to login...");
+      window.location.href = "index.html";
+      return;
+  }
+
+  const userInfo = parseJwt(token);
+
+  if (!userInfo || !userInfo.roles || !userInfo.roles.includes("ROLE_ADMIN")) {
+      console.warn("Access denied! Redirecting to login...");
+      
+      window.location.href = "index.html";
+      return;
+  }
+}
+function parseJwt(token) {
+  try {
+      const base64Url = token.split('.')[1]; // Get payload
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Fix encoding
+      const decodedPayload = JSON.parse(atob(base64)); // Decode base64 to JSON
+      return decodedPayload; // Return full payload
+  } catch (error) {
+      console.error("Error decoding token:", error);
+      return null;
+  }
+}
+checkAdminAccess();
 const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
@@ -114,6 +144,24 @@ const renderBody= () =>`
                   </table>
                 </div>
         </div>
+
+        <div class="userFind">
+        <div class="findinput">
+          <form>
+            <div class="input-group searchgroup">
+             <input class="form-control" type="search" id='searchuser' placeholder="Введите запрос..." aria-label="Поиск">
+          </div>
+            
+          </form>
+        </div>
+         <div class="result_table_user result_table">
+            <div class='result-user result'>
+            <!-- Сюда будут добавляться результаты поиска -->
+            </div>
+         </div>
+      
+         </div>
+
         <div class='sendform'>
         
         </div>
@@ -151,17 +199,11 @@ const renderFooter = () => `
 
 
 async function ChosenOne() {
-        // тут код для отправки заказа в избранное
-        const star = document.querySelector('.chosen');
-        if (star.classList.contains('active')) {
-            // отправляем на сервер весь заказ
-        }
         // а тут очистка заказа
         localStorage.setItem("order", JSON.stringify([]));
         localStorage.setItem("totalcost", JSON.stringify(0.0));
         // убираем из избранного после отправки
-        star.classList.remove('active');
-        star.innerHTML = `<i class='bx bx-star' ></i>`;
+
       
         let totalcost = JSON.parse(localStorage.getItem('totalcost')) || 0.0;  // Инициализация totalcost
         let total = 'Всего:';
@@ -375,11 +417,10 @@ function getFormData(isAddressForm) {
         }
         return data;
 }
-
+let user = null;
 // Функция для обработки отправки данных заказа
 function handleOrderSubmission(orderData, isAddressForm) {
         let order = JSON.parse(localStorage.getItem('order'));
-        let user = JSON.parse(localStorage.getItem('uuid'));
         let orderRequest = order.map(item => ({
           productId: item.id,
           quantity: item.quantity
@@ -577,6 +618,52 @@ function checkScroll(container) {
       loadProducts(searchQuery); // Передаём актуальный поисковый запрос
   }
 }
+// Поиск пользователей
+let pageus = 0; // Начинаем с 0
+let isLoadingus = false; // Флаг загрузки
+
+async function loadUsers(query) {
+    if (isLoadingus) return; // Предотвращаем повторные запросы
+    isLoadingus = true; // Устанавливаем флаг загрузки
+    const apiUrl = `http://46.229.212.34:9091/api/v1/users/search?query=${encodeURIComponent(query)}&page=${pageus}&size=10`;
+    
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const container = document.querySelector('.result-user');
+        
+        console.log(data);
+  
+        const userItems = data.content.map((user) => {
+            const userItem = document.createElement('div');
+            userItem.className = `user-item visible`;
+            userItem.id = `user-${user.id}`;
+            userItem.innerHTML = `
+              <img class="img-cost" src="${user.photoUrl || null}" alt="${user.firstname}" />
+              <h3 class="user-first">${user.firstname}</h3>
+              ${user.username ? `<h3 class="user-name">${user.username}</h3>` : ''}
+              <button class="alege" data-id='${user.uuid}'><i class='bx bx-user-check'></i></i> <i class='bx bx-check'></i></button>
+            `;
+            return userItem;
+        });
+        
+        container.addEventListener('scroll', () => checkScrollus(container));
+        container.append(...userItems);
+        pageus++;
+    } catch (error) {
+        console.error('Ошибка при загрузке пользователей:', error);
+    } finally {
+        isLoadingus = false; // Сбрасываем флаг загрузки
+    }
+}
+
+function checkScrollus(container) {
+    if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
+        const searchQuery = document.querySelector("#searchuser").value; 
+        loadUsers(searchQuery); // Передаём актуальный поисковый запрос
+    }
+}
+
 
 // Назначаем обработчик прокрутки
 
@@ -602,7 +689,21 @@ async function FindTovar() {
           page = 0; // Сброс страницы
           loadProducts(searchInput.value);
         });
+
+        document.querySelector(".result_table_user").addEventListener('click', function(e){
+          if (e.target.matches(".alege") || e.target.closest(".alege")) {
+            const button = e.target.closest(".alege");
+            button.classList.add("sold");
+            user=button.getAttribute('data-id');
+
+
+            // Убираем класс sold через 1 секунду
+            setTimeout(function () {
+              button.classList.remove("sold");
+          }, 1000); // 1 секунда анимации
       
+        }
+        });
         // Поиск по нажатию кнопки
         searchInput.addEventListener("input", function() {
           const container = document.querySelector('.result_table');
@@ -610,6 +711,12 @@ async function FindTovar() {
           page = 0; // Сброс страницы
           loadProducts(searchInput.value);
         });
+
+        document.querySelector('#searchuser').addEventListener('input', (event) => {
+          pageus = 0;
+          document.querySelector('.result-user').innerHTML = '';
+          loadUsers(event.target.value);
+      });
       
         // Поиск при нажатии Enter в поле ввода
         searchInput.addEventListener("keypress", function(event) {
@@ -696,6 +803,7 @@ async function FindTovar() {
             }
         });
         
+        
         let orde = JSON.parse(localStorage.getItem('order'));
         updateModal(orde);
         let total = 'Всего:';
@@ -707,10 +815,60 @@ async function FindTovar() {
         <h6 class="itog-cost">${total} ${totalcost}<h6>
       `);
 }
+async function getReg(uuid1) {
+  try {
+      // Получаем данные пользователя
+      let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
+      let data = await response.json();
 
+
+      // Сохраняем данные адреса, если они еще не сохранены
+      if (!localStorage.getItem("addressResponseDTO") && data.addressResponseDTO) {
+          localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO));
+      }
+
+      // Получаем изображение
+      let imageResponse = data.photoUrl;
+
+      // Вставляем изображение в элементы
+      if (imageResponse) {
+          document.querySelectorAll(".userimg").forEach(im => {
+              im.innerHTML = `<img src="${imageResponse}" alt="User Image">`;
+          });
+      } else {
+          throw new Error("Изображение не найдено");
+      }
+
+  } catch (error) {
+      console.error("Ошибка запроса:", error);
+  }
+}
+function getUUIDFromURL() {
+  const hash = window.location.hash; // Получаем часть после #
+  const match = hash.match(/#menu\/([a-f0-9\-]{36})/i); // Регулярка для UUID
+  return match ? match[1] : null; // Возвращаем UUID или null, если не найден
+}
+async function Registr() {
+  // let params = new URLSearchParams(window.location.search);
+  let uuid = getUUIDFromURL();
+  console.log(uuid);
+  if (!localStorage.getItem("uuid")) {
+      if (uuid) {
+          localStorage.setItem("uuid", JSON.stringify(uuid));
+          getReg(uuid);
+      }
+  } else {
+      let uuid1 = JSON.parse(localStorage.getItem("uuid"));
+
+      if (uuid1) {
+          getReg(uuid1);
+      }
+  }
+}
 
 // Автоматическое подключение при загрузке страницы
 window.onload = async function() {
     document.querySelector('.app').innerHTML=renderHeader()+renderBody()+renderFooter();
     FindTovar();
+    Registr();
 };

@@ -165,7 +165,7 @@ const renderMenu = () => `
         </div>
         <!--Кнопка истории -->
         <div class="buthistory" id="orderHistoryBtn">
-          <a type="button" data-bs-toggle="modal" data-bs-target="#HistoryModal">
+          <a type="button" data-bs-toggle="modal">
             <i class='bx bx-history'></i>
           </a>
         </div>
@@ -472,6 +472,10 @@ function formDate(longDate) {
 }
 
 async function GetHistory() {
+    let userUUID = JSON.parse(localStorage.getItem('uuid'));
+    if(userUUID){
+        document.querySelector('#orderHistoryBtn a').setAttribute('data-bs-target', '#HistoryModal');
+    }
     document.getElementById("orderHistoryBtn").addEventListener("click", async function () {
         let userUUID = JSON.parse(localStorage.getItem('uuid'));
         if(userUUID){
@@ -555,12 +559,16 @@ async function GetHistory() {
                 text = 'Ox... nu sunteti înregistrat!';
                 tele = 'Înregistrare!'
             }
-            if(loc)
             Swal.fire({
                 icon: "error",
                 title: text,
-                footer: `<a href="https://t.me/PARK_TOWN_BOT">${tele}</a>`
+                confirmButtonColor: "#2F9262",
+                footer: `
+                <a href="https://t.me/PARK_TOWN_BOT">${tele}</a>
+                <p>Просто подпишитесь на телеграм бота</p>
+                `
               });
+             
         }
     });
 }

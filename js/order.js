@@ -1,5 +1,5 @@
 const token=JSON.parse(localStorage.getItem('accessToken')); // Получаем токен (замени на свой способ хранения)
-console.log(token);
+
 const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
@@ -657,5 +657,4 @@ window.onload = async function() {
     await connectWebSocket();  // Подключение к WebSocket
     await loadAllOrders();  // Загрузка всех заказов
     Swip();
-    FindTovar();
 };

@@ -1,4 +1,33 @@
-
+function checkAdminAccess() {
+    const token = localStorage.getItem("accessToken");
+  
+    if (!token) {
+        console.warn("No token found! Redirecting to login...");
+        window.location.href = "index.html";
+        return;
+    }
+  
+    const userInfo = parseJwt(token);
+  
+    if (!userInfo || !userInfo.roles || !userInfo.roles.includes("ROLE_ADMIN")) {
+        console.warn("Access denied! Redirecting to login...");
+        
+        window.location.href = "index.html";
+        return;
+    }
+  }
+  function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1]; // Get payload
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Fix encoding
+        const decodedPayload = JSON.parse(atob(base64)); // Decode base64 to JSON
+        return decodedPayload; // Return full payload
+    } catch (error) {
+        console.error("Error decoding token:", error);
+        return null;
+    }
+  }
+checkAdminAccess();
 const token=JSON.parse(localStorage.getItem('accessToken'));
     if(!token){
         window.location.href = 'http://127.0.0.1:9092/Coffe/index.html';
