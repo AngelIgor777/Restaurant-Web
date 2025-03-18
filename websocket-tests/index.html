@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Bucket - WebSocket</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        input, button {
+            margin: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        #orderUpdates {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+            overflow-y: auto;
+            height: 400px;
+        }
+
+        .update-message {
+            background: #e3f2fd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>Shared Bucket System</h1>
+
+<!-- Create Shared Bucket -->
+<h3>Create Shared Bucket</h3>
+<label>User UUID:</label>
+<input type="text" id="creatorUserUUID" placeholder="Enter User UUID">
+<button onclick="createSharedBucket()">➕ Create Shared Bucket</button>
+
+
+<h3>Enter Shared Bucket ID</h3>
+<input type="number" id="bucketId" placeholder="Enter Bucket ID">
+<button onclick="fetchSharedBucket()">Load Order</button>
+
+<h3>Connect WebSocket</h3>
+<input type="text" id="userUUID" placeholder="Enter your User UUID">
+<button onclick="connectWebSocket()">Connect</button>
+
+<h3>Add Product</h3>
+<input type="number" id="productId" placeholder="Product ID">
+<input type="number" id="quantity" placeholder="Quantity">
+<button onclick="addProduct()">Add Product</button>
+
+<h3>Confirm Order</h3>
+<button onclick="confirmOrder()">Confirm Order</button>
+
+<h3>Real-Time Order Updates</h3>
+<div id="orderUpdates"></div>
+
+<script>
+    const API_URL = "http://localhost:9091/api/v1/shared-buckets";
+    const WS_URL = "http://localhost:9091/ws-orders";
+
+    let stompClient = null;
+    let sessionUUID = null;
+    let userUUID = null;
+    let sharedBucketId = null;
+
+
+    // 🚀 CREATE SHARED BUCKET
+    function createSharedBucket() {
+        let userUUID = document.getElementById("creatorUserUUID").value;
+        if (!userUUID) {
+            showMessage("error", "❌ Please enter a User UUID!");
+            return;
+        }
+
+        fetch("http://localhost:9091/api/v1/shared-buckets", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({userUUID: userUUID})
+        })
+            .then(response => response.json())
+            .then(data => {
+                showMessage("success", `✅ Shared Bucket Created! Session UUID: ${data.sessionUUID}`);
+            })
+            .catch(error => showMessage("error", "❌ Error creating shared bucket!"));
+    }
+
+
+    function showMessage(type, message) {
+        const updatesDiv = document.getElementById("orderUpdates");
+        const msgDiv = document.createElement("div");
+        msgDiv.classList.add("update-message");
+
+        if (type === "success") msgDiv.style.background = "#c8e6c9";  // Green
+        else if (type === "warning") msgDiv.style.background = "#fff3cd"; // Yellow
+        else if (type === "error") msgDiv.style.background = "#f8d7da"; // Red
+        else msgDiv.style.background = "#e3f2fd"; // Blue
+
+        msgDiv.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+        updatesDiv.appendChild(msgDiv);
+        updatesDiv.scrollTop = updatesDiv.scrollHeight; // Auto-scroll to latest update
+    }
+
+    async function fetchSharedBucket() {
+        sharedBucketId = document.getElementById("bucketId").value;
+        if (!sharedBucketId) {
+            showMessage("error", "❌ Enter a valid Bucket ID!");
+            return;
+        }
+
+        console.log(userUUID)
+        const response = await fetch(`${API_URL}/${sharedBucketId}?userUUID=${userUUID}`);
+        if (response.ok) {
+            const data = await response.json();
+            sessionUUID = data.sharedBucket.sessionUUID;
+            showMessage("success", `✅ Loaded Shared Bucket! Session UUID: ${sessionUUID}`);
+            showMessage("info", `<pre>${JSON.stringify(data, null, 2)}</pre>`);
+        } else {
+            showMessage("error", "❌ Bucket not found.");
+        }
+    }
+
+    function connectWebSocket() {
+        userUUID = document.getElementById("userUUID").value;
+        if (!userUUID || !sessionUUID) {
+            showMessage("error", "❌ Enter User UUID and Load a Shared Bucket First!");
+            return;
+        }
+
+        const socket = new SockJS(WS_URL);
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            showMessage("success", `✅ Connected to WebSocket for session: ${sessionUUID}`);
+
+            stompClient.subscribe(`/topic/order/${sessionUUID}`, function (message) {
+                const updatedBucket = JSON.parse(message.body);
+                showMessage("info", `🔄 Order Updated: <pre>${JSON.stringify(updatedBucket, null, 2)}</pre>`);
+            });
+
+            stompClient.subscribe(`/topic/order/${sessionUUID}/confirmed`, function () {
+                showMessage("success", "✅ Order Fully Confirmed!");
+            });
+
+            stompClient.subscribe(`/topic/order/${sessionUUID}/progress`, function (message) {
+                showMessage("warning", `⏳ Waiting for user confirmation: ${message.body}`);
+            });
+        });
+    }
+
+    function addProduct() {
+        if (!stompClient || !sessionUUID || !userUUID) {
+            showMessage("error", "❌ WebSocket not connected or session/user UUID missing!");
+            return;
+        }
+
+        const productId = document.getElementById("productId").value;
+        const quantity = document.getElementById("quantity").value;
+
+        const productData = {
+            productId: parseInt(productId),
+            sharedBucketId: parseInt(sharedBucketId),
+            userUUID: userUUID,
+            quantity: parseInt(quantity)
+        };
+
+        stompClient.send(`/app/order/${sessionUUID}/addProduct`, {}, JSON.stringify(productData));
+        showMessage("info", "🛒 Product added via WebSocket!");
+    }
+
+    function confirmOrder() {
+        console.log("session uuid: " + sessionUUID)
+        console.log("user uuid: " + userUUID)
+        if (!stompClient || !sessionUUID || !userUUID) {
+            showMessage("error", "❌ WebSocket not connected or session/user UUID missing!");
+            return;
+        }
+
+        stompClient.send(`/app/order/${sessionUUID}/confirm`, {}, userUUID);
+        showMessage("info", "✅ Order confirmation request sent!");
+    }
+</script>
+</body>
+</html>

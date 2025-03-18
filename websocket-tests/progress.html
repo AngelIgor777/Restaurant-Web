@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Bucket WebSocket</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
+        #log { margin-top: 20px; padding: 10px; background: white; border-radius: 5px; max-height: 300px; overflow-y: auto; }
+        .message { padding: 5px; border-bottom: 1px solid #ddd; }
+        .success { color: green; }
+        .info { color: blue; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+
+<h2>Shared Bucket WebSocket</h2>
+<label>Session UUID:</label>
+<input type="text" id="sessionUUID" placeholder="Enter Session UUID" value="4e6f5ce4-577f-4580-9775-678f30ef7ded">
+<label>User UUID:</label>
+<input type="text" id="userUUID" placeholder="Enter User UUID" value="d4b68e04-d2bd-4701-aa88-2bc9f07629f4">
+<button onclick="connectWebSocket()">🔗 Connect WebSocket</button>
+<button onclick="confirmOrder()">✅ Confirm Order</button>
+
+<h3>Live Updates</h3>
+<div id="log"></div>
+
+<script>
+    let stompClient = null;
+
+    function connectWebSocket() {
+        let sessionUUID = document.getElementById("sessionUUID").value;
+        if (!sessionUUID) {
+            showMessage("error", "❌ Please enter a Session UUID!");
+            return;
+        }
+
+        let socket = new SockJS("http://localhost:9091/ws-orders"); // Your WebSocket endpoint
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function () {
+            showMessage("success", "✅ WebSocket Connected!");
+
+            // Subscribe to confirmed topic
+            stompClient.subscribe(`/topic/order/${sessionUUID}/confirmed`, function (message) {
+                let data = JSON.parse(message.body);
+                showMessage("success", "🎉 Order Confirmed!");
+            });
+
+            // Subscribe to progress topic
+            stompClient.subscribe(`/topic/order/${sessionUUID}/progress`, function (message) {
+                let userUUID = message.body;
+                showMessage("info", `⏳ User ${userUUID} is confirming...`);
+            });
+
+            showMessage("success", "✅ Subscribed to order updates!");
+        });
+    }
+
+    function confirmOrder() {
+        let sessionUUID = document.getElementById("sessionUUID").value;
+        let userUUID = document.getElementById("userUUID").value;
+
+        if (!stompClient || !sessionUUID || !userUUID) {
+            showMessage("error", "❌ WebSocket not connected or missing values!");
+            return;
+        }
+
+        stompClient.send(`/app/order/${sessionUUID}/confirm`, {}, JSON.stringify(userUUID));
+        showMessage("info", "✅ Order confirmation request sent!");
+    }
+
+    function showMessage(type, text) {
+        let log = document.getElementById("log");
+        let messageDiv = document.createElement("div");
+        messageDiv.className = `message ${type}`;
+        messageDiv.innerHTML = text;
+        log.appendChild(messageDiv);
+        log.scrollTop = log.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
