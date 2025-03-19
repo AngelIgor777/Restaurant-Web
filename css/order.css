@@ -203,7 +203,7 @@ input[type="radio"]:checked {
 }
 .user-item{
   display: flex !important;
-  height: 70px;
+  height: 90px;
   width: 100%;
   margin-bottom: 10px;
   flex-direction: row !important;

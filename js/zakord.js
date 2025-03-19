@@ -639,7 +639,7 @@ async function loadUsers(query) {
             userItem.className = `user-item visible`;
             userItem.id = `user-${user.id}`;
             userItem.innerHTML = `
-              <img class="img-cost" src="${user.photoUrl || null}" alt="${user.firstname}" />
+              <img class="img-cost" src="${user.photoUrl || "./img/default_user.png"}" alt="${user.firstname}" />
               <h3 class="user-first">${user.firstname}</h3>
               ${user.username ? `<h3 class="user-name">${user.username}</h3>` : ''}
               <button class="alege" data-id='${user.uuid}'><i class='bx bx-user-check'></i></i> <i class='bx bx-check'></i></button>
