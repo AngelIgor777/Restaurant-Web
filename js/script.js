@@ -893,6 +893,7 @@ async function fetchMenuItems(categoryIds) {
         // 5. Ждём загрузки изображений перед обновлением Isotope
         imagesLoaded(menuContainer, function () {
             initializeIsotope();
+            loadscreen();
         });
 
     } catch (error) {
@@ -1374,7 +1375,7 @@ async function Hachchange() {
         // загрузка товаров
 
         await fetchProductTypes();
-        loadscreen();
+        
         // запуск всех нужных функ. после загрузки самого сайта
         GetHistory();
         Registr();
