@@ -11,7 +11,6 @@ function checkAdminAccess() {
   
     if (!userInfo || !userInfo.roles || !userInfo.roles.includes("ROLE_ADMIN")) {
         console.warn("Access denied! Redirecting to login...");
-        
         window.location.href = "index.html";
         return;
     }
@@ -29,9 +28,6 @@ function checkAdminAccess() {
   }
 checkAdminAccess();
 const token=JSON.parse(localStorage.getItem('accessToken'));
-    if(!token){
-        window.location.href = 'http://127.0.0.1:9092/Coffe/index.html';
-  }
 
 let allitems=[];
 async function Statistiktable(start, end) {

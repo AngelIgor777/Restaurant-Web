@@ -647,9 +647,4 @@ input{
     
   }
 }
-@media (min-height:1200px) {
-  .aboutmenu {
-    width: 100%;
-    height:1200px;
-  }
-}
+
