@@ -2408,6 +2408,7 @@ function headerRum() {
         it.addEventListener("change", function (event) {
             localStorage.setItem('lang', JSON.stringify(event.target.value));
             Hachchange();
+            
         });
 
     });
@@ -2436,6 +2437,7 @@ function Language() {
             it.addEventListener("change", function (event) {
                 localStorage.setItem('lang', JSON.stringify(event.target.value));
                 Hachchange();
+                
             });
             if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
 
@@ -2475,9 +2477,10 @@ function Language() {
                         </tr>
       `;
                 document.querySelector(".category-list li a").textContent = 'Toate';
+                // если что функции для перевода сюда
                 footerRum();
                 headerRum();
-
+                Registr();
                 document.querySelectorAll(".description h5 span").forEach(it => {
                     it.textContent = 'Timp aproximativ de gătire: ';
                 });
