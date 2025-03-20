@@ -1,3 +1,4 @@
+
 // Закрытие меню
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
@@ -480,6 +481,10 @@ async function GetHistory() {
         let userUUID = JSON.parse(localStorage.getItem('uuid'));
         if(userUUID){
             try {
+                if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+                    const titl=document.getElementById('HistoryModalTitle');
+                    titl.textContent='Istoricul comenzilor';
+                    }
                 const response = await fetch(`http://46.229.212.34:9091/api/v1/orders/user?userUUID=${userUUID}&page=0&size=40`);
                 const data = await response.json();
                 console.log("Response from user order history:", data);
@@ -494,7 +499,7 @@ async function GetHistory() {
     
                 const orderList = document.createElement("ul");
                 orderList.classList.add("order-list");
-    
+                
                 data.forEach(order => {
                     const { orderResponseDTO } = order;
                     const orderItem = document.createElement("li");
@@ -503,11 +508,21 @@ async function GetHistory() {
                     // Order info (Date & Total Price)
                     const orderInfo = document.createElement("div");
                     orderInfo.classList.add("order-info");
-                    orderInfo.innerHTML = `
+                    if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+                        orderInfo.innerHTML = `
+                        <button class='histsend' data-id='${orderResponseDTO.id}'>Repetă comanda</button>
+                        <span class="order-date">Data comenzii: ${formDate(orderResponseDTO.createdAt)}</span>
+                        <span class="order-price">Sumă: ${orderResponseDTO.totalPrice.toFixed(2)} lei</span>
+                    `;
+                    }
+                    else{
+                        orderInfo.innerHTML = `
                         <button class='histsend' data-id='${orderResponseDTO.id}'>Повторить заказ</button>
                         <span class="order-date">Дата заказа: ${formDate(orderResponseDTO.createdAt)}</span>
                         <span class="order-price">Сумма: ${orderResponseDTO.totalPrice.toFixed(2)} lei</span>
                     `;
+                    }
+                    
     
                     // Product Images
                     const productImages = document.createElement("div");
@@ -549,7 +564,6 @@ async function GetHistory() {
                 });
             } catch (error) {
                 console.error("Error fetching order history:", error);
-                modalBody.innerHTML = "<p>Error loading order history.</p>";
             }
         }
         else{
@@ -948,19 +962,19 @@ async function updateModal(order) {
       <h6 class="itog-cost">${total} ${totalcost}<h6>
       `);
         // добавление в избранное
-        const star = document.querySelector('.chosen');
-        star.addEventListener('click', function () {
-            // добавление класс active
-            if (!star.classList.contains('active')) {
-                star.classList.add('active');
-                star.innerHTML = `<i class='bx bxs-star' ></i>`;
-            }
-            // удаление класс active
-            else {
-                star.classList.remove('active');
-                star.innerHTML = `<i class='bx bx-star' ></i>`;
-            }
-        });
+        // const star = document.querySelector('.chosen');
+        // star.addEventListener('click', function () {
+        //     // добавление класс active
+        //     if (!star.classList.contains('active')) {
+        //         star.classList.add('active');
+        //         star.innerHTML = `<i class='bx bxs-star' ></i>`;
+        //     }
+        //     // удаление класс active
+        //     else {
+        //         star.classList.remove('active');
+        //         star.innerHTML = `<i class='bx bx-star' ></i>`;
+        //     }
+        // });
         // Важно: добавляем обработчик события для кнопок удаления
         const deleteButtons = document.querySelectorAll(".delete");
         deleteButtons.forEach(button => {
@@ -1337,17 +1351,14 @@ async function Profile(e) {
 async function ChosenOne() {
     // тут код для отправки заказа в избранное
     const star = document.querySelector('.chosen');
-    if (star.classList.contains('active')) {
-        // отправляем на сервер весь заказ
-    }
     // а тут очистка заказа
     localStorage.setItem("order", JSON.stringify([]));
     localStorage.setItem("totalcost", JSON.stringify(0.0));
     const buttosend = document.querySelector("p.colvo");
     buttosend.textContent = '0';
     // убираем из избранного после отправки
-    star.classList.remove('active');
-    star.innerHTML = `<i class='bx bx-star' ></i>`;
+    // star.classList.remove('active');
+    // star.innerHTML = `<i class='bx bx-star' ></i>`;
 }
 
 // Вызываем функцию при изменения хэша это основа не забываеми
@@ -1489,7 +1500,7 @@ async function Hachchange() {
             }
             
             if (order.length > 0) {
-                console.log(order);
+                
                 let titl = 'Введите данные';
                 let stre = 'Улица';
                 let casa = 'Дом';
@@ -1514,6 +1525,7 @@ async function Hachchange() {
                     car = 'Hartă';
                     cash = 'Numerar';
                 }
+                console.log(order);
                 Swal.fire({
                     title: `${titl}`,
                     html: `
@@ -2401,17 +2413,16 @@ function headerRum() {
     </div>
   </nav>
 `;
-    const selects = document.querySelectorAll('select.form-select.lang');
-    selects.forEach(it => {
-
-        it.value = JSON.parse(localStorage.getItem('lang'));
-        it.addEventListener("change", function (event) {
-            localStorage.setItem('lang', JSON.stringify(event.target.value));
-            Hachchange();
-            
-        });
-
+const lang = JSON.parse(localStorage.getItem('lang')) || 'ru';
+const selects = document.querySelectorAll('select.form-select.lang');
+selects.forEach(it => {
+    it.value = lang;
+    it.addEventListener("change", function (event) {
+        localStorage.setItem('order', JSON.stringify([]));
+        localStorage.setItem('lang', JSON.stringify(event.target.value)); 
+        setTimeout(() => location.reload(), 100);
     });
+});
 }
 
 function loadCachedBackground(url) {
@@ -2428,78 +2439,102 @@ function Language() {
     if (!localStorage.getItem('lang')) {
         localStorage.setItem('lang', JSON.stringify('ru'));
     }
+
     setTimeout(function () {
-        const selects = document.querySelectorAll('select.form-select.lang');
-        console.log(selects);
-        selects.forEach(it => {
+        const lang = JSON.parse(localStorage.getItem('lang')) || 'ru';
 
-            it.value = JSON.parse(localStorage.getItem('lang'));
-            it.addEventListener("change", function (event) {
-                localStorage.setItem('lang', JSON.stringify(event.target.value));
-                Hachchange();
-                
-            });
-            if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-
-                const observer = new MutationObserver(() => {
-                    document.querySelectorAll('.swal2-confirm').forEach(it => {
-                        it.textContent = 'Confirma';
-                    });
-                    document.querySelectorAll('.swal2-cancel').forEach(it => {
-                        it.textContent = 'Anulare';
-                    });
-                    document.querySelectorAll('.swal2-validation-message').forEach(it => {
-                        it.textContent = 'Vă rugăm să completați toate câmpurile!';
-                    });
-                });
-
-                observer.observe(document.body, {
-                    childList: true, subtree: true
-                });
-
-
-                document.querySelectorAll('.btn-success').forEach(it => {
-                    it.textContent = 'Confirma';
-                });
-                document.querySelectorAll('.decline').forEach(it => {
-                    it.textContent = 'Anulare';
-                });
-                document.querySelector('.modal-header h1').textContent = 'Comanda ta';
-                document.querySelector('.check-box label').textContent = 'Comanda la domiciliu';
-                document.querySelector('.ord thead').innerHTML = `
-      <tr>
-                          <th style="text-align: center;">№</th>
-                          <th style="text-align: center;">Nume</th>
-                          <th style="text-align: center;">Preţ</th>
-                          <th style="text-align: center;">Cantitate</th>
-                          <th></th>
-                          
-                        </tr>
-      `;
-                document.querySelector(".category-list li a").textContent = 'Toate';
-                // если что функции для перевода сюда
-                footerRum();
-                headerRum();
-                Registr();
-                document.querySelectorAll(".description h5 span").forEach(it => {
-                    it.textContent = 'Timp aproximativ de gătire: ';
-                });
-                document.querySelector('.category-content h1.title').innerHTML = `
-      <a
-                  data-bs-toggle="collapse"
-                  href="#Category"
-                  id='menutext'
-                  role="button"
-                  aria-expanded="false"
-                  aria-controls="Category"
-                  > <i class="bi bi-chevron-down"></i>Meniu</a
-                >`
-
+        // Объект с переводами
+        const translations = {
+            ru: {
+                confirm: 'Подтвердить',
+                cancel: 'Отмена',
+                validation: 'Пожалуйста, заполните все поля!',
+                menu: '<i class="bi bi-chevron-down"></i>Меню'
+            },
+            ro: {
+                confirm: 'Confirma',
+                cancel: 'Anulare',
+                validation: 'Vă rugăm să completați toate câmpurile!',
+                menu: '<i class="bi bi-chevron-down"></i>Meniu'
             }
-        });
-    }, 1000);  // Задержка 1 секунда
+        };
 
+        // --- Создаем один MutationObserver ---
+        const observer = new MutationObserver(() => {
+            observer.disconnect(); // Отключаем перед изменением, чтобы избежать зацикливания
+
+            document.querySelectorAll('.swal2-confirm').forEach(it => {
+                if (it.textContent !== translations[lang].confirm) {
+                    it.textContent = translations[lang].confirm;
+                }
+            });
+            document.querySelectorAll('.swal2-cancel').forEach(it => {
+                if (it.textContent !== translations[lang].cancel) {
+                    it.textContent = translations[lang].cancel;
+                }
+            });
+            document.querySelectorAll('.swal2-validation-message').forEach(it => {
+                if (it.textContent !== translations[lang].validation) {
+                    it.textContent = translations[lang].validation;
+                }
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // --- Логика перевода ---
+        const selects = document.querySelectorAll('select.form-select.lang');
+        selects.forEach(it => {
+            it.value = lang;
+            it.addEventListener("change", function (event) {
+                localStorage.setItem('order', JSON.stringify([]));
+                localStorage.setItem('lang', JSON.stringify(event.target.value)); 
+                setTimeout(() => location.reload(), 100);
+            });
+        });
+
+        if (lang === 'ro') {
+            document.querySelectorAll('.btn-success').forEach(it => it.textContent = 'Confirma');
+            document.querySelectorAll('.decline').forEach(it => it.textContent = 'Anulare');
+
+            const modalHeader = document.querySelector('.modal-header h1');
+            if (modalHeader) modalHeader.textContent = 'Comanda ta';
+
+            const checkBoxLabel = document.querySelector('.check-box label');
+            if (checkBoxLabel) checkBoxLabel.textContent = 'Comanda la domiciliu';
+
+            const orderTable = document.querySelector('.ord thead');
+            if (orderTable) {
+                orderTable.innerHTML = `
+                    <tr>
+                        <th style="text-align: center;">№</th>
+                        <th style="text-align: center;">Nume</th>
+                        <th style="text-align: center;">Preţ</th>
+                        <th style="text-align: center;">Cantitate</th>
+                        <th></th>
+                    </tr>`;
+            }
+
+            const categoryList = document.querySelector(".category-list li a");
+            if (categoryList) categoryList.textContent = 'Toate';
+
+            const categoryTitle = document.querySelector('.category-content h1.title a');
+            if (categoryTitle) categoryTitle.innerHTML = translations[lang].menu;
+
+            
+            footerRum();
+            headerRum();
+            Registr();
+
+            document.querySelectorAll(".description h5 span").forEach(it => {
+                it.textContent = 'Timp aproximativ de gătire: ';
+            });
+        }
+    }, 1000);
 }
+
 
 function loadscreen() {
     const loadingScreens = document.getElementsByClassName('loader');
