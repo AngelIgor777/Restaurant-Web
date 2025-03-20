@@ -464,7 +464,12 @@ function formatTime(inputTime) {
 function formDate(longDate) {
     const date = new Date(longDate);
     const day = date.getDate();
-    const months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+    let months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+    if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+        months = ["ianuarie", "februarie", "martie", "aprilie", "mai", "iunie", "iulie", "august", "septembrie", "octombrie", "noiembrie", "decembrie"];
+
+    }
+    
     const month = months[date.getMonth()];
     let hours = date.getHours() + 2;
     hours.toString().padStart(2, "0");

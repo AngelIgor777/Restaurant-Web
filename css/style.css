@@ -1245,7 +1245,11 @@ input[type="number"]::-webkit-inner-spin-button {
   text-align: center;
   min-width: 120px; /* Prevent text from squeezing too much */
 }
-
+@media (max-width:800px) {
+  .order-info {
+  margin-top: 25px;
+}
+}
 .product-images {
   display: flex;
   flex-wrap: wrap; /* Wrap images when needed */
