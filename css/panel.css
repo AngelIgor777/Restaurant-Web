@@ -211,7 +211,10 @@ textarea{
     width: 80%;
 }
 .modal-content{
-    width: 700px;
+    width: auto !important;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: visible !important;
 }
 .catTitle{
     display: flex;
