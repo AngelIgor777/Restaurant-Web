@@ -298,10 +298,73 @@ function Language() {
 
     });
 }
+function ExitButton() {
+  document.querySelector('.exit').addEventListener('click', function () {
+      if (localStorage.getItem('uuid')) {
+          localStorage.removeItem('uuid');
+          localStorage.removeItem('addressResponseDTO');
+      }
+  });
+}
+function getUUIDFromURL() {
+  const hash = window.location.hash; // Получаем часть после #
+  const match = hash.match(/#menu\/([a-f0-9\-]{36})/i); // Регулярка для UUID
+  return match ? match[1] : null; // Возвращаем UUID или null, если не найден
+}
+// Изменения ярлыка
+async function getReg(uuid1) {
+  try {
+    // Получаем данные пользователя
+    let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`,{
+      
+    });
+    let data = await response.json();
 
+    
+    // Сохраняем данные адреса, если они еще не сохранены
+    if (!localStorage.getItem("addressResponseDTO") && data.addressResponseDTO) {
+      localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO));
+    }
+
+    // Получаем изображение
+    let imageResponse = data.photoUrl;
+
+    // Вставляем изображение в элементы
+    if (imageResponse) {
+      document.querySelectorAll(".userimg").forEach(im => {
+        im.innerHTML = `<img src="${imageResponse}" alt="User Image">`;
+      });
+    } else {
+      throw new Error("Изображение не найдено");
+    }
+
+  } catch (error) {
+    console.error("Ошибка запроса:", error);
+  }
+}
+
+async function Registr() {
+  // let params = new URLSearchParams(window.location.search);
+  let uuid = getUUIDFromURL();
+  console.log(uuid);
+  if (!localStorage.getItem("uuid")) {
+    if (uuid) {
+      localStorage.setItem("uuid", JSON.stringify(uuid));
+      getReg(uuid);
+    }
+  } else {
+    let uuid1 = JSON.parse(localStorage.getItem("uuid"));
+    
+    if (uuid1) {
+      getReg(uuid1);
+    }
+  }
+}
 window.addEventListener('load', function (e) {
     start();
     Chatnum();
     Language();
+    ExitButton();
+    Registr();
     document.querySelector('body').style.backgroundImage = "url(./img/about.png)";
 });

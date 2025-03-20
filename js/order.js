@@ -41,9 +41,8 @@ const renderHeader = () => `
                 
                 <ul class="dropdown-menu text-small shadow dropdown-menu-start">
                   <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
-                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
+                  <li><a class="dropdown-item exit" href="#" style="color: black;">Выход</a></li>
                 </ul>
                 <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class='bx bxs-user-circle singinuser' ></i>
@@ -77,9 +76,8 @@ const renderHeader = () => `
                 
                  <ul class="dropdown-menu text-small shadow dropdown-menu-start">
                   <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
-                  <li><a class="dropdown-item" id='notification' style="color: black;">Уведомления</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" style="color: black;">Выход</a></li>
+                  <li><a class="dropdown-item exit" href="#" style="color: black;">Выход</a></li>
                 </ul>
                 <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class='bx bxs-user-circle singinuser' ></i>
@@ -680,7 +678,14 @@ function Swipto(id) {
   console.log(id);
   swiper.slideTo(1);
 }
-
+function ExitButton() {
+  document.querySelector('.exit').addEventListener('click', function () {
+      if (localStorage.getItem('uuid')) {
+          localStorage.removeItem('uuid');
+          localStorage.removeItem('addressResponseDTO');
+      }
+  });
+}
 // Автоматическое подключение при загрузке страницы
 window.onload = async function() {
       document.querySelector('.app').innerHTML=renderHeader()+renderBody()+renderFooter();
@@ -689,4 +694,5 @@ window.onload = async function() {
     await connectWebSocket();  // Подключение к WebSocket
     await loadAllOrders();  // Загрузка всех заказов
     Swip();
+    ExitButton();
 };

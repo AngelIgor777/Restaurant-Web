@@ -1598,7 +1598,14 @@ async function Registr() {
       }
     }
   }
-
+function ExitButton() {
+    document.querySelector('.exit').addEventListener('click', function () {
+        if (localStorage.getItem('uuid')) {
+            localStorage.removeItem('uuid');
+            localStorage.removeItem('addressResponseDTO');
+        }
+    });
+}
 
 document.querySelector('.cupon').addEventListener('click', Cupon);
 document.querySelector('.notifay').addEventListener('click', Notifications);
@@ -1607,4 +1614,4 @@ document.querySelector('.cattaloge').addEventListener('click', Closepagging);
 // Запуск
 Closepagging();
 Registr();
-
+ExitButton();
