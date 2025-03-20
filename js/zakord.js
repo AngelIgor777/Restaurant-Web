@@ -590,8 +590,8 @@ async function loadProducts(query) {
                 menuItem.id = `item-${product.id}`;
                 menuItem.innerHTML = `
                   <img class="img-cost" src="${product.imageUrl}" alt="${product.name}" />
-                  <h3 class="name">${product.name}</h3>
-                  <h3 class="cost">${product.price} MDL</h3>
+                  <h3 class="nameTov">${product.name}</h3>
+                  <h3 class="costTov">${product.price} MDL</h3>
                   <div class="send-plus-min">
                     <div class="plus-min">
                       <p class="min"><i class="bx bx-minus-circle"></i></p>
