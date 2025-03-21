@@ -934,6 +934,8 @@ async function updateModal(order) {
             // обновляем данные таблицы
             localStorage.setItem('totalcost', JSON.stringify(totalcost));
             localStorage.setItem('order', JSON.stringify(order));
+            const buttosend = document.querySelector("p.colvo");
+            buttosend.innerHTML = order.length;
             ishist = false;
         }
 

@@ -106,7 +106,7 @@ async function Statistik() {
             <tbody class="catlist">
             </tbody>
         </table>
-        <div class='pagging'>
+        <div class='pagging' id='statpag'>
             <p>ещё...</p>
         </div>
         <div class='information'>
@@ -133,6 +133,11 @@ async function Statistik() {
     });
 
     await Statistiktable('2023-01-01T00:00:00', allTime);
+    const statpag=document.querySelector('#statpag');
+    statpag.addEventListener('click', function(){
+        pagcup(statpag);
+    });
+    pagcup(statpag);
 }
 
 async function Notifications() {
@@ -993,7 +998,7 @@ function pagcup(el){
                 let i = 0;
                 
                 nearestTable.querySelectorAll('tbody tr').forEach(em => {
-                    if (i >= 2) {
+                    if (i >= 4) {
                         em.style.display = 'none'; // Скрыть строки
                     } else {
                         em.style.display = ''; // Убедиться, что строки видимы

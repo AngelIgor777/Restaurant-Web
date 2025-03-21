@@ -989,52 +989,7 @@ input[type="number"]::-webkit-inner-spin-button {
     background-color: #252525d9;
   }
 }
-@media (max-width: 525px) {
-  .menu-container .send-plus-min {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
-    align-items: center;
-    margin-top: 10px;
-  }
-  .menu-container .send-plus-min button {
-    position: relative;
-    right: 0;
-    bottom: -10px;
-    height: 20px;
-    width: 100%;
-    border: none;
-    background-color: #252525d9;
-    font-size: 1.3rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin: 0;
-    border-radius: 0 0 10px 10px;
-  }
-  .category ul {
-    display: flex;
-    flex-direction: column;
-    list-style: none;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    text-align: center;
-  }
-  .menu-container .item h3 {
-    margin-top: 20px;
-  }
-  .menu-container .item .img-cost img {
-    width: 165px;
-    height: 190px !important;
-    object-fit: cover;
-    border-radius: 4px;
-    transition: all 0.3s;
-  }
 
-}
 /* 
  */
 @media (max-width: 780px) {
@@ -1168,7 +1123,7 @@ input[type="number"]::-webkit-inner-spin-button {
     right: 0;
     height: 30px;
     width: 30px;
-    border: none;
+    bottom: 0;
     background-color: #252525d9;
     font-size: 0.9rem;
     cursor: pointer;
@@ -1188,6 +1143,52 @@ input[type="number"]::-webkit-inner-spin-button {
     position: absolute;
     left: 0 !important;
   }
+}
+@media (max-width: 525px) {
+  .menu-container .send-plus-min {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .menu-container .send-plus-min button {
+    position: relative;
+    right: 0;
+    bottom: -10px;
+    height: 20px;
+    width: 100%;
+    border: none;
+    background-color: #252525d9;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0;
+    border-radius: 0 0 10px 10px;
+  }
+  .category ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+  }
+  .menu-container .item h3 {
+    margin-top: 20px;
+  }
+  .menu-container .item .img-cost img {
+    width: 165px;
+    height: 190px !important;
+    object-fit: cover;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+
 }
 @media (max-width: 480px) {
   
