@@ -931,6 +931,9 @@ async function updateModal(order) {
         let totalcost = JSON.parse(localStorage.getItem('totalcost'));
         if (ishist) {
             totalcost = JSON.parse(localStorage.getItem('totalhist'));
+            // обновляем данные таблицы
+            localStorage.setItem('totalcost', JSON.stringify(totalcost));
+            localStorage.setItem('order', JSON.stringify(order));
             ishist = false;
         }
 
