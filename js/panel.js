@@ -685,10 +685,20 @@ async function CuponItem() {
                           <input type="text" class="form-control" id="cupname" placeholder="Название" />
                           <label for="cupname">Название</label>
                        </div>
-                       <div class="form-floating mb-3">
-                          <textarea class="form-control" placeholder="Имя товара" id="cupid" rows="3"></textarea>
-                          <label for="cupid">Имя товара</label>
-                       </div>
+
+                            <div class="findinput">
+                              <div class="form-floating mb-3">
+                                <input class="form-control" placeholder="Имя товара" id="cupid" rows="3"></input>
+                                <label for="cupid">Имя товара</label>
+                                 </div>
+                            </div>
+                             <div class="result_table">
+                                <div class='result'>
+                                <!-- Сюда будут добавляться результаты поиска -->
+                                </div>
+                             </div>
+
+                            </div>
                        <div class="form-floating mb-3">
                           <textarea class="form-control" placeholder="Описание" id="cupdes" rows="3"></textarea>
                           <label for="cupdes">Описание</label>
@@ -713,13 +723,17 @@ async function CuponItem() {
                     cancelButtonColor: "#3f3f3f",
                     confirmButtonText: "Создать",
                     cancelButtonText: "Отмена",
+                    didOpen: () => {
+                        FindTovar();
+                    },
                     preConfirm: () => {
+                        
                         const name = document.getElementById("cupname").value;
                         const des = document.getElementById("cupdes").value;
                         const dis = document.getElementById("cupskid").value;
                         const cuptime = document.getElementById("cupday").value;
-                        const findid=document.getElementById("cupid").value;
-                        const cupid = allitems.find(item => item.name === findid).id;
+                        
+                        const cupid = JSON.parse(localStorage.getItem('cupid'));
                         if (!name || !dis || !cuptime || !cupid) {
                             Swal.showValidationMessage("Пожалуйста, заполните все поля или проверьте правильность написания имени!");
                             return false;
@@ -997,6 +1011,111 @@ function pagcup(el){
                 el.classList.replace('pagshow', 'pagging');
             }
 }
+
+// для поиска 
+let page = 0; // Начинаем с 0
+let isLoading = false; // Флаг загрузки
+
+async function loadProducts(query) {
+        if (isLoading) return; // Предотвращаем повторные запросы
+          isLoading = true; // Устанавливаем флаг загрузки
+        const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page}&size=20&query=${encodeURIComponent(query)}`;
+        
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            const container = document.querySelector('.result_table');
+            
+            console.log(data);
+      
+            const photoRequests = data.content.map(async (product) => {
+                try {
+                    const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${product.id}`);
+                    const photoData = await photoResponse.json();
+                    return { ...product, imageUrl: photoData[0]?.url || 'path/to/default-image.jpg' };
+                } catch (photoError) {
+                    console.error(`Ошибка при загрузке фото для продукта ${product.id}`, photoError);
+                    return { ...product, imageUrl: 'path/to/default-image.jpg' };
+                }
+            });
+      
+            const productsWithPhotos = await Promise.all(photoRequests);
+      
+            const menuItems = productsWithPhotos.map((product) => {
+                const menuItem = document.createElement('div');
+                menuItem.className = `col-sm-6 col-md-4 col-lg-1 item visible`;
+                menuItem.id = `item-${product.id}`;
+                menuItem.innerHTML = `
+                  <img class="img-cost" src="${product.imageUrl}" alt="${product.name}" />
+                  <h3 class="nameTov">${product.name}</h3>
+                    <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+                  </div>
+                `;
+                return menuItem;
+            });
+            container.addEventListener('scroll', () => checkScroll(container)); 
+            container.append(...menuItems);
+            page++;
+        } catch (error) {
+            console.error('Ошибка при загрузке товаров:', error);
+        }finally {
+          isLoading = false; // Сбрасываем флаг загрузки
+      }
+}
+function checkScroll(container) {
+  if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
+      const searchQuery = document.querySelector("#cupid").value; 
+      loadProducts(searchQuery); // Передаём актуальный поисковый запрос
+  }
+}
+// для поиска товаров
+async function FindTovar() {
+    const searchInput = document.querySelector("#cupid");
+    const resultTable = document.querySelector(".result_table");
+
+    
+    if (!searchInput || !resultTable) {
+        console.error("Ошибка: не найдены необходимые элементы.");
+        return;
+    }
+    loadProducts("");
+    // поле для ввода данных
+    // Поиск по нажатию кнопки
+    searchInput.addEventListener("input", function() {
+      const container = document.querySelector('.result_table');
+      container.innerHTML = ''; // Очистка контейнера
+      page = 0; // Сброс страницы
+      loadProducts(searchInput.value);
+    });
+  
+    // Поиск при нажатии Enter в поле ввода
+    searchInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            const container = document.querySelector('.result_table');
+            container.innerHTML = ''; // Очистка контейнера
+            loadProducts(searchInput.value);
+        }
+    });
+  
+    // Обработка кликов внутри `.result_table`
+    resultTable.addEventListener("click", function(e) {
+  
+        if (e.target.matches(".send") || e.target.closest(".send")) {
+            const button = e.target.closest(".send");
+            button.classList.add("sold");
+            const itemid = parseInt(button.closest(".item").id.replace(/[^0-9]/g, ""));
+            localStorage.setItem('cupid', JSON.stringify(itemid));
+            // Убираем класс sold через 1 секунду
+            setTimeout(function () {
+                button.classList.remove("sold");
+            }, 1000); // 1 секунда анимации
+        
+        }
+    });
+
+}
+// Загрузка всех таблиц
 async function fetchProductTypes() {
     try {
      
@@ -1005,7 +1124,7 @@ async function fetchProductTypes() {
       
       if (data.content && Array.isArray(data.content)) {
         const categorytable = document.querySelector('.categorylist');
-      
+        categorytable.innerHTML='';
   
         // Создаем таблицы категорий
         data.content.forEach(item => {
@@ -1061,12 +1180,7 @@ async function fetchProductTypes() {
                 Rumcat(itemId);
             });
         })
-        document.querySelectorAll('.history').forEach(item=>{
-            item.addEventListener('click', function(){
-                const itemId = this.getAttribute("data-id");
-                Historyset(itemId);
-            });
-        })
+        
         document.querySelector('.categorylist').addEventListener('click', async (event) => {
             if (event.target.closest('.delete-item')) {
                 Swal.fire({
@@ -1129,6 +1243,12 @@ async function fetchProductTypes() {
                 categoryDiv.remove();
                     }
                 });
+            }
+            // если нажали на кнопку история запускаем функцию
+            if(event.target.closest('.history')){
+                const button= event.target.closest('.history');
+                const itemId = button.getAttribute("data-id");
+                Historyset(itemId);
             }
             if(event.target.closest('.category-btn')){
                 const button= event.target.closest('.category-btn');
@@ -1403,8 +1523,8 @@ async function Historyset(id) {
     const data = await response.json();
     console.log(data);
     let tbody = document.querySelector(".ordorlist");
-  tbody.innerHTML = ''; // Очищаем таблицу перед вставкой новых данных
-  
+    tbody.innerHTML = ''; // Очищаем таблицу перед вставкой новых данных
+    console.log();
   // Проверяем, что orderList не пустой
     let j=0
     for (let i of data) {

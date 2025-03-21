@@ -213,7 +213,7 @@ async function ChosenOne() {
         const ordcont = document.querySelector(".itog-cost");
         ordcont.innerHTML = ` <h6 class="itog-cost">${total} ${totalcost}<h6> `;
       
-        updateModal();
+        updateModal(JSON.parse(localStorage.getItem('order')));
 }
 async function Addsendform() {
       
@@ -273,7 +273,7 @@ async function Addsendform() {
             </div>
             <div class='inputtab-container' style='display:none;'>
               <div class="slider-container">
-                <label for="rangeSlider" class="form-label">${texts.selectTable}</label>
+                <label for="table" class="form-label">${texts.selectTable}</label>
                 <input type="range" class="form-range" id="table" min="1" max="10" value="5">
                 <p>${texts.tableNum} <span id="sliderValue">5</span></p>
               </div>
@@ -486,7 +486,6 @@ async function updateModal(order) {
         console.log(order);
         if (order.length > 0) {
             let totalcost = JSON.parse(localStorage.getItem('totalcost'));
-            console.log('sdfsdfsdf');
             for (let i = 0; i < order.length; i++) {
                 let name = order[i].tovarname || order[i].name;
                 if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
@@ -656,16 +655,16 @@ async function loadUsers(query) {
         isLoadingus = false; // Сбрасываем флаг загрузки
     }
 }
-
+// Назначаем обработчик прокрутки
 function checkScrollus(container) {
     if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
         const searchQuery = document.querySelector("#searchuser").value; 
+        console.log(231);
         loadUsers(searchQuery); // Передаём актуальный поисковый запрос
     }
 }
 
 
-// Назначаем обработчик прокрутки
 
 
 async function FindTovar() {
@@ -764,9 +763,9 @@ async function FindTovar() {
                 const input = button.closest(".send-plus-min").querySelector("input");
       
                 let quantity = parseInt(input.value, 10);
-                const productName = item.querySelector('.name').textContent;
+                const productName = item.querySelector('.nameTov').textContent;
                 const productId = parseInt(item.id.replace(/[^0-9]/g, ""));
-                const price = parseFloat(item.querySelector('.cost').textContent) * quantity;
+                const price = parseFloat(item.querySelector('.costTov').textContent) * quantity;
       
                 totalcost += price;
       

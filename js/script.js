@@ -1846,7 +1846,7 @@ async function Hachchange() {
         if (menuItem) {
 
             const itemid = parseInt(menuItem.closest(".item").id.replace(/[^0-9]/g, ""));
-            ;console.log(itemid);
+            console.log(itemid);
 
             let onlyItem = itemid;
             let contentfetch = await fetch(`http://46.229.212.34:9091/api/v1/products/${onlyItem}`);
