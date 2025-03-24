@@ -838,7 +838,7 @@ async function fetchMenuItems(categoryIds) {
         const menuContainer = document.querySelector('.menu-container');
         menuContainer.innerHTML = '';
         // 1. Запрашиваем все товары по категориям параллельно
-        const productRequests = categoryIds.map(id => fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}&page=1&size=1`)
+        const productRequests = categoryIds.map(id => fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`)
             .then(response => response.json())
             .then(data => ({id, products: data.content  || []})));
 
