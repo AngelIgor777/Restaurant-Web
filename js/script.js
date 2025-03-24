@@ -819,7 +819,8 @@ async function fetchProductTypes() {
             // После загрузки категорий загружаем меню
             const categoryIds = data.content.map(item => item.id); // Извлекаем IDs
             localStorage.setItem('cat', JSON.stringify(categoryIds));
-            await fetchMenuItems(categoryIds);
+            console.log(categoryIds);
+            await fetchMenuItems(categoryIds, 0);
             setTimeout(function () {
                 document.querySelector('.containe').style.height = 'auto';
                 document.querySelector('.containe').style.opacity = '1';
@@ -833,18 +834,17 @@ async function fetchProductTypes() {
 }
 
 // Получение данных меню
-async function fetchMenuItems(categoryIds) {
+async function fetchMenuItems(categoryIds, page) {
     try {
         const menuContainer = document.querySelector('.menu-container');
         menuContainer.innerHTML = '';
         // 1. Запрашиваем все товары по категориям параллельно
         const productRequests = categoryIds.map(id => fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`)
             .then(response => response.json())
-            .then(data => ({id, products: data.content  || []})));
-
+            .then(data => ({id, products: data.content || []})));
 
         const categoriesWithProducts = await Promise.all(productRequests);
-        console.log(categoriesWithProducts);
+
         //2. Загружаем фото и переводы параллельно
         const productDetailsRequests = categoriesWithProducts.flatMap(({
                                                                            id,
@@ -1021,13 +1021,17 @@ async function updateModal(order) {
     }
 }
 
-function initializeIsotope() {
+async function initializeIsotope() {
     var $container = $('.menu-container');
-    var itemsPerPage = 10;
+    var itemsPerPage = 20;
     var currentPage = 1;
     var searchClicked = false;
     var first = true;
-
+    var selector='*';
+    const response = await fetch('http://46.229.212.34:9091/api/v1/products?size=10');
+    const data = await response.json();
+    var totalPages=data.totalPages;
+    console.log(totalPages);
     async function loadProducts(page, query) {
         const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page - 1}&size=${itemsPerPage}&query=${query}`;
 
@@ -1115,7 +1119,7 @@ function initializeIsotope() {
 
 // Инициализация Isotope
     $container.isotope({
-        filter: '*', layoutMode: 'masonry', masonry: {gutter: 10}, transitionDuration: 0
+        filter: selector, layoutMode: 'masonry', masonry: {gutter: 10}, transitionDuration: 0
     });
 
     $container.on('arrangeComplete', function () {
@@ -1153,7 +1157,24 @@ function initializeIsotope() {
         var end = start + itemsPerPage;
         if (searchClicked) {
             loadProducts(page, query);
-        } else {
+        } 
+        
+        // идея чтобы при каждом нажатии на кнопку категории происходила fetchMenuItems(catid, page); типа та категия и стр
+        // не забудь отнять 1 от page
+
+        // else{
+        //     let catid=[];
+        //     // Если selector не '*', то удаляем точку и оставляем только число
+        // if (selector !== '*') {
+        //     catid.push(parseInt(selector.replace('.', '')));  // Убираем точку и получаем число
+        // } else {
+        //     catid.push(JSON.parse(localStorage.getItem('cat')));  // В случае *, передаем как есть
+        // }
+        // // Передаем в fetchMenuItems
+        // // fetchMenuItems(catid, page); 
+        
+        // }
+        else {
             // Получаем текущий фильтр
             var selector = $('.category-list .active').attr('data-filter') || '*';
 
@@ -1169,7 +1190,7 @@ function initializeIsotope() {
                 }
             });
         }
-
+        console.log(page);
         // Обновляем активную кнопку пагинации
         $('.pagul .pagination-button').removeClass('active');
         $(`.pagul .pagination-button[data-page="${page}"]`).addClass('active');
@@ -1179,11 +1200,11 @@ function initializeIsotope() {
     }
 
 // Обработчик фильтрации
-    $('.category-list a').on('click', function () {
+    $('.category-list a').on('click', async function () {
         $('.category-list .active').removeClass('active');
         $(this).addClass('active');
 
-        var selector = $(this).attr('data-filter') || '*';
+        selector = $(this).attr('data-filter') || '*';
         var allItems = selector === '*' ? $container.find('.item') : $container.find(selector);
 
         if (selector === '*') {
@@ -1191,12 +1212,16 @@ function initializeIsotope() {
         }
         if (searchClicked) {
             // это что бы перезагрузить страницу
-
+            
+            
             Hachchange();
             // если что в localstorage есть cat и можно реальзвать загрузку
 
         }
-        var totalPages = Math.ceil(allItems.length / itemsPerPage);
+        var ids=parseInt(selector.replace('.', ''));
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${ids}}`);
+        const data = await response.json();
+        totalPages=data.totalPages;
         initializePagination(totalPages);
         showPage(1);
         return false;
@@ -1210,7 +1235,6 @@ function initializeIsotope() {
         }).detach().appendTo($parent);
     }
 
-    var totalPages = Math.ceil($container.find('.item').length / itemsPerPage);
     initializePagination(totalPages);
     showPage(1);
 
