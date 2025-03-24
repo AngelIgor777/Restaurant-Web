@@ -634,9 +634,8 @@ async function WeekTop() {
     console.log(data);
     for (const item of data) {
         // Запрос URL картинки
-        const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${item.id}`);
-        const photoData = await photoResponse.json();
-        const imageUrl = photoData[0].url; // Если нет URL, используем картинку по умолчанию
+        
+        const imageUrl = item.photoUrl; // Если нет URL, используем картинку по умолчанию
         // Создаем элемент меню
         let name = item.name;
         let descr = item.description;
@@ -833,91 +832,161 @@ async function fetchProductTypes() {
     }
 }
 
+// Проверка что это в первый раз
+let first=true;
 // Получение данных меню
 async function fetchMenuItems(categoryIds, page) {
     try {
+        console.log(categoryIds);
         const menuContainer = document.querySelector('.menu-container');
         menuContainer.innerHTML = '';
-        // 1. Запрашиваем все товары по категориям параллельно
-        const productRequests = categoryIds.map(id => fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`)
+
+        // 1. Запрашиваем все товары без категорий
+        const productRequest = fetch(`http://46.229.212.34:9091/api/v1/products?page=${page}&size=10`)
             .then(response => response.json())
-            .then(data => ({id, products: data.content || []})));
+            .then(data => ({ products: data.content || [] }));
 
-        const categoriesWithProducts = await Promise.all(productRequests);
+        const categoriesWithProducts = await productRequest;
 
-        //2. Загружаем фото и переводы параллельно
-        const productDetailsRequests = categoriesWithProducts.flatMap(({
-                                                                           id,
-                                                                           products
-                                                                       }) => products.map(async (product) => {
-            // Запрос фото товара
-            const photoPromise = fetch(`http://46.229.212.34:9091/api/v1/photos/product/${product.id}`)
-                .then(res => res.json())
-                .then(photoData => photoData[0]?.url || 'path/to/default-image.jpg');
-
-            // Запрос перевода (если выбран румынский язык)
-            let translationPromise = Promise.resolve(null);
-            if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-                translationPromise = fetch(`http://46.229.212.34:9091/api/v1/product-translations/${product.id}?lang=ro`)
-                    .then(res => res.ok ? res.json() : null);
-            }
-
-            const [imageUrl, translation] = await Promise.all([photoPromise, translationPromise]);
-
-            return {
-                ...product,
-                categoryId: id,
-                imageUrl,
-                name: translation?.name || product.name,
-                description: translation?.description || product.description
-            };
-        }));
-
-        const productsWithDetails = await Promise.all(productDetailsRequests);
+        // 2. Загружаем переводы параллельно (если язык румынский)
+        let translationsMap = new Map();
+        if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+            const translationRequests = categoriesWithProducts.products.map(product => 
+                fetch(`http://46.229.212.34:9091/api/v1/product-translations/${product.id}?lang=ro`)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(translation => ({ id: product.id, translation }))
+            );
+            const translations = await Promise.all(translationRequests);
+            translations.forEach(({ id, translation }) => {
+                if (translation) translationsMap.set(id, translation);
+            });
+        }
 
         // 3. Создаём HTML элементы
         const fragment = document.createDocumentFragment();
 
-        productsWithDetails.forEach(item => {
+        categoriesWithProducts.products.forEach(product => {
+            const translation = translationsMap.get(product.id) || {};
+            const name = translation.name || product.name;
+            const description = translation.description || product.description;
+
             const menuItem = document.createElement('div');
-            menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${item.categoryId}`;
-            menuItem.id = `item-${item.id}`;
+            menuItem.className = `col-sm-6 col-md-4 col-lg-1 item`;
+            menuItem.id = `item-${product.id}`;
             menuItem.innerHTML = `
-        <div class="img-cost">
-          <a href="#item-${item.id}">
-            <div class="description">
-              <h3><b>${item.description}</b></h3>
-              <h5>${item.cookingTime && item.cookingTime !== '00:00:00' ? `${formatTime(item.cookingTime)}</b>` : ""}</h5>
-            </div>
-          </a>
-          <img src="${item.imageUrl}" alt="${item.name}" />
-          <p class="cost">${item.price} MDL</p>
-        </div>
-        <h3 class="name">${item.name}</h3>
-        <div class="send-plus-min">
-          <div class="plus-min">
-            <p class="min"><i class="bx bx-minus-circle"></i></p>
-            <input type="number" value="1" maxlength="2" min="0" disabled/>
-            <p class="plus"><i class="bx bx-plus-circle"></i></p>
-          </div>
-          <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
-        </div>
-      `;
+                <div class="img-cost">
+                    <a href="#item-${product.id}">
+                        <div class="description">
+                            <h3><b>${description}</b></h3>
+                            <h5>${product.cookingTime && product.cookingTime !== '00:00:00' 
+                                ? `${formatTime(product.cookingTime)}` 
+                                : ""}</h5>
+                        </div>
+                    </a>
+                    <img src="${product.photoUrl}" alt="${name}" />
+                    <p class="cost">${product.price} MDL</p>
+                </div>
+                <h3 class="name">${name}</h3>
+                <div class="send-plus-min">
+                    <div class="plus-min">
+                        <p class="min"><i class="bx bx-minus-circle"></i></p>
+                        <input type="number" value="1" maxlength="2" min="0" disabled/>
+                        <p class="plus"><i class="bx bx-plus-circle"></i></p>
+                    </div>
+                    <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+                </div>
+            `;
             fragment.appendChild(menuItem);
         });
 
         // 4. Добавляем товары в контейнер
         menuContainer.appendChild(fragment);
 
-        // 5. Ждём загрузки изображений перед обновлением Isotope
-        imagesLoaded(menuContainer, function () {
+        // 5. Обновляем Isotope
+        if(first){
+            first=false
             initializeIsotope();
             loadscreen();
-        });
-
+        }
+        
     } catch (error) {
         console.error('Ошибка при запросе данных меню:', error);
     }
+}
+
+// для определенных категорий
+async function JustFetchMenu(categoryIds, page, size) {
+    const menuContainer = document.querySelector('.menu-container');
+        menuContainer.innerHTML = '';
+        
+        // 1. Запрашиваем все товары по категориям параллельно
+        const productRequests = categoryIds.map(id => 
+            fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}&page=${page-1}&size=${size}`)
+                .then(response => response.json())
+                .then(data => ({ id, products: data.content || [] }))
+        );
+
+        const categoriesWithProducts = await Promise.all(productRequests);
+
+        // 2. Загружаем переводы параллельно (если язык румынский)
+        let translationsMap = new Map();
+        if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+            const translationRequests = categoriesWithProducts.flatMap(({ products }) => 
+                products.map(product => 
+                    fetch(`http://46.229.212.34:9091/api/v1/product-translations/${product.id}?lang=ro`)
+                        .then(res => res.ok ? res.json() : null)
+                        .then(translation => ({ id: product.id, translation }))
+                )
+            );
+            const translations = await Promise.all(translationRequests);
+            translations.forEach(({ id, translation }) => {
+                if (translation) translationsMap.set(id, translation);
+            });
+        }
+
+        // 3. Создаём HTML элементы
+        const fragment = document.createDocumentFragment();
+
+        categoriesWithProducts.forEach(({ id, products }) => {
+            products.forEach(product => {
+                const translation = translationsMap.get(product.id) || {};
+                const name = translation.name || product.name;
+                const description = translation.description || product.description;
+
+                const menuItem = document.createElement('div');
+                menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${id}`;
+                menuItem.id = `item-${product.id}`;
+                menuItem.innerHTML = `
+                    <div class="img-cost">
+                        <a href="#item-${product.id}">
+                            <div class="description">
+                                <h3><b>${description}</b></h3>
+                                <h5>${product.cookingTime && product.cookingTime !== '00:00:00' 
+                                    ? `${formatTime(product.cookingTime)}` 
+                                    : ""}
+                                </h5>
+                            </div>
+                        </a>
+                        <img src="${product.photoUrl}" alt="${name}" />
+                        <p class="cost">${product.price} MDL</p>
+                    </div>
+                    <h3 class="name">${name}</h3>
+                    <div class="send-plus-min">
+                        <div class="plus-min">
+                            <p class="min"><i class="bx bx-minus-circle"></i></p>
+                            <input type="number" value="1" maxlength="2" min="0" disabled/>
+                            <p class="plus"><i class="bx bx-plus-circle"></i></p>
+                        </div>
+                        <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+                    </div>
+                `;
+                fragment.appendChild(menuItem);
+            });
+        });
+
+        // 4. Добавляем товары в контейнер
+        menuContainer.appendChild(fragment);
+        revealCards();
 }
 
 
@@ -1023,88 +1092,82 @@ async function updateModal(order) {
 
 async function initializeIsotope() {
     var $container = $('.menu-container');
-    var itemsPerPage = 20;
+    let cat=JSON.parse(localStorage.getItem('cat'));
+    var itemsPerPage = 10;
     var currentPage = 1;
     var searchClicked = false;
     var first = true;
     var selector='*';
-    const response = await fetch('http://46.229.212.34:9091/api/v1/products?size=10');
+    const response = await fetch(`http://46.229.212.34:9091/api/v1/products?size=${itemsPerPage}`);
     const data = await response.json();
     var totalPages=data.totalPages;
-    console.log(totalPages);
+    console.log(data);
     async function loadProducts(page, query) {
         const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page - 1}&size=${itemsPerPage}&query=${query}`;
-
+    
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
-
+    
             $container.empty();
-
-            // Загружаем фото параллельно
-            const photoRequests = data.content.map(async (product) => {
-                const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${product.id}`);
-                const photoData = await photoResponse.json();
-                return {...product, imageUrl: photoData[0]?.url || 'path/to/default-image.jpg'};
-            });
-
-            const productsWithPhotos = await Promise.all(photoRequests);
-
+    
             // Генерируем HTML
-            const menuItems = productsWithPhotos.map((product) => {
+            const fragment = document.createDocumentFragment();
+            data.content.forEach(product => {
                 const menuItem = document.createElement('div');
                 menuItem.className = `col-sm-6 col-md-4 col-lg-1 item visible`;
                 menuItem.id = `item-${product.id}`;
                 menuItem.innerHTML = `
-              <div class="img-cost">
-                <a href="#item-${product.id}">
-                  <div class="description">
-                    <h3><b>${product.description}</b></h3>
-                    <h5>${product.cookingTime && product.cookingTime !== '00:00:00' ? formatTime(product.cookingTime) : ''}</h5>
+                  <div class="img-cost">
+                    <a href="#item-${product.id}">
+                      <div class="description">
+                        <h3><b>${product.description}</b></h3>
+                        <h5>${product.cookingTime && product.cookingTime !== '00:00:00' ? formatTime(product.cookingTime) : ''}</h5>
+                      </div>
+                    </a>
+                    <img src="${product.photoUrl}" alt="${product.name}" />
+                    <p class="cost">${product.price} MDL</p>
                   </div>
-                </a>
-                <img src="${product.imageUrl}" alt="${product.name}" />
-                <p class="cost">${product.price} MDL</p>
-              </div>
-              <h3 class="name">${product.name}</h3>
-              <div class="send-plus-min">
-                <div class="plus-min">
-                  <p class="min"><i class="bx bx-minus-circle"></i></p>
-                  <input type="number" value="1" maxlength="2" min="0" readonly/>
-                  <p class="plus"><i class="bx bx-plus-circle"></i></p>
-                </div>
-                <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
-              </div>
-            `;
-                return menuItem;
+                  <h3 class="name">${product.name}</h3>
+                  <div class="send-plus-min">
+                    <div class="plus-min">
+                      <p class="min"><i class="bx bx-minus-circle"></i></p>
+                      <input type="number" value="1" maxlength="2" min="0" readonly/>
+                      <p class="plus"><i class="bx bx-plus-circle"></i></p>
+                    </div>
+                    <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+                  </div>
+                `;
+                fragment.appendChild(menuItem);
             });
-
-            $container.append(menuItems);
-
-            // Ждём загрузки изображений перед запуском Isotope
+    
+            $container.append(fragment);
+    
+            // Обновляем Isotope сразу после вставки элементов
             $container.find('img').on('load', function () {
                 $container.isotope({
                     filter: '*', layoutMode: 'masonry', masonry: {gutter: 10}, transitionDuration: 0
                 });
             });
-
+    
             // Обновление пагинации
             const totalPages = Math.ceil(data.totalElements / itemsPerPage);
             if (first) {
                 initializePagination(totalPages);
-                first = false; // Выключаем первый запуск
+                first = false;
             }
-
+    
             // Исправленный `arrangeComplete`
             $container.on('arrangeComplete', function () {
                 $container.find('.item').css('position', 'static');
                 revealCards();
             });
-
+    
         } catch (error) {
             console.error('Ошибка при загрузке товаров:', error);
         }
     }
+    
 
     var query;
     $('#search-button').on('click', function () {
@@ -1162,34 +1225,43 @@ async function initializeIsotope() {
         // идея чтобы при каждом нажатии на кнопку категории происходила fetchMenuItems(catid, page); типа та категия и стр
         // не забудь отнять 1 от page
 
-        // else{
-        //     let catid=[];
-        //     // Если selector не '*', то удаляем точку и оставляем только число
-        // if (selector !== '*') {
-        //     catid.push(parseInt(selector.replace('.', '')));  // Убираем точку и получаем число
-        // } else {
-        //     catid.push(JSON.parse(localStorage.getItem('cat')));  // В случае *, передаем как есть
-        // }
-        // // Передаем в fetchMenuItems
-        // // fetchMenuItems(catid, page); 
-        
-        // }
-        else {
-            // Получаем текущий фильтр
-            var selector = $('.category-list .active').attr('data-filter') || '*';
-
-            $container.isotope({
-                filter: function () {
-                    if (selector === '*') {
-                        var index = $(this).index();
-                        return index >= start && index < end;
-                    } else {
-                        var index = $(this).index(selector);
-                        return index >= start && index < end;
-                    }
-                }
-            });
+        else{
+            let catid=[];
+            // Если selector не '*', то удаляем точку и оставляем только число
+        if (selector !== '*') {
+            catid.push(parseInt(selector.replace('.', '')));  // Убираем точку и получаем число
+            JustFetchMenu(catid, page, 10);
+        } else {
+            fetchMenuItems(JSON.parse(localStorage.getItem('cat')), page);  // В случае *, передаем как есть
+            // показать карточки
         }
+        // Передаем в fetchMenuItems
+        //  
+        $container.isotope({
+           filter: '*',  // Показываем все элементы
+        });
+        // чтобы карточки появились нужна небольшая задержка
+        setTimeout(function () {
+            revealCards();
+        }, 300); // 1 секунда анимации
+        
+        }
+        // else {
+        //     // Получаем текущий фильтр
+        //     var selector = $('.category-list .active').attr('data-filter') || '*';
+
+        //     $container.isotope({
+        //         filter: function () {
+        //             if (selector === '*') {
+        //                 var index = $(this).index();
+        //                 return index >= start && index < end;
+        //             } else {
+        //                 var index = $(this).index(selector);
+        //                 return index >= start && index < end;
+        //             }
+        //         }
+        //     });
+        // }
         console.log(page);
         // Обновляем активную кнопку пагинации
         $('.pagul .pagination-button').removeClass('active');
@@ -1207,21 +1279,26 @@ async function initializeIsotope() {
         selector = $(this).attr('data-filter') || '*';
         var allItems = selector === '*' ? $container.find('.item') : $container.find(selector);
 
-        if (selector === '*') {
-            shuffleElements(allItems);
-        }
+        
         if (searchClicked) {
             // это что бы перезагрузить страницу
-            
-            
             Hachchange();
             // если что в localstorage есть cat и можно реальзвать загрузку
-
         }
-        var ids=parseInt(selector.replace('.', ''));
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${ids}}`);
+        
+        
+        if (selector === '*') {
+            const response = await fetch(`http://46.229.212.34:9091/api/v1/products?size=${itemsPerPage}`);
+            const data = await response.json();
+            var totalPages=data.totalPages;
+        }
+        else{
+            var ids=parseInt(selector.replace('.', ''));
+        console.log(ids)
+        const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${ids}`);
         const data = await response.json();
         totalPages=data.totalPages;
+        }
         initializePagination(totalPages);
         showPage(1);
         return false;
