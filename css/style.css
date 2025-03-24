@@ -6,10 +6,11 @@
 body {
   background-color: #fef9e7;
   background-size: cover;
+  -webkit-background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  min-height: 100vh;
+  min-height: 100dvh; /* Учитывает динамическую высоту экрана */
 }
 header {
   background-color: rgba(0, 0, 0, 0.4);
@@ -231,6 +232,10 @@ header {
 .menuorder{
   background-color: rgb(210, 209, 209) !important;
   color: #000000;
+  font-family: "Comfortaa", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
 }
 .menuorder table{
   --bs-table-bg: rgb(210, 209, 209) !important;
@@ -240,12 +245,17 @@ header {
 }
 .menuorder .modal-footer button{
   border: none;
+  font-size: 1rem !important;
 }
 .decline{
   background-color: #3f3f3f;
   color: #fff !important;
 }
 .swal2-popup {
+  font-family: "Comfortaa", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
   background-color: rgb(210, 209, 209) !important;  /* Фон окна */
 }
 .swal2-popup h1{
@@ -426,8 +436,9 @@ header {
   box-shadow: 5px 10px 20px 5px rgba(0, 0, 0, 0.5);
   overflow-y: hidden;
   font-size: 1.4rem;
-  font-family: "Kurale", serif;
-  font-weight: 400;
+  font-family: "Comfortaa", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
   font-style: normal;
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.448);
 }
@@ -750,8 +761,9 @@ input[type="number"]::-webkit-inner-spin-button {
   box-shadow: 5px 10px 20px 5px rgba(0, 0, 0, 0.5);
   overflow-y: hidden;
   font-size: 1.4rem;
-  font-family: "Kurale", serif;
-  font-weight: 400;
+  font-family: "Comfortaa", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
   font-style: normal;
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.448);
 }
@@ -767,8 +779,9 @@ input[type="number"]::-webkit-inner-spin-button {
   background-color: #ffffff35;
   color: #fff;
   font-size: 1.4rem;
-  font-family: "Kurale", serif;
-  font-weight: 400;
+  font-family: "Comfortaa", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
   font-style: normal;
   border-radius: 5px;
   border: none;

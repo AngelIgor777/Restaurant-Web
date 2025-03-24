@@ -576,16 +576,20 @@ input{
     display: flex;
     flex-wrap: wrap;
   }
+  .contact-inputs{
+    flex-direction: column;
+  }
   .contact-inputs .form-floating{
     margin-left: 14px;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-  .contact-inputs .form-group{
-    margin-left: 14px;
+    max-width: 100%;
     width: 100%;
-    max-width: 100% !important;
+    margin-left: 0 !important;
   }
+.contact-inputs .form-group{
+  margin-left: 0 !important;
+  width: 100%;
+  max-width: 100% !important;
+}
   .contact-button{
     width: auto;
     margin-left: auto;
@@ -595,6 +599,7 @@ input{
   }
   .contact-us{
     flex-direction: column;
+    padding: 10px;
   }
   .contact-info{
     width: 100%;
@@ -632,7 +637,7 @@ input{
   .aboutmenu .navbar button {
     margin-right: 60px;
     margin-left: auto;
-    border: solid black ;
+    border: solid rgba(255, 255, 255, 0.655) ;
     color: #fff !important;
   }
   .aboutrestoran{

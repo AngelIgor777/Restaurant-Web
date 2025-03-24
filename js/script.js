@@ -467,7 +467,6 @@ function formDate(longDate) {
     let months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
     if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
         months = ["ianuarie", "februarie", "martie", "aprilie", "mai", "iunie", "iulie", "august", "septembrie", "octombrie", "noiembrie", "decembrie"];
-
     }
     
     const month = months[date.getMonth()];
@@ -839,12 +838,13 @@ async function fetchMenuItems(categoryIds) {
         const menuContainer = document.querySelector('.menu-container');
         menuContainer.innerHTML = '';
         // 1. Запрашиваем все товары по категориям параллельно
-        const productRequests = categoryIds.map(id => fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`)
+        const productRequests = categoryIds.map(id => fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}&page=1&size=1`)
             .then(response => response.json())
-            .then(data => ({id, products: data.content || []})));
+            .then(data => ({id, products: data.content  || []})));
+
 
         const categoriesWithProducts = await Promise.all(productRequests);
-
+        console.log(categoriesWithProducts);
         //2. Загружаем фото и переводы параллельно
         const productDetailsRequests = categoriesWithProducts.flatMap(({
                                                                            id,
@@ -1379,7 +1379,7 @@ async function Hachchange() {
 
     if (hash === '#menu') {
         window.scrollTo(0, 1);
-        document.querySelector('body').style.backgroundImage = "url(./img/menu.png)";
+        document.querySelector('body').style.backgroundImage = "url(./img/menu-sjat.png)";
         document.querySelector('body').classList.add('bodyc');
         document.querySelector('.app').style.display = 'none';
         menusect.innerHTML = '';
@@ -1842,7 +1842,7 @@ async function Hachchange() {
         });
     } else if (hash && hash.startsWith('#item-')) {
         window.scrollTo(0, 1);
-        document.querySelector('body').style.backgroundImage = "url(./img/menu.png)";
+        document.querySelector('body').style.backgroundImage = "url(./img/menu-sjat.png)";
         document.querySelector('body').classList.add('bodyc');
         const menuItem = document.querySelector(hash);
         if (!localStorage.getItem("onlyItem")) {
@@ -2533,9 +2533,8 @@ function Language() {
             const categoryTitle = document.querySelector('.category-content h1.title a');
             if (categoryTitle) categoryTitle.innerHTML = translations[lang].menu;
 
-            
-            footerRum();
             headerRum();
+            footerRum();
             Registr();
 
             document.querySelectorAll(".description h5 span").forEach(it => {
