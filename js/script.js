@@ -1102,7 +1102,7 @@ async function initializeIsotope() {
     var selector='*';
     const response = await fetch(`http://46.229.212.34:9091/api/v1/products?size=${itemsPerPage}`);
     const data = await response.json();
-    var totalPages=data.totalPages;
+    var totalPages=data.totalPages-1;
     console.log(data);
     async function loadProducts(page, query) {
         const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page - 1}&size=${itemsPerPage}&query=${query}`;
@@ -1234,7 +1234,9 @@ async function initializeIsotope() {
             catid.push(parseInt(selector.replace('.', '')));  // Убираем точку и получаем число
             JustFetchMenu(catid, page, 10);
         } else {
-            fetchMenuItems(JSON.parse(localStorage.getItem('cat')), page);  // В случае *, передаем как есть
+            fetchMenuItems(JSON.parse(localStorage.getItem('cat')), page);
+            console.log(234);
+              // В случае *, передаем как есть
             // показать карточки
         }
         // Передаем в fetchMenuItems
@@ -1288,7 +1290,7 @@ async function initializeIsotope() {
         if (selector === '*') {
             const response = await fetch(`http://46.229.212.34:9091/api/v1/products?size=${itemsPerPage}`);
             const data = await response.json();
-            var totalPages=data.totalPages;
+            var totalPages=data.totalPages-1;
         }
         else{
             var ids=parseInt(selector.replace('.', ''));
