@@ -397,9 +397,13 @@ header {
 /* Карточки в меню */
 .containe {
   width: 100%;
-  
+  min-height: 800px;
 }
-
+.cat{
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
 .menu-container {
   display: flex;
   flex-direction: row;
@@ -779,7 +783,7 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 200px !important;
   background-color: #ffffff35;
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   font-family: "Comfortaa", serif;
   font-optical-sizing: auto;
   font-weight: 700;

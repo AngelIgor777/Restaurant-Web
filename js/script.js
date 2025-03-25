@@ -820,10 +820,9 @@ async function fetchProductTypes() {
             localStorage.setItem('cat', JSON.stringify(categoryIds));
             console.log(categoryIds);
             await fetchMenuItems(categoryIds, 0);
-            setTimeout(function () {
-                document.querySelector('.containe').style.height = 'auto';
-                document.querySelector('.containe').style.opacity = '1';
-            }, 500)
+            
+            
+            
         } else {
             console.error('Неверный формат данных:', data);
         }
@@ -905,8 +904,11 @@ async function fetchMenuItems(categoryIds, page) {
         // 5. Обновляем Isotope
         if(first){
             first=false
-            initializeIsotope();
+            await initializeIsotope();
             loadscreen();
+            // это чтобы экран появился
+            document.querySelector('.containe').style.height = 'auto';
+            document.querySelector('.containe').style.opacity = '1';
         }
         
     } catch (error) {
@@ -1104,7 +1106,7 @@ async function initializeIsotope() {
     console.log(data);
     async function loadProducts(page, query) {
         const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page - 1}&size=${itemsPerPage}&query=${query}`;
-    
+        console.log(apiUrl);
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
@@ -1178,7 +1180,7 @@ async function initializeIsotope() {
         loadProducts(1, query); // Загружаем товары с API по запросу
     });
 
-    shuffleElements($container.find('.item'));
+
 
 // Инициализация Isotope
     $container.isotope({
@@ -1280,11 +1282,7 @@ async function initializeIsotope() {
         var allItems = selector === '*' ? $container.find('.item') : $container.find(selector);
 
         
-        if (searchClicked) {
-            // это что бы перезагрузить страницу
-            Hachchange();
-            // если что в localstorage есть cat и можно реальзвать загрузку
-        }
+        
         
         
         if (selector === '*') {
@@ -1305,12 +1303,12 @@ async function initializeIsotope() {
     });
 
 // Функция перемешивания элементов
-    function shuffleElements($elements) {
-        var $parent = $elements.parent();
-        $elements.sort(function () {
-            return 0.5 - Math.random();
-        }).detach().appendTo($parent);
-    }
+//     function shuffleElements($elements) {
+//         var $parent = $elements.parent();
+//         $elements.sort(function () {
+//             return 0.5 - Math.random();
+//         }).detach().appendTo($parent);
+//     }
 
     initializePagination(totalPages);
     showPage(1);
@@ -2292,7 +2290,7 @@ function revealCards() {
 
         setTimeout(() => {
             card.classList.add("visible");
-        }, index * 200); // Добавляем задержку для плавного появления
+        }, index * 50); // Добавляем задержку для плавного появления
     });
 }
 
