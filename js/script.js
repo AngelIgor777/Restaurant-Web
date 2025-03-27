@@ -836,6 +836,7 @@ let first=true;
 // Получение данных меню
 async function fetchMenuItems(categoryIds, page) {
     try {
+        let tran=false;
         console.log(categoryIds);
         const menuContainer = document.querySelector('.menu-container');
         menuContainer.innerHTML = '';
@@ -868,6 +869,10 @@ async function fetchMenuItems(categoryIds, page) {
             const translation = translationsMap.get(product.id) || {};
             const name = translation.name || product.name;
             const description = translation.description || product.description;
+            // узнаем произошел ли перевод
+            if(translation.name){
+                tran=true;
+            }
 
             const menuItem = document.createElement('div');
             menuItem.className = `col-sm-6 col-md-4 col-lg-1 item`;
@@ -909,6 +914,9 @@ async function fetchMenuItems(categoryIds, page) {
             // это чтобы экран появился
             document.querySelector('.containe').style.height = 'auto';
             document.querySelector('.containe').style.opacity = '1';
+        }
+        if(tran){
+            revealCards();
         }
         
     } catch (error) {
@@ -1088,7 +1096,11 @@ async function updateModal(order) {
         });
     } else {
         // Если нет элементов в заказе, показываем сообщение
-        tbody.insertAdjacentHTML('beforeend', '<tr><td colspan="5">Корзина пуста</td></tr>');
+        let empt='<tr><td colspan="5">Корзина пуста</td></tr>';
+        if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+            empt = '<tr><td colspan="5">Coșul este gol</td></tr>';
+        }
+        tbody.insertAdjacentHTML('beforeend', empt);
     }
 }
 
@@ -1106,13 +1118,12 @@ async function initializeIsotope() {
     console.log(data);
     async function loadProducts(page, query) {
         const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page - 1}&size=${itemsPerPage}&query=${query}`;
-        console.log(apiUrl);
+        
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
     
             $container.empty();
-    
             // Генерируем HTML
             const fragment = document.createDocumentFragment();
             data.content.forEach(product => {
