@@ -1,4 +1,3 @@
-
 // Закрытие меню
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
@@ -219,7 +218,7 @@ const renderMenu = () => `
                 </div>
                 <button
                   type="button"
-                  class="btn decline"
+                  class="btn decline orderButtons"
                   data-bs-dismiss="modal"
                   style="font-size: 1.2rem"
                 >
@@ -2714,5 +2713,4 @@ window.addEventListener('hashchange', function () {
 window.addEventListener('load', function () {
     Hachchange();
 });
-
 
