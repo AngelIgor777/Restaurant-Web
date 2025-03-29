@@ -1335,11 +1335,11 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 @media (min-width: 992px) {
+
     .buttonsing-1 {
         display: none !important;
         margin-right: 10px;
     }
-
     .buttonsing-2 a {
         margin-right: 10px;
     }
@@ -1348,6 +1348,9 @@ input[type="number"]::-webkit-inner-spin-button {
         position: absolute;
         left: 0 !important;
     }
+    /*body {*/
+    /*    background-image: url('img/menu-sjat-mobile.png');*/
+    /*}*/
 }
 
 @media (max-width: 525px) {
