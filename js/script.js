@@ -4,7 +4,7 @@ const navbarCollapse = document.querySelector('.navbar-collapse');
 // для всей суммы
 let ishist = false;
 // для заказа
-let isorder=false;
+let isorder = false;
 // части html для меню
 const renderHeader = () => `
 <header>
@@ -467,7 +467,7 @@ function formDate(longDate) {
     if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
         months = ["ianuarie", "februarie", "martie", "aprilie", "mai", "iunie", "iulie", "august", "septembrie", "octombrie", "noiembrie", "decembrie"];
     }
-    
+
     const month = months[date.getMonth()];
     let hours = date.getHours() + 2;
     hours.toString().padStart(2, "0");
@@ -477,37 +477,37 @@ function formDate(longDate) {
 
 async function GetHistory() {
     let userUUID = JSON.parse(localStorage.getItem('uuid'));
-    if(userUUID){
+    if (userUUID) {
         document.querySelector('#orderHistoryBtn a').setAttribute('data-bs-target', '#HistoryModal');
     }
     document.getElementById("orderHistoryBtn").addEventListener("click", async function () {
         let userUUID = JSON.parse(localStorage.getItem('uuid'));
-        if(userUUID){
+        if (userUUID) {
             try {
                 if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-                    const titl=document.getElementById('HistoryModalTitle');
-                    titl.textContent='Istoricul comenzilor';
-                    }
+                    const titl = document.getElementById('HistoryModalTitle');
+                    titl.textContent = 'Istoricul comenzilor';
+                }
                 const response = await fetch(`http://46.229.212.34:9091/api/v1/orders/user?userUUID=${userUUID}&page=0&size=40`);
                 const data = await response.json();
                 console.log("Response from user order history:", data);
-    
+
                 const modalBody = document.getElementById("historyBody");
                 modalBody.innerHTML = ""; // Clear previous content
-    
+
                 if (!data || data.length === 0) {
                     modalBody.innerHTML = "<p>No order history available.</p>";
                     return;
                 }
-    
+
                 const orderList = document.createElement("ul");
                 orderList.classList.add("order-list");
-                
+
                 data.forEach(order => {
-                    const { orderResponseDTO } = order;
+                    const {orderResponseDTO} = order;
                     const orderItem = document.createElement("li");
                     orderItem.classList.add("order-item");
-    
+
                     // Order info (Date & Total Price)
                     const orderInfo = document.createElement("div");
                     orderInfo.classList.add("order-info");
@@ -517,16 +517,15 @@ async function GetHistory() {
                         <span class="order-date">Data comenzii: ${formDate(orderResponseDTO.createdAt)}</span>
                         <span class="order-price">Sumă: ${orderResponseDTO.totalPrice.toFixed(2)} lei</span>
                     `;
-                    }
-                    else{
+                    } else {
                         orderInfo.innerHTML = `
                         <button class='histsend' data-id='${orderResponseDTO.id}'>Повторить заказ</button>
                         <span class="order-date">Дата заказа: ${formDate(orderResponseDTO.createdAt)}</span>
                         <span class="order-price">Сумма: ${orderResponseDTO.totalPrice.toFixed(2)} lei</span>
                     `;
                     }
-                    
-    
+
+
                     // Product Images
                     const productImages = document.createElement("div");
                     productImages.classList.add("product-images");
@@ -537,41 +536,40 @@ async function GetHistory() {
                         img.classList.add("product-image");
                         productImages.appendChild(img);
                     });
-    
+
                     orderItem.appendChild(orderInfo);
                     orderItem.appendChild(productImages);
                     orderList.appendChild(orderItem);
                 });
-    
+
                 modalBody.appendChild(orderList);
-                document.querySelector('.histmod .order-list').addEventListener('click', function(e) {
-                  // Проверяем, что клик был по кнопке .histsend
-                  
-                  if (e.target && e.target.classList.contains('histsend')) {
-                    const orderId = e.target.getAttribute('data-id'); // Получаем id из data-id кнопки
-                    
-                    // Находим заказ с этим id
-                    const order = data.find(order => order.orderResponseDTO.id == orderId);
-                    // Выводим все продукты этого заказа
-                    if (order) {
-                      console.log('Все продукты для заказа:', order.orderResponseDTO.products);
-                      $('#Modalwindow').modal('show');
-                      ishist=true;
-                      isorder=true;
-                      // Сохраняю итоговую стоимость и список товаров для дальнейшей работы
-                      localStorage.setItem('historder', JSON.stringify(order.orderResponseDTO.products));
-                      localStorage.setItem('totalhist', JSON.stringify(order.orderResponseDTO.totalPrice));
-                      updateModal(order.orderResponseDTO.products);  // Предполагается, что функция updateModal существует
+                document.querySelector('.histmod .order-list').addEventListener('click', function (e) {
+                    // Проверяем, что клик был по кнопке .histsend
+
+                    if (e.target && e.target.classList.contains('histsend')) {
+                        const orderId = e.target.getAttribute('data-id'); // Получаем id из data-id кнопки
+
+                        // Находим заказ с этим id
+                        const order = data.find(order => order.orderResponseDTO.id == orderId);
+                        // Выводим все продукты этого заказа
+                        if (order) {
+                            console.log('Все продукты для заказа:', order.orderResponseDTO.products);
+                            $('#Modalwindow').modal('show');
+                            ishist = true;
+                            isorder = true;
+                            // Сохраняю итоговую стоимость и список товаров для дальнейшей работы
+                            localStorage.setItem('historder', JSON.stringify(order.orderResponseDTO.products));
+                            localStorage.setItem('totalhist', JSON.stringify(order.orderResponseDTO.totalPrice));
+                            updateModal(order.orderResponseDTO.products);  // Предполагается, что функция updateModal существует
+                        }
                     }
-                  }
                 });
             } catch (error) {
                 console.error("Error fetching order history:", error);
             }
-        }
-        else{
-            let text="Ox... вы не зарегистрированы!"
-            let tele='Зарегестрироваться!';
+        } else {
+            let text = "Ox... вы не зарегистрированы!"
+            let tele = 'Зарегестрироваться!';
             if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
                 text = 'Ox... nu sunteti înregistrat!';
                 tele = 'Înregistrare!'
@@ -584,8 +582,8 @@ async function GetHistory() {
                 <a href="https://t.me/PARK_TOWN_BOT">${tele}</a>
                 <p>Просто подпишитесь на телеграм бота</p>
                 `
-              });
-             
+            });
+
         }
     });
 }
@@ -633,7 +631,7 @@ async function WeekTop() {
     console.log(data);
     for (const item of data) {
         // Запрос URL картинки
-        
+
         const imageUrl = item.photoUrl; // Если нет URL, используем картинку по умолчанию
         // Создаем элемент меню
         let name = item.name;
@@ -819,9 +817,8 @@ async function fetchProductTypes() {
             localStorage.setItem('cat', JSON.stringify(categoryIds));
             console.log(categoryIds);
             await fetchMenuItems(categoryIds, 0);
-            
-            
-            
+
+
         } else {
             console.error('Неверный формат данных:', data);
         }
@@ -831,11 +828,12 @@ async function fetchProductTypes() {
 }
 
 // Проверка что это в первый раз
-let first=true;
+let first = true;
+
 // Получение данных меню
 async function fetchMenuItems(categoryIds, page) {
     try {
-        let tran=false;
+        let tran = false;
         console.log(categoryIds);
         const menuContainer = document.querySelector('.menu-container');
         menuContainer.innerHTML = '';
@@ -843,20 +841,20 @@ async function fetchMenuItems(categoryIds, page) {
         // 1. Запрашиваем все товары без категорий
         const productRequest = fetch(`http://46.229.212.34:9091/api/v1/products?page=${page}&size=10`)
             .then(response => response.json())
-            .then(data => ({ products: data.content || [] }));
+            .then(data => ({products: data.content || []}));
 
         const categoriesWithProducts = await productRequest;
 
         // 2. Загружаем переводы параллельно (если язык румынский)
         let translationsMap = new Map();
         if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-            const translationRequests = categoriesWithProducts.products.map(product => 
+            const translationRequests = categoriesWithProducts.products.map(product =>
                 fetch(`http://46.229.212.34:9091/api/v1/product-translations/${product.id}?lang=ro`)
                     .then(res => res.ok ? res.json() : null)
-                    .then(translation => ({ id: product.id, translation }))
+                    .then(translation => ({id: product.id, translation}))
             );
             const translations = await Promise.all(translationRequests);
-            translations.forEach(({ id, translation }) => {
+            translations.forEach(({id, translation}) => {
                 if (translation) translationsMap.set(id, translation);
             });
         }
@@ -869,8 +867,8 @@ async function fetchMenuItems(categoryIds, page) {
             const name = translation.name || product.name;
             const description = translation.description || product.description;
             // узнаем произошел ли перевод
-            if(translation.name){
-                tran=true;
+            if (translation.name) {
+                tran = true;
             }
 
             const menuItem = document.createElement('div');
@@ -881,9 +879,9 @@ async function fetchMenuItems(categoryIds, page) {
                     <a href="#item-${product.id}">
                         <div class="description">
                             <h3><b>${description}</b></h3>
-                            <h5>${product.cookingTime && product.cookingTime !== '00:00:00' 
-                                ? `${formatTime(product.cookingTime)}` 
-                                : ""}</h5>
+                            <h5>${product.cookingTime && product.cookingTime !== '00:00:00'
+                ? `${formatTime(product.cookingTime)}`
+                : ""}</h5>
                         </div>
                     </a>
                     <img src="${product.photoUrl}" alt="${name}" />
@@ -906,18 +904,18 @@ async function fetchMenuItems(categoryIds, page) {
         menuContainer.appendChild(fragment);
 
         // 5. Обновляем Isotope
-        if(first){
-            first=false
+        if (first) {
+            first = false
             await initializeIsotope();
             loadscreen();
             // это чтобы экран появился
             document.querySelector('.containe').style.height = 'auto';
             document.querySelector('.containe').style.opacity = '1';
         }
-        if(tran){
+        if (tran) {
             revealCards();
         }
-        
+
     } catch (error) {
         console.error('Ошибка при запросе данных меню:', error);
     }
@@ -926,53 +924,53 @@ async function fetchMenuItems(categoryIds, page) {
 // для определенных категорий
 async function JustFetchMenu(categoryIds, page, size) {
     const menuContainer = document.querySelector('.menu-container');
-        menuContainer.innerHTML = '';
-        
-        // 1. Запрашиваем все товары по категориям параллельно
-        const productRequests = categoryIds.map(id => 
-            fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}&page=${page-1}&size=${size}`)
-                .then(response => response.json())
-                .then(data => ({ id, products: data.content || [] }))
+    menuContainer.innerHTML = '';
+
+    // 1. Запрашиваем все товары по категориям параллельно
+    const productRequests = categoryIds.map(id =>
+        fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}&page=${page - 1}&size=${size}`)
+            .then(response => response.json())
+            .then(data => ({id, products: data.content || []}))
+    );
+
+    const categoriesWithProducts = await Promise.all(productRequests);
+
+    // 2. Загружаем переводы параллельно (если язык румынский)
+    let translationsMap = new Map();
+    if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+        const translationRequests = categoriesWithProducts.flatMap(({products}) =>
+            products.map(product =>
+                fetch(`http://46.229.212.34:9091/api/v1/product-translations/${product.id}?lang=ro`)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(translation => ({id: product.id, translation}))
+            )
         );
+        const translations = await Promise.all(translationRequests);
+        translations.forEach(({id, translation}) => {
+            if (translation) translationsMap.set(id, translation);
+        });
+    }
 
-        const categoriesWithProducts = await Promise.all(productRequests);
+    // 3. Создаём HTML элементы
+    const fragment = document.createDocumentFragment();
 
-        // 2. Загружаем переводы параллельно (если язык румынский)
-        let translationsMap = new Map();
-        if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-            const translationRequests = categoriesWithProducts.flatMap(({ products }) => 
-                products.map(product => 
-                    fetch(`http://46.229.212.34:9091/api/v1/product-translations/${product.id}?lang=ro`)
-                        .then(res => res.ok ? res.json() : null)
-                        .then(translation => ({ id: product.id, translation }))
-                )
-            );
-            const translations = await Promise.all(translationRequests);
-            translations.forEach(({ id, translation }) => {
-                if (translation) translationsMap.set(id, translation);
-            });
-        }
+    categoriesWithProducts.forEach(({id, products}) => {
+        products.forEach(product => {
+            const translation = translationsMap.get(product.id) || {};
+            const name = translation.name || product.name;
+            const description = translation.description || product.description;
 
-        // 3. Создаём HTML элементы
-        const fragment = document.createDocumentFragment();
-
-        categoriesWithProducts.forEach(({ id, products }) => {
-            products.forEach(product => {
-                const translation = translationsMap.get(product.id) || {};
-                const name = translation.name || product.name;
-                const description = translation.description || product.description;
-
-                const menuItem = document.createElement('div');
-                menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${id}`;
-                menuItem.id = `item-${product.id}`;
-                menuItem.innerHTML = `
+            const menuItem = document.createElement('div');
+            menuItem.className = `col-sm-6 col-md-4 col-lg-1 item ${id}`;
+            menuItem.id = `item-${product.id}`;
+            menuItem.innerHTML = `
                     <div class="img-cost">
                         <a href="#item-${product.id}">
                             <div class="description">
                                 <h3><b>${description}</b></h3>
-                                <h5>${product.cookingTime && product.cookingTime !== '00:00:00' 
-                                    ? `${formatTime(product.cookingTime)}` 
-                                    : ""}
+                                <h5>${product.cookingTime && product.cookingTime !== '00:00:00'
+                ? `${formatTime(product.cookingTime)}`
+                : ""}
                                 </h5>
                             </div>
                         </a>
@@ -989,13 +987,13 @@ async function JustFetchMenu(categoryIds, page, size) {
                         <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
                     </div>
                 `;
-                fragment.appendChild(menuItem);
-            });
+            fragment.appendChild(menuItem);
         });
+    });
 
-        // 4. Добавляем товары в контейнер
-        menuContainer.appendChild(fragment);
-        revealCards();
+    // 4. Добавляем товары в контейнер
+    menuContainer.appendChild(fragment);
+    revealCards();
 }
 
 
@@ -1095,7 +1093,7 @@ async function updateModal(order) {
         });
     } else {
         // Если нет элементов в заказе, показываем сообщение
-        let empt='<tr><td colspan="5">Корзина пуста</td></tr>';
+        let empt = '<tr><td colspan="5">Корзина пуста</td></tr>';
         if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
             empt = '<tr><td colspan="5">Coșul este gol</td></tr>';
         }
@@ -1105,23 +1103,24 @@ async function updateModal(order) {
 
 async function initializeIsotope() {
     var $container = $('.menu-container');
-    let cat=JSON.parse(localStorage.getItem('cat'));
+    let cat = JSON.parse(localStorage.getItem('cat'));
     var itemsPerPage = 10;
     var currentPage = 1;
     var searchClicked = false;
     var first = true;
-    var selector='*';
+    var selector = '*';
     const response = await fetch(`http://46.229.212.34:9091/api/v1/products?size=${itemsPerPage}`);
     const data = await response.json();
-    var totalPages=data.totalPages-1;
+    var totalPages = data.totalPages - 1;
     console.log(data);
+
     async function loadProducts(page, query) {
         const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page - 1}&size=${itemsPerPage}&query=${query}`;
-        
+
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
-    
+
             $container.empty();
             // Генерируем HTML
             const fragment = document.createDocumentFragment();
@@ -1152,34 +1151,34 @@ async function initializeIsotope() {
                 `;
                 fragment.appendChild(menuItem);
             });
-    
+
             $container.append(fragment);
-    
+
             // Обновляем Isotope сразу после вставки элементов
             $container.find('img').on('load', function () {
                 $container.isotope({
                     filter: '*', layoutMode: 'masonry', masonry: {gutter: 10}, transitionDuration: 0
                 });
             });
-    
+
             // Обновление пагинации
             const totalPages = Math.ceil(data.totalElements / itemsPerPage);
             if (first) {
                 initializePagination(totalPages);
                 first = false;
             }
-    
+
             // Исправленный `arrangeComplete`
             $container.on('arrangeComplete', function () {
                 $container.find('.item').css('position', 'static');
                 revealCards();
             });
-    
+
         } catch (error) {
             console.error('Ошибка при загрузке товаров:', error);
         }
     }
-    
+
 
     var query;
     $('#search-button').on('click', function () {
@@ -1189,7 +1188,6 @@ async function initializeIsotope() {
 
         loadProducts(1, query); // Загружаем товары с API по запросу
     });
-
 
 
 // Инициализация Isotope
@@ -1232,33 +1230,33 @@ async function initializeIsotope() {
         var end = start + itemsPerPage;
         if (searchClicked) {
             loadProducts(page, query);
-        } 
-        
-        // идея чтобы при каждом нажатии на кнопку категории происходила fetchMenuItems(catid, page); типа та категия и стр
+        }
+
+            // идея чтобы при каждом нажатии на кнопку категории происходила fetchMenuItems(catid, page); типа та категия и стр
         // не забудь отнять 1 от page
 
-        else{
-            let catid=[];
+        else {
+            let catid = [];
             // Если selector не '*', то удаляем точку и оставляем только число
-        if (selector !== '*') {
-            catid.push(parseInt(selector.replace('.', '')));  // Убираем точку и получаем число
-            JustFetchMenu(catid, page, 10);
-        } else {
-            fetchMenuItems(JSON.parse(localStorage.getItem('cat')), page);
-            console.log(234);
-              // В случае *, передаем как есть
-            // показать карточки
-        }
-        // Передаем в fetchMenuItems
-        //  
-        $container.isotope({
-           filter: '*',  // Показываем все элементы
-        });
-        // чтобы карточки появились нужна небольшая задержка
-        setTimeout(function () {
-            revealCards();
-        }, 300); // 1 секунда анимации
-        
+            if (selector !== '*') {
+                catid.push(parseInt(selector.replace('.', '')));  // Убираем точку и получаем число
+                JustFetchMenu(catid, page, 10);
+            } else {
+                fetchMenuItems(JSON.parse(localStorage.getItem('cat')), page);
+                console.log(234);
+                // В случае *, передаем как есть
+                // показать карточки
+            }
+            // Передаем в fetchMenuItems
+            //
+            $container.isotope({
+                filter: '*',  // Показываем все элементы
+            });
+            // чтобы карточки появились нужна небольшая задержка
+            setTimeout(function () {
+                revealCards();
+            }, 300); // 1 секунда анимации
+
         }
         // else {
         //     // Получаем текущий фильтр
@@ -1293,21 +1291,17 @@ async function initializeIsotope() {
         selector = $(this).attr('data-filter') || '*';
         var allItems = selector === '*' ? $container.find('.item') : $container.find(selector);
 
-        
-        
-        
-        
+
         if (selector === '*') {
             const response = await fetch(`http://46.229.212.34:9091/api/v1/products?size=${itemsPerPage}`);
             const data = await response.json();
-            var totalPages=data.totalPages-1;
-        }
-        else{
-            var ids=parseInt(selector.replace('.', ''));
-        console.log(ids)
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${ids}`);
-        const data = await response.json();
-        totalPages=data.totalPages;
+            var totalPages = data.totalPages - 1;
+        } else {
+            var ids = parseInt(selector.replace('.', ''));
+            console.log(ids)
+            const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${ids}`);
+            const data = await response.json();
+            totalPages = data.totalPages;
         }
         initializePagination(totalPages);
         showPage(1);
@@ -1482,15 +1476,52 @@ async function ChosenOne() {
     // star.innerHTML = `<i class='bx bx-star' ></i>`;
 }
 
+function getBackgroundImage(baseName) {
+    let windowWidth = window.innerWidth;
+    let isMobile = windowWidth < 768;
+    let devicePixelRatio = window.devicePixelRatio;
+    let isRetina =  devicePixelRatio > 1;
+    let isRetina2 = 3 > devicePixelRatio > 1;
+    let isRetina3 = 4 > devicePixelRatio > 2;
+    let isRetina4 = 5 > devicePixelRatio > 3;
+    let isRetina5 = 6 > devicePixelRatio > 4;
+    console.debug("is mobile width: " + isMobile + ": width: " + windowWidth);
+    console.debug("is retina: " + isRetina2 + "; device pixel ratio: " + devicePixelRatio);
+    let mobileSuffix = isMobile ? "-mobile" : "";
+    const photoFormat = "webp";
+
+    if (isMobile && isRetina) {
+        let photoUrl = `url(./img/${baseName}${mobileSuffix}@2x.${photoFormat})`;
+        console.debug("photo url: " + photoUrl);
+        return photoUrl;
+    }
+    // else if (isMobile && isRetina3) {
+    //
+    // } else if (isMobile && isRetina4) {
+    //
+    // } else if (isMobile && isRetina5) {
+    //
+    // }
+    else if (isMobile) {
+        return `url(./img/${baseName}${mobileSuffix}.${photoFormat})`;
+    } else {
+        return `url(./img/${baseName}.${photoFormat})`;
+    }
+}
+
 // Вызываем функцию при изменения хэша это основа не забываеми
 async function Hachchange() {
 
     document.querySelector('body').style.backgroundImage = "url(./img/about.png)";
     const hash = extractHash(window.location.hash);
 
+    // Default background
+
     if (hash === '#menu') {
+        let backgroundImage = getBackgroundImage("menu-sjat")
+
         window.scrollTo(0, 1);
-        document.querySelector('body').style.backgroundImage = "url(./img/menu-sjat.png)";
+        document.querySelector('body').style.backgroundImage = backgroundImage;
         document.querySelector('body').classList.add('bodyc');
         document.querySelector('.app').style.display = 'none';
         menusect.innerHTML = '';
@@ -1507,7 +1538,7 @@ async function Hachchange() {
         // загрузка товаров
 
         await fetchProductTypes();
-        
+
         // запуск всех нужных функ. после загрузки самого сайта
         GetHistory();
         Registr();
@@ -1614,14 +1645,14 @@ async function Hachchange() {
         // Кнопка отправки
         document.querySelector('.ordersend').addEventListener('click', function () {
             let order = JSON.parse(localStorage.getItem('order'));
-            if(isorder){
-              order=JSON.parse(localStorage.getItem('historder'));
-              localStorage.removeItem("historder");
-              isorder=false;
+            if (isorder) {
+                order = JSON.parse(localStorage.getItem('historder'));
+                localStorage.removeItem("historder");
+                isorder = false;
             }
-            
+
             if (order.length > 0) {
-                
+
                 let titl = 'Введите данные';
                 let stre = 'Улица';
                 let casa = 'Дом';
@@ -1779,7 +1810,7 @@ async function Hachchange() {
                         console.log("Введенные данные:", result.value);
 
                         let book = {};
-                        
+
                         let orderrequest = [];
                         order.forEach(item => {
                             let todo = {
@@ -1862,7 +1893,7 @@ async function Hachchange() {
                     if (result.isConfirmed && !check.checked) {
                         const num = document.getElementById("table").value.trim();
                         let book = {};
-                        
+
                         let orderrequest = [];
                         order.forEach(item => {
                             let todo = {
@@ -2534,16 +2565,16 @@ function headerRum() {
     </div>
   </nav>
 `;
-const lang = JSON.parse(localStorage.getItem('lang')) || 'ru';
-const selects = document.querySelectorAll('select.form-select.lang');
-selects.forEach(it => {
-    it.value = lang;
-    it.addEventListener("change", function (event) {
-        localStorage.setItem('order', JSON.stringify([]));
-        localStorage.setItem('lang', JSON.stringify(event.target.value)); 
-        setTimeout(() => location.reload(), 100);
+    const lang = JSON.parse(localStorage.getItem('lang')) || 'ru';
+    const selects = document.querySelectorAll('select.form-select.lang');
+    selects.forEach(it => {
+        it.value = lang;
+        it.addEventListener("change", function (event) {
+            localStorage.setItem('order', JSON.stringify([]));
+            localStorage.setItem('lang', JSON.stringify(event.target.value));
+            setTimeout(() => location.reload(), 100);
+        });
     });
-});
 }
 
 function loadCachedBackground(url) {
@@ -2600,10 +2631,10 @@ function Language() {
                 }
             });
 
-            observer.observe(document.body, { childList: true, subtree: true });
+            observer.observe(document.body, {childList: true, subtree: true});
         });
 
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, {childList: true, subtree: true});
 
         // --- Логика перевода ---
         const selects = document.querySelectorAll('select.form-select.lang');
@@ -2611,7 +2642,7 @@ function Language() {
             it.value = lang;
             it.addEventListener("change", function (event) {
                 localStorage.setItem('order', JSON.stringify([]));
-                localStorage.setItem('lang', JSON.stringify(event.target.value)); 
+                localStorage.setItem('lang', JSON.stringify(event.target.value));
                 setTimeout(() => location.reload(), 100);
             });
         });
