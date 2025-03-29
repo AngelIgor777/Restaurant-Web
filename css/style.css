@@ -1074,6 +1074,7 @@ input[type="number"]::-webkit-inner-spin-button {
 .searchgroup input {
     background-color: #0000005a;
     max-width: 382px;
+
     color: #fff;
 }
 
@@ -1083,6 +1084,10 @@ input[type="number"]::-webkit-inner-spin-button {
     box-shadow: none; /* Убираем синее свечение */
     border-color: #0000005a;
     color: #fff;
+}
+.searchgroup input::placeholder {
+    color: #fff;
+    opacity: 1; /* Ensures full visibility */
 }
 
 .searchgroup button {
@@ -1516,4 +1521,12 @@ input[type="number"]::-webkit-inner-spin-button {
         font-size: 0.7rem !important;
     }
 }
+
+
+
+
+
+
+
+
 

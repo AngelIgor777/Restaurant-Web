@@ -1476,6 +1476,9 @@ async function ChosenOne() {
     // star.innerHTML = `<i class='bx bx-star' ></i>`;
 }
 
+
+// когда нужно будет загружать фотографию на задний фон - использовать это, а пока просто фон
+//todo сделать фотографии для retina2,3,4,5
 function getBackgroundImage(baseName) {
     let windowWidth = window.innerWidth;
     let isMobile = windowWidth < 768;
@@ -1522,7 +1525,8 @@ async function Hachchange() {
         let backgroundImage = getBackgroundImage("menu-sjat")
 
         window.scrollTo(0, 1);
-        document.querySelector('body').style.backgroundImage = backgroundImage;
+        // document.querySelector('body').style.backgroundImage = backgroundImage;
+        document.querySelector('body').style.background = `linear-gradient(to bottom, #222222, #3a3a3a, #525252)`;
         document.querySelector('body').classList.add('bodyc');
         document.querySelector('.app').style.display = 'none';
         menusect.innerHTML = '';
