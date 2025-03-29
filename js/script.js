@@ -1502,6 +1502,7 @@ function getBackgroundImage(baseName) {
     // } else if (isMobile && isRetina5) {
     //
     // }
+
     else if (isMobile) {
         return `url(./img/${baseName}${mobileSuffix}.${photoFormat})`;
     } else {
