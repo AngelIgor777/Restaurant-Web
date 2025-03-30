@@ -361,7 +361,7 @@ function displayOrderBB(data) {
       </div>
       <div class="buttonsall">
         <button class="confirm" data-id="${order.id}">Подтвердить</button>
-        <button class="close" data-id="${order.id}">Отмена</button>
+        <button class="close" data-id="${order.id}">Удалить</button>
         </div>
       `
     ;
