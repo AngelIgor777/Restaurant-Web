@@ -1989,7 +1989,7 @@ async function Hachchange() {
         });
     } else if (hash && hash.startsWith('#item-')) {
         window.scrollTo(0, 1);
-        document.querySelector('body').style.backgroundImage = "url(./img/menu-sjat.png)";
+        document.querySelector('body').style.background = `linear-gradient(to bottom, #222222, #3a3a3a, #525252)`;
         document.querySelector('body').classList.add('bodyc');
         const menuItem = document.querySelector(hash);
         if (!localStorage.getItem("onlyItem")) {
