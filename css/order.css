@@ -220,7 +220,7 @@ b {
 }
 
 .result_table_user {
-    height: 400px;
+    height: 100px;
 }
 
 input[type="radio"] {
@@ -466,7 +466,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .orderconteiner {
-    height: 400px !important;
+    height: 350px !important;
     width: 500px !important;
     margin-top: 60px;
     margin-left: 30px;
