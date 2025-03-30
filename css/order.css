@@ -1,26 +1,29 @@
-
-body{
+body {
     display: flex;
     flex-direction: column;
     margin: 0;
     background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-image: url('../img/back.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-image: url('../img/back.jpg');
 }
-#messages{
+
+#messages {
     margin-bottom: 40px;
 }
-.ordertop{
-  position: relative;
-  display: flex;
-  flex: 1;
+
+.ordertop {
+    position: relative;
+    display: flex;
+    flex: 1;
 }
-.foot{
-  margin-top: auto !important;
+
+.foot {
+    margin-top: auto !important;
 }
-.app{
+
+.app {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -28,12 +31,14 @@ body{
     height: 100%;
     overflow: hidden;
 }
-.buttonsall{
+
+.buttonsall {
     display: flex;
     justify-content: right;
     margin-top: 100px;
 }
-.buttonsall .confirm{
+
+.buttonsall .confirm {
     padding: 10px;
     border-radius: 10px;
     border: none;
@@ -45,11 +50,12 @@ body{
     position: absolute;
     bottom: 30px;
 }
-.buttonsall .close{
+
+.buttonsall .close {
     padding: 10px;
     border-radius: 10px;
     border: none;
-    background-color: #b7c38b;
+    background-color: rgba(128, 25, 25, 0.9);
     font-family: "Kurale", serif;
     font-weight: 400;
     font-style: normal;
@@ -58,70 +64,85 @@ body{
     right: 220px;
     bottom: 30px;
 }
+
 /* кнопка добавления и все её менюшки */
-.addbutton{
+.addbutton {
     color: #ff2b2be6;
 }
-.sendsearch{
-    width:40px;
+
+.sendsearch {
+    width: 40px;
     height: 100%;
     border: none;
 }
-.modal-content{
+
+.modal-content {
     background-color: #00000081;
 }
-.findinput{
+
+.findinput {
     width: 100%;
 }
-.searchgroup{
+
+.searchgroup {
     max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 20px;
     display: flex;
     justify-content: center;
-  }
-  .searchgroup input{
+}
+
+.searchgroup input {
     background-color: #00000053;
     max-width: 382px;
-  }
-  .searchgroup input:focus{
+}
+
+.searchgroup input:focus {
     background-color: #00000053;
     outline: none; /* Убираем стандартное выделение */
     box-shadow: none; /* Убираем синее свечение */
     border-color: #0000005a;
     color: #fff;
-  }
-  .searchgroup button{
+}
+
+.searchgroup button {
     background-color: #ffffff53;
     margin: 0 !important;
-  }
-  .searchgroup button i{
+}
+
+.searchgroup button i {
     color: #fff;
-  }
-  .searchgroup button i::before{
+}
+
+.searchgroup button i::before {
     opacity: 1;
-  } 
-.input-group-text{
+}
+
+.input-group-text {
     padding: 0;
 }
-th{
+
+th {
     min-width: 80px;
     width: 100vw;
 
 }
-.swal2-popup{
+
+.swal2-popup {
     width: 1000px;
 }
+
 b {
-    font-weight: 600; 
+    font-weight: 600;
 }
-.order{
+
+.order {
     border-radius: 10px;
     border: 2px solid #8b6f47; /* Более тёмная граница */
     box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3); /* Тень для глубины */
     padding: 40px;
-    margin: 0 20 ;
+    margin: 0 20;
     font-size: 1.5rem;
     font-family: "Kurale", serif;
     font-weight: 400;
@@ -132,130 +153,102 @@ b {
     height: auto;
     background: linear-gradient(to top, #fff8e1, #f5e6cc);
 }
+
 .swiper-container {
     width: 100%; /* или фиксированную ширину, например, 600px */
     height: 100%; /* или конкретную высоту */
     overflow: hidden; /* Скрывает контент, который выходит за пределы */
 }
-.addbody{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+
+.addbody {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .result_table {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start; /* Исправлено на начало для правильного выравнивания */
-  place-items: flex-start; /* Исправлено на начало для корректного выравнивания */
-  margin-bottom: 20px;
-  width: 100%;
-  height: 800px;
-  flex-grow: 1; /* Позволяет контейнеру растягиваться */
-  gap: 20px 40px;
-  overflow-y: auto; /* Для обеспечения прокрутки */
-  scrollbar-width: none; /* Для Firefox */
-  -ms-overflow-style: none; /* Для IE и Edge */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start; /* Исправлено на начало для правильного выравнивания */
+    place-items: flex-start; /* Исправлено на начало для корректного выравнивания */
+    margin-bottom: 20px;
+    width: 100%;
+    height: 800px;
+    flex-grow: 1; /* Позволяет контейнеру растягиваться */
+    gap: 20px 40px;
+    overflow-y: auto; /* Для обеспечения прокрутки */
+    scrollbar-width: none; /* Для Firefox */
+    -ms-overflow-style: none; /* Для IE и Edge */
 }
 
-.result_table::-webkit-scrollbar{
-  display: none;
+.result_table::-webkit-scrollbar {
+    display: none;
 }
-.modal-header .btn-close{
+
+.modal-header .btn-close {
     background-color: #fff;
 }
-.searchFind{
-  width: 670px;
-  margin-top: 60px;
-  display: flex;
-  flex-direction:column;
-  border-radius: 15px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+
+.searchFind {
+    width: 670px;
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.userFind{
-  width: 500px;
-  margin-top: 60px;
-  margin-left: 30px;
-  display: flex;
-  flex-direction:column;
-  border-radius: 15px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+.userFind {
+    width: 500px;
+    margin-top: 60px;
+    margin-left: 30px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
 }
-.result-user{
-  width: 100%;
-  height: 400px;
+
+.result-user {
+    width: 100%;
+    height: 400px;
 }
+
 .result_table_user {
-  height: 400px;
+    height: 400px;
 }
+
 input[type="radio"] {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #555;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #555;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
 input[type="radio"]:hover {
-  border-color: #2e7d32;
+    border-color: #2e7d32;
 }
 
 input[type="radio"]:checked {
-  background-color: #2e7d32;
-  border-color: #2e7d32;
+    background-color: #2e7d32;
+    border-color: #2e7d32;
 }
-.user-item{
-  display: flex !important;
-  position: relative;
-  height: 90px;
-  width: 100%;
-  margin-bottom: 10px;
-  flex-direction: row !important;
-  align-content: center !important;
-  flex-wrap: wrap ;
-  text-align: center;
-  background-color: #ffffffa4;
-  border-radius: 10px;
-  overflow-y: hidden;
-  font-size: 1.4rem;
-  font-family: "Kurale", serif;
-  font-weight: 400;
-  font-style: normal;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.448);
-}
-.user-item img {
-  width: 100px;
-  height: 100%;
-  object-fit: cover;
-  transition: all 0.3s;
-}
-.user-item h3 {
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: 20px;
-  max-width: 220px;
-  font-size: clamp(1.2rem, 1.6rem, 1.9rem);
-  overflow: hidden;
-  height: 80px;
-  font-size: clamp(1.2rem, 1.6vw, 1.4rem) !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.item{
+
+.user-item {
     display: flex !important;
-    height: 140px;
+    position: relative;
+    height: 90px;
     width: 100%;
+    margin-bottom: 10px;
     flex-direction: row !important;
     align-content: center !important;
-    flex-wrap: wrap ;
+    flex-wrap: wrap;
     text-align: center;
     background-color: #ffffffa4;
     border-radius: 10px;
@@ -265,7 +258,47 @@ input[type="radio"]:checked {
     font-weight: 400;
     font-style: normal;
     text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.448);
-  }
+}
+
+.user-item img {
+    width: 100px;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s;
+}
+
+.user-item h3 {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 20px;
+    max-width: 220px;
+    font-size: clamp(1.2rem, 1.6rem, 1.9rem);
+    overflow: hidden;
+    height: 80px;
+    font-size: clamp(1.2rem, 1.6vw, 1.4rem) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item {
+    display: flex !important;
+    height: 140px;
+    width: 100%;
+    flex-direction: row !important;
+    align-content: center !important;
+    flex-wrap: wrap;
+    text-align: center;
+    background-color: #ffffffa4;
+    border-radius: 10px;
+    overflow-y: hidden;
+    font-size: 1.4rem;
+    font-family: "Kurale", serif;
+    font-weight: 400;
+    font-style: normal;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.448);
+}
+
 .item h3 {
     margin-top: auto;
     margin-bottom: auto;
@@ -279,15 +312,18 @@ input[type="radio"]:checked {
     align-items: center;
     justify-content: center;
 }
-.item  img {
+
+.item img {
     width: 100px;
     height: 100%;
     object-fit: cover;
     transition: all 0.3s;
-  }
-.send-plus-min{
-  margin-left: auto;
 }
+
+.send-plus-min {
+    margin-left: auto;
+}
+
 .send-plus-min .plus-min {
     display: flex;
     justify-content: center;
@@ -297,22 +333,27 @@ input[type="radio"]:checked {
     height: 50px;
     text-align: center;
     margin-right: 60px !important;
-  }
-  .send-plus-min .plus {
+}
+
+.send-plus-min .plus {
     transition: all 0.15s;
     margin: 0;
-  }
+}
+
 .send-plus-min .plus:hover {
     transform: scale(1.09);
-  }
+}
+
 .send-plus-min .min {
     transition: all 0.15s;
     margin: 0;
-  }
+}
+
 .send-plus-min .min:hover {
     transform: scale(1.09);
-  }
-  /* Входные данные */
+}
+
+/* Входные данные */
 .send-plus-min .plus-min input {
     width: 26px;
     height: auto;
@@ -323,19 +364,22 @@ input[type="radio"]:checked {
     font-size: 1.5rem;
     color: black;
     margin-bottom: 10px;
-  }
-  input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button {
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
-  }
+}
+
 .send-plus-min {
     display: flex;
     justify-content: center;
     position: relative;
     align-items: center;
     height: 100%;
-  }
+}
+
 .send-plus-min button {
     position: absolute;
     display: flex;
@@ -350,294 +394,44 @@ input[type="radio"]:checked {
     cursor: pointer;
     transition: all 0.2s;
     color: #fff;
-  }
+}
+
 .send-plus-min button:hover {
     color: #fff;
-  }
-  
+}
+
 .send-plus-min i {
     transition: transform 0.3s ease-in-out, opacity 0.3s ease;
-  }
-  
-  /* Скрываем иконку галочки по умолчанию */
+}
+
+/* Скрываем иконку галочки по умолчанию */
 .send-plus-min button .bx-check {
     display: none;
     opacity: 0;
     transform: scale(0);
-  }
-  
-  /* Когда кнопка нажата */
+}
+
+/* Когда кнопка нажата */
 .send-plus-min button.sold .bx-dish {
     display: none;
     opacity: 0;
     transform: scale(0);
-  }
-  
+}
+
 .send-plus-min button.sold .bx-check {
     display: block;
     opacity: 1; /* Показываем галочку */
     transform: scale(1.4); /* Увеличиваем галочку */
     animation: Check 0.4s forwards;
-  }
+}
+
 /* анимации для кнопок */
-.alege{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  right: 0;
-  height: 100%;
-  width: 40px;
-  border: none;
-  background-color: #252525d9;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #fff;
-}
-.alege i {
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease;
-}
-.alege.sold .bx-user-check {
-  display: none;
-  opacity: 0;
-  transform: scale(0);
-}
-
-.alege .bx-check {
-    display: none;
-    opacity: 0;
-    transform: scale(0);
-  }
-.alege.sold .bx-check {
-  display: block;
-  opacity: 1; /* Показываем галочку */
-  transform: scale(1.4); /* Увеличиваем галочку */
-  animation: Check 0.4s forwards;
-}
-.orderconteiner{
-  height: 400px !important;
-  width: 500px !important;
-  margin-top: 60px;
-  margin-left: 30px;
-  position: relative;
-  overflow-y: scroll; /* Для обеспечения прокрутки */
-  scrollbar-width: none; /* Для Firefox */
-  -ms-overflow-style: none; /* Для IE и Edge */
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 15px;
-  padding: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.itog-cost{
-  position: relative;
-  color: #000000;
-  margin-left: auto;
-  right: 0;
-  width: 130px;
-  font-size: 1.3rem;
-  font-family: "Kurale", serif;
-  font-weight: 600;
-  font-style: normal;
-}
-
-.table {
-  --bs-table-bg: rgb(244, 242, 242) !important;
-}
-
-.orderconteiner::-webkit-scrollbar{
-  display: none;
-}
-.ord{
-  margin: 0;
-}
-.orderli{
-  position: relative;
-  background-color: #ffffffa4;
-  flex-grow: 1; /* Позволяет контейнеру растягиваться */
-
-}
-
-.oredersendcolum{
-  display: flex;
-  flex-direction: column;
-}
-.sendform{
-  background-color: rgb(244, 242, 242);
-  height: auto;
-  width: 500px;
-  margin-top: 30px;
-  margin-left: 30px;
-  padding: 20px;
-  display: flex;
-  font-size: 1.2rem;
-  border-radius: 15px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-}
-.formsend{
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.updateMod{
-  margin-left: auto;
-}
-.check-box{
-  position: relative;
-}
-.confirmed{
-    display: none;
-}
-.order h2{
-    font-family: "Kurale", serif;
-    font-weight: 600;
-    font-style: normal;
-    font-size: 1.8rem;
-    color:#303c51;
-}
-.and{
-    color: #000000;
-    font-weight: bold;
-    cursor: pointer;
-    text-decoration: underline;
-}
-details[open] .and{
-    display: none;
-}
-details .andv{
-    display: none;
-}
-details[open] .andv{
-    display: block;
-    font-size: 1.4rem;
-}
-details[open]{
-    margin-bottom: 40px;
-}
-
-.product{
-    border-bottom: solid 1px rgba(0, 0, 0, 0.689);
-}
-.product:last-child{
-    border-bottom: solid 0 rgba(0, 0, 0, 0.689);
-}
-summary {
-    list-style: none;
-  }
-  summary::-webkit-details-marker {
-    display: none;
-  }
-@media (max-width: 1025px) {
-    .order{
-      width: 88%;
-    }
-    .addbody{
-      justify-content: center;
-    }
-    .searchFind{
-      width: 90%;
-      margin-top: 60px;
-      display: flex;
-      flex-direction:column;
-      border-radius: 15px;
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 10px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-    }
-    .result_table {
-      justify-content: flex-start; /* Исправлено на начало для правильного выравнивания */
-      place-items: flex-start; /* Исправлено на начало для корректного выравнивания */
-      margin-bottom: 20px;
-      width: 100%;
-      height: 500px !important;
-      flex-grow: 1; /* Позволяет контейнеру растягиваться */
-      gap: 20px 40px;
-      overflow-y:scroll; /* Для обеспечения прокрутки */
-      scrollbar-width: none; /* Для Firefox */
-      -ms-overflow-style: none; /* Для IE и Edge */
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 20px;
-    }
-    .item{
-      display: flex !important;
-      height: 140px !important;
-      width: 100%;
-      flex-direction: row !important;
-      align-content: center !important;
-      flex-wrap: wrap ;
-      text-align: center;
-      background-color: #ffffffa4;
-      border-radius: 10px;
-      overflow-y: hidden;
-      font-size: 1.4rem;
-      font-family: "Kurale", serif;
-      font-weight: 400;
-      font-style: normal;
-      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.448);
-      
-    }
-    .item h3 {
-      margin-top: auto;
-      margin-bottom: auto;
-      margin-left: 20px;
-      max-width: 120px;
-      overflow: hidden;
-      height: 80px;
-      font-size: clamp(0.6rem, 0.8rem, 1.6rem) !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-  }
-  .item  img {
-    width: 80px;
-    height: 100%;
-    object-fit: cover;
-    transition: all 0.3s;
-  }
-  .oredersendcolum{
-    justify-content: center;
-   
-  }
-  .orderconteiner{
-    margin-left: auto !important;
-    margin-right: auto;
-    width: 80% !important;
-  }
-  .orderli{
-    width: 100% !important;
-  }
-  .userFind{
-    width: 80% !important;
-    margin-left: auto !important;
-    margin-right: auto;
-  }
-  .sendform{
-    width: 80% !important;
-    margin-left: auto !important;
-    margin-right: auto;
-  }
-  .table {
-    width: auto; /* Таблица займет только необходимое место */
-    table-layout: auto; /* Позволяет колонкам подстраиваться под содержимое */
-    max-width: 100%; /* Не дает таблице выходить за границы */
-  }
-  .send-plus-min{
+.alege {
     display: flex;
     justify-content: center;
-    position: relative;
     align-items: center;
-    height: 100%;
-    margin-left: auto !important;
-  }
-  .send-plus-min button {
     position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     right: 0;
-    top: 0 ;
     height: 100%;
     width: 40px;
     border: none;
@@ -646,37 +440,349 @@ summary {
     cursor: pointer;
     transition: all 0.2s;
     color: #fff;
-  }
-    .nameTov{
-      text-wrap: inherit;
-      margin-left: 5px !important;
+}
+
+.alege i {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease;
+}
+
+.alege.sold .bx-user-check {
+    display: none;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.alege .bx-check {
+    display: none;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.alege.sold .bx-check {
+    display: block;
+    opacity: 1; /* Показываем галочку */
+    transform: scale(1.4); /* Увеличиваем галочку */
+    animation: Check 0.4s forwards;
+}
+
+.orderconteiner {
+    height: 400px !important;
+    width: 500px !important;
+    margin-top: 60px;
+    margin-left: 30px;
+    position: relative;
+    overflow-y: scroll; /* Для обеспечения прокрутки */
+    scrollbar-width: none; /* Для Firefox */
+    -ms-overflow-style: none; /* Для IE и Edge */
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.itog-cost {
+    position: relative;
+    color: #000000;
+    margin-left: auto;
+    right: 0;
+    width: 130px;
+    font-size: 1.3rem;
+    font-family: "Kurale", serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.table {
+    --bs-table-bg: rgb(244, 242, 242) !important;
+}
+
+.orderconteiner::-webkit-scrollbar {
+    display: none;
+}
+
+.ord {
+    margin: 0;
+}
+
+.orderli {
+    position: relative;
+    background-color: #ffffffa4;
+    flex-grow: 1; /* Позволяет контейнеру растягиваться */
+
+}
+
+.oredersendcolum {
+    display: flex;
+    flex-direction: column;
+}
+
+.sendform {
+    background-color: rgb(244, 242, 242);
+    height: auto;
+    width: 500px;
+    margin-top: 30px;
+    margin-left: 30px;
+    padding: 20px;
+    display: flex;
+    font-size: 1.2rem;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.formsend {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.updateMod {
+    margin-left: auto;
+}
+
+.check-box {
+    position: relative;
+}
+
+.confirmed {
+    display: none;
+}
+
+.order h2 {
+    font-family: "Kurale", serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 1.8rem;
+    color: #303c51;
+}
+
+.and {
+    color: #000000;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+details[open] .and {
+    display: none;
+}
+
+details .andv {
+    display: none;
+}
+
+details[open] .andv {
+    display: block;
+    font-size: 1.4rem;
+}
+
+details[open] {
+    margin-bottom: 40px;
+}
+
+.product {
+    border-bottom: solid 1px rgba(0, 0, 0, 0.689);
+}
+
+.product:last-child {
+    border-bottom: solid 0 rgba(0, 0, 0, 0.689);
+}
+
+summary {
+    list-style: none;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+@media (max-width: 1025px) {
+    .order {
+        width: 88%;
     }
-    .costTov{
-      margin-left: 5px !important;
+
+    .addbody {
+        justify-content: center;
     }
-    
-  }
-  @media (max-width: 580px) {
-      .table>:not(caption)>*>* {
+
+    .searchFind {
+        width: 90%;
+        margin-top: 60px;
+        display: flex;
+        flex-direction: column;
+        border-radius: 15px;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .result_table {
+        justify-content: flex-start; /* Исправлено на начало для правильного выравнивания */
+        place-items: flex-start; /* Исправлено на начало для корректного выравнивания */
+        margin-bottom: 20px;
+        width: 100%;
+        height: 500px !important;
+        flex-grow: 1; /* Позволяет контейнеру растягиваться */
+        gap: 20px 40px;
+        overflow-y: scroll; /* Для обеспечения прокрутки */
+        scrollbar-width: none; /* Для Firefox */
+        -ms-overflow-style: none; /* Для IE и Edge */
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+    }
+
+    .item {
+        display: flex !important;
+        height: 140px !important;
+        width: 100%;
+        flex-direction: row !important;
+        align-content: center !important;
+        flex-wrap: wrap;
+        text-align: center;
+        background-color: #ffffffa4;
+        border-radius: 10px;
+        overflow-y: hidden;
+        font-size: 1.4rem;
+        font-family: "Kurale", serif;
+        font-weight: 400;
+        font-style: normal;
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.448);
+
+    }
+
+    .item h3 {
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: 20px;
+        max-width: 120px;
+        overflow: hidden;
+        height: 80px;
+        font-size: clamp(0.6rem, 0.8rem, 1.6rem) !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .item img {
+        width: 80px;
+        height: 100%;
+        object-fit: cover;
+        transition: all 0.3s;
+    }
+
+    .oredersendcolum {
+        justify-content: center;
+
+    }
+
+    .orderconteiner {
+        margin-left: auto !important;
+        margin-right: auto;
+        width: 80% !important;
+    }
+
+    .orderli {
+        width: 100% !important;
+    }
+
+    .userFind {
+        width: 80% !important;
+        margin-left: auto !important;
+        margin-right: auto;
+    }
+
+    .sendform {
+        width: 80% !important;
+        margin-left: auto !important;
+        margin-right: auto;
+    }
+
+    .table {
+        width: auto; /* Таблица займет только необходимое место */
+        table-layout: auto; /* Позволяет колонкам подстраиваться под содержимое */
+        max-width: 100%; /* Не дает таблице выходить за границы */
+    }
+
+    .send-plus-min {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        align-items: center;
+        height: 100%;
+        margin-left: auto !important;
+    }
+
+    .send-plus-min button {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 40px;
+        border: none;
+        background-color: #252525d9;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #fff;
+    }
+
+    .nameTov {
+        text-wrap: inherit;
+        margin-left: 5px !important;
+    }
+
+    .costTov {
+        margin-left: 5px !important;
+    }
+
+}
+
+@media (max-width: 580px) {
+    .table > :not(caption) > * > * {
         padding: 0 !important;
-      }
-      .orderconteiner{
+    }
+
+    .orderconteiner {
         padding: 0;
-      }
-      .result_table_user{
+    }
+
+    .result_table_user {
         width: 100%;
         justify-content: center;
-      }
-      .result-user{
+    }
+
+    .result-user {
         width: 100%;
-      }
-      .user-item{
+    }
+
+    .user-item {
         width: 90%;
-      }
-      .user-item h3 {
+    }
+
+    .user-item h3 {
         font-size: 0.8rem !important;
-      }
-      .alege{
+    }
+
+    .alege {
         margin-top: 0 !important;
-      }
-  }
+    }
+}
+
+.header {
+    margin-bottom: 20px;
+
+}
+
+.warning {
+    font-size: 30px;
+    color: #ffffff;
+}
+
+#searchOrderInput {
+    height: 50px;
+}
+
+

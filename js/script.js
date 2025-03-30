@@ -1,3 +1,4 @@
+const host = "http://46.229.212.34:9091";
 // Закрытие меню
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
@@ -488,7 +489,7 @@ async function GetHistory() {
                     const titl = document.getElementById('HistoryModalTitle');
                     titl.textContent = 'Istoricul comenzilor';
                 }
-                const response = await fetch(`http://46.229.212.34:9091/api/v1/orders/user?userUUID=${userUUID}&page=0&size=40`);
+                const response = await fetch(`${host}/api/v1/orders/user?userUUID=${userUUID}&page=0&size=40`);
                 const data = await response.json();
                 console.log("Response from user order history:", data);
 
@@ -516,12 +517,14 @@ async function GetHistory() {
                         <button class='histsend' data-id='${orderResponseDTO.id}'>Repetă comanda</button>
                         <span class="order-date">Data comenzii: ${formDate(orderResponseDTO.createdAt)}</span>
                         <span class="order-price">Sumă: ${orderResponseDTO.totalPrice.toFixed(2)} lei</span>
+                        ${orderResponseDTO.otp ? `<span class="order-price">Cod: ${orderResponseDTO.otp}</span>` : ''}
                     `;
                     } else {
                         orderInfo.innerHTML = `
                         <button class='histsend' data-id='${orderResponseDTO.id}'>Повторить заказ</button>
                         <span class="order-date">Дата заказа: ${formDate(orderResponseDTO.createdAt)}</span>
                         <span class="order-price">Сумма: ${orderResponseDTO.totalPrice.toFixed(2)} lei</span>
+                        ${orderResponseDTO.otp ? `<span class="order-price">Код: ${orderResponseDTO.otp}</span>` : ''}
                     `;
                     }
 
@@ -598,7 +601,7 @@ async function Sendmes() {
         let number = document.getElementById("contact-number").value.trim();
         let eventName = document.getElementById("contact-event").value.trim();
         let message = document.getElementById("contact-message").value.trim();
-        fetch(`http://46.229.212.34:9091/api/v1/connection?name=${name}&email=${email}&event=${eventName}&phoneNumber=${number}&message=${message}`, {
+        fetch(`${host}/api/v1/connection?name=${name}&email=${email}&event=${eventName}&phoneNumber=${number}&message=${message}`, {
             method: 'POST', headers: {"Content-Type": "application/json"},
         }).then(result => {
             let titl = 'Успех!';
@@ -626,7 +629,7 @@ async function WeekTop() {
     container.classList.add('nothing');
 
 
-    const response = await fetch(`http://46.229.212.34:9091/api/v1/products/top-weekly?page=0&size=10`);
+    const response = await fetch(`${host}/api/v1/products/top-weekly?page=0&size=10`);
     const data = await response.json();
     console.log(data);
     for (const item of data) {
@@ -637,7 +640,7 @@ async function WeekTop() {
         let name = item.name;
         let descr = item.description;
         if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-            const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${item.id}?lang=ro`, {
+            const respo = await fetch(`${host}/api/v1/product-translations/${item.id}?lang=ro`, {
                 method: "GET"
             });
 
@@ -779,7 +782,7 @@ async function WeekTop() {
 async function fetchProductTypes() {
     try {
 
-        const response = await fetch('http://46.229.212.34:9091/api/v1/product-types');
+        const response = await fetch(`${host}/api/v1/product-types`);
         const data = await response.json();
 
         if (data.content && Array.isArray(data.content)) {
@@ -795,7 +798,7 @@ async function fetchProductTypes() {
                 let namerum = item.name;
                 console.log(namerum, item.id);
                 if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-                    const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-type-translations/${item.id}?lang=ro`, {
+                    const respo = await fetch(`${host}/api/v1/product-type-translations/${item.id}?lang=ro`, {
                         method: "GET"
                     });
 
@@ -839,7 +842,7 @@ async function fetchMenuItems(categoryIds, page) {
         menuContainer.innerHTML = '';
 
         // 1. Запрашиваем все товары без категорий
-        const productRequest = fetch(`http://46.229.212.34:9091/api/v1/products?page=${page}&size=10`)
+        const productRequest = fetch(`${host}/api/v1/products?page=${page}&size=10`)
             .then(response => response.json())
             .then(data => ({products: data.content || []}));
 
@@ -849,7 +852,7 @@ async function fetchMenuItems(categoryIds, page) {
         let translationsMap = new Map();
         if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
             const translationRequests = categoriesWithProducts.products.map(product =>
-                fetch(`http://46.229.212.34:9091/api/v1/product-translations/${product.id}?lang=ro`)
+                fetch(`${host}/api/v1/product-translations/${product.id}?lang=ro`)
                     .then(res => res.ok ? res.json() : null)
                     .then(translation => ({id: product.id, translation}))
             );
@@ -928,7 +931,7 @@ async function JustFetchMenu(categoryIds, page, size) {
 
     // 1. Запрашиваем все товары по категориям параллельно
     const productRequests = categoryIds.map(id =>
-        fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}&page=${page - 1}&size=${size}`)
+        fetch(`${host}/api/v1/products?typeId=${id}&page=${page - 1}&size=${size}`)
             .then(response => response.json())
             .then(data => ({id, products: data.content || []}))
     );
@@ -940,7 +943,7 @@ async function JustFetchMenu(categoryIds, page, size) {
     if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
         const translationRequests = categoriesWithProducts.flatMap(({products}) =>
             products.map(product =>
-                fetch(`http://46.229.212.34:9091/api/v1/product-translations/${product.id}?lang=ro`)
+                fetch(`${host}/api/v1/product-translations/${product.id}?lang=ro`)
                     .then(res => res.ok ? res.json() : null)
                     .then(translation => ({id: product.id, translation}))
             )
@@ -1018,7 +1021,7 @@ async function updateModal(order) {
         for (let i = 0; i < order.length; i++) {
             let name = order[i].tovarname || order[i].name;
             if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-                const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${order[i].id}?lang=ro`, {
+                const respo = await fetch(`${host}/api/v1/product-translations/${order[i].id}?lang=ro`, {
                     method: "GET"
                 });
 
@@ -1109,13 +1112,13 @@ async function initializeIsotope() {
     var searchClicked = false;
     var first = true;
     var selector = '*';
-    const response = await fetch(`http://46.229.212.34:9091/api/v1/products?size=${itemsPerPage}`);
+    const response = await fetch(`${host}/api/v1/products?size=${itemsPerPage}`);
     const data = await response.json();
     var totalPages = data.totalPages - 1;
     console.log(data);
 
     async function loadProducts(page, query) {
-        const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page - 1}&size=${itemsPerPage}&query=${query}`;
+        const apiUrl = `${host}/api/v1/products/search?page=${page - 1}&size=${itemsPerPage}&query=${query}`;
 
         try {
             const response = await fetch(apiUrl);
@@ -1185,7 +1188,6 @@ async function initializeIsotope() {
         searchClicked = true;  // Устанавливаем флаг, что кнопка поиска была нажата
         first = true;  // Сброс флага для загрузки пагинации при новом поиске
         query = $('#search-input').val(); // Получаем значение из поля ввода
-
         loadProducts(1, query); // Загружаем товары с API по запросу
     });
 
@@ -1293,13 +1295,13 @@ async function initializeIsotope() {
 
 
         if (selector === '*') {
-            const response = await fetch(`http://46.229.212.34:9091/api/v1/products?size=${itemsPerPage}`);
+            const response = await fetch(`${host}/api/v1/products?size=${itemsPerPage}`);
             const data = await response.json();
             var totalPages = data.totalPages - 1;
         } else {
             var ids = parseInt(selector.replace('.', ''));
             console.log(ids)
-            const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${ids}`);
+            const response = await fetch(`${host}/api/v1/products?typeId=${ids}`);
             const data = await response.json();
             totalPages = data.totalPages;
         }
@@ -1394,7 +1396,7 @@ async function Profile(e) {
                         city: "Copceac", street: street, homeNumber: home, apartmentNumber: 1, userUUID: uuid
                     }
 
-                    fetch('http://46.229.212.34:9091/api/v1/addresses', {
+                    fetch(`${host}/api/v1/addresses`, {
                         method: 'POST', headers: {"Content-Type": "application/json"}, body: JSON.stringify(addres)
                     }).then(result => result.json())
                         .then(data => {
@@ -1483,7 +1485,7 @@ function getBackgroundImage(baseName) {
     let windowWidth = window.innerWidth;
     let isMobile = windowWidth < 768;
     let devicePixelRatio = window.devicePixelRatio;
-    let isRetina =  devicePixelRatio > 1;
+    let isRetina = devicePixelRatio > 1;
     let isRetina2 = 3 > devicePixelRatio > 1;
     let isRetina3 = 4 > devicePixelRatio > 2;
     let isRetina4 = 5 > devicePixelRatio > 3;
@@ -1498,12 +1500,12 @@ function getBackgroundImage(baseName) {
         console.debug("photo url: " + photoUrl);
         return photoUrl;
     }
-    // else if (isMobile && isRetina3) {
-    //
-    // } else if (isMobile && isRetina4) {
-    //
-    // } else if (isMobile && isRetina5) {
-    //
+        // else if (isMobile && isRetina3) {
+        //
+        // } else if (isMobile && isRetina4) {
+        //
+        // } else if (isMobile && isRetina5) {
+        //
     // }
 
     else if (isMobile) {
@@ -1519,10 +1521,8 @@ async function Hachchange() {
     document.querySelector('body').style.backgroundImage = "url(./img/about.png)";
     const hash = extractHash(window.location.hash);
 
-    // Default background
-
     if (hash === '#menu') {
-        let backgroundImage = getBackgroundImage("menu-sjat")
+        // let backgroundImage = getBackgroundImage("menu-sjat")
 
         window.scrollTo(0, 1);
         // document.querySelector('body').style.backgroundImage = backgroundImage;
@@ -1855,7 +1855,7 @@ async function Hachchange() {
                             addressRequestDTO: adres
                         }
                         console.log(JSON.stringify(book));
-                        fetch('http://46.229.212.34:9091/api/v1/order-products/bulk', {
+                        fetch(`${host}/api/v1/order-products/bulk`, {
                             method: 'POST', headers: {
                                 'Content-Type': 'application/json',
                             }, body: JSON.stringify(book),
@@ -1930,7 +1930,7 @@ async function Hachchange() {
                             addressRequestDTO: null
                         }
                         console.log(JSON.stringify(book));
-                        fetch('http://46.229.212.34:9091/api/v1/order-products/bulk', {
+                        fetch(`${host}/api/v1/order-products/bulk`, {
                             method: 'POST', headers: {
                                 'Content-Type': 'application/json',
                             }, body: JSON.stringify(book),
@@ -2001,14 +2001,14 @@ async function Hachchange() {
             console.log(itemid);
 
             let onlyItem = itemid;
-            let contentfetch = await fetch(`http://46.229.212.34:9091/api/v1/products/${onlyItem}`);
+            let contentfetch = await fetch(`${host}/api/v1/products/${onlyItem}`);
             let contentdat = await contentfetch.json();
             let contentimg = contentdat.photoResponseDTOList[0].url;
 
             let name = contentdat.productResponseDTO.name;
             let descr = contentdat.productResponseDTO.description;
             if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-                const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${onlyItem}?lang=ro`, {
+                const respo = await fetch(`${host}/api/v1/product-translations/${onlyItem}?lang=ro`, {
                     method: "GET"
                 });
 
@@ -2113,14 +2113,14 @@ async function Hachchange() {
             console.log(localStorage.getItem("onlyItem"))
             if (localStorage.getItem("onlyItem")) {
                 let onlyItem = parseInt(hash.replace(/[^0-9]/g, ""));
-                let contentfetch = await fetch(`http://46.229.212.34:9091/api/v1/products/${onlyItem}`);
+                let contentfetch = await fetch(`${host}/api/v1/products/${onlyItem}`);
                 let contentdat = await contentfetch.json();
                 let contentimg = contentdat.photoResponseDTOList[0].url;
                 console.log(contentimg);
                 let name = contentdat.productResponseDTO.name;
                 let descr = contentdat.productResponseDTO.description;
                 if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-                    const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${onlyItem}?lang=ro`, {
+                    const respo = await fetch(`${host}/api/v1/product-translations/${onlyItem}?lang=ro`, {
                         method: "GET"
                     });
 
@@ -2268,7 +2268,7 @@ function getUUIDFromURL() {
 async function getReg(uuid1) {
     try {
         // Получаем данные пользователя
-        let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
+        let response = await fetch(`${host}/api/v1/users/${uuid1}`);
         let data = await response.json();
 
 

@@ -1,3 +1,5 @@
+const host = "http://46.229.212.34:9091";
+
 function checkAdminAccess() {
   const token = localStorage.getItem("accessToken");
 
@@ -446,7 +448,7 @@ function handleOrderSubmission(orderData, isAddressForm) {
           } : null
         };
       
-        fetch('http://46.229.212.34:9091/api/v1/order-products/bulk', {
+        fetch(`${host}/api/v1/order-products/bulk`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -489,7 +491,7 @@ async function updateModal(order) {
             for (let i = 0; i < order.length; i++) {
                 let name = order[i].tovarname || order[i].name;
                 if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-                    const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${order[i].id}?lang=ro`, {
+                    const respo = await fetch(`${host}/api/v1/product-translations/${order[i].id}?lang=ro`, {
                         method: "GET"
                     });
       
@@ -561,7 +563,7 @@ let isLoading = false; // Флаг загрузки
 async function loadProducts(query) {
         if (isLoading) return; // Предотвращаем повторные запросы
           isLoading = true; // Устанавливаем флаг загрузки
-        const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page}&size=20&query=${encodeURIComponent(query)}`;
+        const apiUrl = `${host}/api/v1/products/search?page=${page}&size=20&query=${encodeURIComponent(query)}`;
         
         try {
             const response = await fetch(apiUrl);
@@ -572,7 +574,7 @@ async function loadProducts(query) {
       
             const photoRequests = data.content.map(async (product) => {
                 try {
-                    const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${product.id}`);
+                    const photoResponse = await fetch(`${host}/api/v1/photos/product/${product.id}`);
                     const photoData = await photoResponse.json();
                     return { ...product, imageUrl: photoData[0]?.url || 'path/to/default-image.jpg' };
                 } catch (photoError) {
@@ -624,7 +626,7 @@ let isLoadingus = false; // Флаг загрузки
 async function loadUsers(query) {
     if (isLoadingus) return; // Предотвращаем повторные запросы
     isLoadingus = true; // Устанавливаем флаг загрузки
-    const apiUrl = `http://46.229.212.34:9091/api/v1/users/search?query=${encodeURIComponent(query)}&page=${pageus}&size=10`;
+    const apiUrl = `${host}/api/v1/users/search?query=${encodeURIComponent(query)}&page=${pageus}&size=10`;
     
     try {
         const response = await fetch(apiUrl);
@@ -817,7 +819,7 @@ async function FindTovar() {
 async function getReg(uuid1) {
   try {
       // Получаем данные пользователя
-      let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`);
+      let response = await fetch(`${host}/api/v1/users/${uuid1}`);
       let data = await response.json();
 
 

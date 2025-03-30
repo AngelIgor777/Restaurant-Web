@@ -1,3 +1,4 @@
+const host = "http://46.229.212.34:9091";
 const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
@@ -133,7 +134,7 @@ async function Chatnum() {
         console.log(input)
         if (input) {
             if (document.querySelector('.pot').style.display === 'none') {
-                fetch(`http://46.229.212.34:9091/api/v1/otp/generate?chatId=${input}`, {
+                fetch(`${host}/api/v1/otp/generate?chatId=${input}`, {
                     method: 'POST'
                 }).then(result => {
                     if (result.ok) {
@@ -155,7 +156,7 @@ async function Chatnum() {
                     });
             } else {
                 let pot = document.querySelector('#chatpot').value;
-                fetch(`http://46.229.212.34:9091/api/v1/otp/verify?chatId=${input}&otp=${pot}`, {
+                fetch(`${host}/api/v1/otp/verify?chatId=${input}&otp=${pot}`, {
                     method: 'POST'
                 }).then(result =>
                     result.json())
@@ -315,7 +316,7 @@ function getUUIDFromURL() {
 async function getReg(uuid1) {
   try {
     // Получаем данные пользователя
-    let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`,{
+    let response = await fetch(`${host}/api/v1/users/${uuid1}`,{
       
     });
     let data = await response.json();

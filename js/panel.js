@@ -1,3 +1,4 @@
+const host = "http://46.229.212.34:9091";
 function checkAdminAccess() {
     const token = localStorage.getItem("accessToken");
   
@@ -34,7 +35,7 @@ async function Statistiktable(start, end) {
     try{
         if (!start) start = '2023-01-01T00:00:00';
         if (!end) end = '2025-01-31T23:59:59';
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/statistics?from=${start}&to=${end}`, {
+        const response = await fetch(`${host}/api/v1/statistics?from=${start}&to=${end}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -227,7 +228,7 @@ async function Notifications() {
             }
     
             try {
-                const response = await fetch(`http://46.229.212.34:9091/api/v1/scheduler/update-cron?cronExpression=${encodeURIComponent(cronExpression)}`, {
+                const response = await fetch(`${host}/api/v1/scheduler/update-cron?cronExpression=${encodeURIComponent(cronExpression)}`, {
                     method: 'POST',
                     headers: {
                         "Authorization": `Bearer ${token}`
@@ -255,7 +256,7 @@ async function Notifications() {
                 }
     
                 // Запуск бота
-                await fetch('http://46.229.212.34:9091/api/v1/scheduler/start', {
+                await fetch(`${host}/api/v1/scheduler/start`, {
                     method: 'POST',
                     headers: {
                         "Authorization": `Bearer ${token}`
@@ -287,7 +288,7 @@ async function Notifications() {
             }
             if (mestext) {
                 console.log(token);
-                fetch('http://46.229.212.34:9091/api/v1/tg',{
+                fetch(`${host}/api/v1/tg`,{
                     method:'POST',
                     headers: { 
                         "Content-Type": "application/json",
@@ -348,15 +349,15 @@ async function Rumcat(id) {
     }).then(async (result) => {
         if (result.isConfirmed) {  // Если пользователь нажал "OK"
             try {
-                let fet=`http://46.229.212.34:9091/api/v1/product-type-translations/`;
+                let fet=`${host}/api/v1/product-type-translations/`;
                 let met="POST";
-                const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-type-translations/${id}?lang=ro`, {
+                const respo = await fetch(`${host}/api/v1/product-type-translations/${id}?lang=ro`, {
                     method: "GET"
                 });
                 console.log(respo)
                 if (respo.status !== 404) {
                     const dat = await respo.json();
-                    fet=`http://46.229.212.34:9091/api/v1/product-type-translations/${dat.id}?lang=ro`;
+                    fet=`${host}/api/v1/product-type-translations/${dat.id}?lang=ro`;
                     met="PATCH";
                 }
                 console.log(met, id);
@@ -428,15 +429,15 @@ async function Rumname(id) {
     }).then(async (result) => {
         if (result.isConfirmed) {  // Если пользователь нажал "OK"
             try {
-                let fet=`http://46.229.212.34:9091/api/v1/product-translations`;
+                let fet=`${host}/api/v1/product-translations`;
                 let met="POST";
-                const respo = await fetch(`http://46.229.212.34:9091/api/v1/product-translations/${id}?lang=ro`, {
+                const respo = await fetch(`${host}/api/v1/product-translations/${id}?lang=ro`, {
                     method: "GET"
                 });
                 console.log(respo)
                 if (respo.status !== 404) { 
                     const dat = await respo.json();
-                    fet=`http://46.229.212.34:9091/api/v1/product-translations/${dat.id}?lang=ro`;
+                    fet=`${host}/api/v1/product-translations/${dat.id}?lang=ro`;
                     met="PATCH";
                 }
                 const response = await fetch(fet, {
@@ -480,7 +481,7 @@ async function Rumname(id) {
 async function CuponAll() {
     if(token){
         try {
-            const response = await fetch(`http://46.229.212.34:9091/api/v1/discounts`, {
+            const response = await fetch(`${host}/api/v1/discounts`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -577,7 +578,7 @@ async function CuponAll() {
 
 async function deleteCupponAl(productId) {
     try {
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/discounts/${productId}`, {
+        const response = await fetch(`${host}/api/v1/discounts/${productId}`, {
             method: 'DELETE',
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -594,7 +595,7 @@ async function deleteCupponAl(productId) {
 async function CuponItem() {
     if(token){
         try {
-            const response = await fetch(`http://46.229.212.34:9091/api/v1/product-discounts`, {
+            const response = await fetch(`${host}/api/v1/product-discounts`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -765,7 +766,7 @@ async function CuponItem() {
                             validTo
                         };
                         try {
-                            const response = await fetch("http://46.229.212.34:9091/api/v1/product-discounts", {
+                            const response = await fetch(`${host}/api/v1/product-discounts`, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
@@ -802,7 +803,7 @@ async function CuponItem() {
 }
 async function deleteCupponIt(productId) {
     try {
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/product-discounts/${productId}`, {
+        const response = await fetch(`${host}/api/v1/product-discounts/${productId}`, {
             method: 'DELETE',
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -895,7 +896,7 @@ async function Addallcup() {
                     validTo
                 };
                 try {
-                    const response = await fetch("http://46.229.212.34:9091/api/v1/discounts", {
+                    const response = await fetch("${host}/api/v1/discounts", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -1024,7 +1025,7 @@ let isLoading = false; // Флаг загрузки
 async function loadProducts(query) {
         if (isLoading) return; // Предотвращаем повторные запросы
           isLoading = true; // Устанавливаем флаг загрузки
-        const apiUrl = `http://46.229.212.34:9091/api/v1/products/search?page=${page}&size=20&query=${encodeURIComponent(query)}`;
+        const apiUrl = `${host}/api/v1/products/search?page=${page}&size=20&query=${encodeURIComponent(query)}`;
         
         try {
             const response = await fetch(apiUrl);
@@ -1035,7 +1036,7 @@ async function loadProducts(query) {
       
             const photoRequests = data.content.map(async (product) => {
                 try {
-                    const photoResponse = await fetch(`http://46.229.212.34:9091/api/v1/photos/product/${product.id}`);
+                    const photoResponse = await fetch(`${host}/api/v1/photos/product/${product.id}`);
                     const photoData = await photoResponse.json();
                     return { ...product, imageUrl: photoData[0]?.url || 'path/to/default-image.jpg' };
                 } catch (photoError) {
@@ -1124,7 +1125,7 @@ async function FindTovar() {
 async function fetchProductTypes() {
     try {
      
-      const response = await fetch('http://46.229.212.34:9091/api/v1/product-types');
+      const response = await fetch(`${host}/api/v1/product-types`);
       const data = await response.json();
       
       if (data.content && Array.isArray(data.content)) {
@@ -1391,7 +1392,7 @@ document.querySelector('button.confirm').addEventListener('click', async functio
             formData.append("price",changeproduct.price);
             formData.append("cookingTime",changeproduct.cookingTime);
             formData.append('file', img);
-            fetch('http://46.229.212.34:9091/api/v1/products', {
+            fetch(`${host}/api/v1/products`, {
                 method: 'PATCH',
                 headers: {
                 "Authorization": `Bearer ${token}`
@@ -1434,7 +1435,7 @@ document.querySelector('button.confirm').addEventListener('click', async functio
         // const rumData = await Rumname();
         // console.log(rumData);
 
-        fetch('http://46.229.212.34:9091/api/v1/products', {
+        fetch(`${host}/api/v1/products`, {
             method: 'POST',
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -1492,7 +1493,7 @@ document.querySelector('button.confirm').addEventListener('click', async functio
         if (modalInstance) {
             modalInstance.hide(); // Закрываем модальное окно
         }
-        fetch('http://46.229.212.34:9091/api/v1/product-types', {
+        fetch(`${host}/api/v1/product-types`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -1516,7 +1517,7 @@ document.querySelector('button.confirm').addEventListener('click', async functio
 });
 }
 async function Historyset(id) {
-    const response = await fetch(`http://46.229.212.34:9091/api/v1/productHistory/${id}`, {
+    const response = await fetch(`${host}/api/v1/productHistory/${id}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`
@@ -1552,7 +1553,7 @@ async function Historyset(id) {
         item.addEventListener('click', async function() {
             const itemId = this.getAttribute('data-id');
             const histId=this.getAttribute('data-history');
-            const response = await fetch(`http://46.229.212.34:9091/api/v1/productHistory/${itemId}/${histId}`, {
+            const response = await fetch(`${host}/api/v1/productHistory/${itemId}/${histId}`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -1571,7 +1572,7 @@ async function Historyset(id) {
 async function Addtable(categoryIds){
     try{
         for(const id of categoryIds){
-            const response = await fetch(`http://46.229.212.34:9091/api/v1/products?typeId=${id}`);
+            const response = await fetch(`${host}/api/v1/products?typeId=${id}`);
             const data = await response.json();
             const tableone=document.querySelector(`.item-${id}`);
             const typename=id;
@@ -1610,7 +1611,7 @@ async function Addtable(categoryIds){
 }
 async function deleteProduct(productId) {
     try {
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/products/${productId}`, {
+        const response = await fetch(`${host}/api/v1/products/${productId}`, {
             method: 'DELETE',
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -1626,7 +1627,7 @@ async function deleteProduct(productId) {
 }
 async function deleteCategory(categoryId) {
     try {
-        const response = await fetch(`http://46.229.212.34:9091/api/v1/product-types/${categoryId}`, {
+        const response = await fetch(`${host}/api/v1/product-types/${categoryId}`, {
             method: 'DELETE',
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -1678,7 +1679,7 @@ function getUUIDFromURL() {
 async function getReg(uuid1) {
     try {
       // Получаем данные пользователя
-      let response = await fetch(`http://46.229.212.34:9091/api/v1/users/${uuid1}`,{
+      let response = await fetch(`${host}/api/v1/users/${uuid1}`,{
         
       });
       let data = await response.json();
