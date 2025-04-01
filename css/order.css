@@ -42,11 +42,12 @@ body {
     padding: 10px;
     border-radius: 10px;
     border: none;
+    font-size: 18px;
     background-color: #adbf6c;
     font-family: "Kurale", serif;
     font-weight: 400;
     font-style: normal;
-    width: 170px;
+    width: 180px;
     position: absolute;
     bottom: 30px;
 }
@@ -61,7 +62,7 @@ body {
     font-style: normal;
     width: auto;
     position: absolute;
-    right: 220px;
+    right: 240px;
     bottom: 30px;
 }
 
@@ -169,20 +170,42 @@ b {
 
 .result_table {
     display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: flex-start; /* Исправлено на начало для правильного выравнивания */
-    place-items: flex-start; /* Исправлено на начало для корректного выравнивания */
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center; 
+    align-items: center;
     margin-bottom: 20px;
     width: 100%;
     height: 800px;
     flex-grow: 1; /* Позволяет контейнеру растягиваться */
-    gap: 20px 40px;
+    gap: 5px 5px;
     overflow-y: auto; /* Для обеспечения прокрутки */
     scrollbar-width: none; /* Для Firefox */
     -ms-overflow-style: none; /* Для IE и Edge */
 }
+.grid {
+    display: grid;
+    grid-template-columns: repeat(5, 50px);
+    grid-template-rows: repeat(2, 50px);
+    gap: 1px;
+}
 
+.cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border: 1px solid black;
+    cursor: pointer;
+    font-size: 20px;
+    background-color: white;
+    border-radius: 9px;
+}
+
+.selected {
+    background-color: lightblue;
+}
 .result_table::-webkit-scrollbar {
     display: none;
 }
@@ -192,7 +215,7 @@ b {
 }
 
 .searchFind {
-    width: 670px;
+    width: 70%;
     margin-top: 60px;
     display: flex;
     flex-direction: column;
@@ -283,11 +306,12 @@ input[type="radio"]:checked {
 
 .item {
     display: flex !important;
-    height: 140px;
-    width: 100%;
-    flex-direction: row !important;
+    height: 340px;
+    width: 227px;
+    flex-direction: column !important;
     align-content: center !important;
-    flex-wrap: wrap;
+    justify-content: center;
+    flex-wrap: nowrap;
     text-align: center;
     background-color: #ffffffa4;
     border-radius: 10px;
@@ -300,41 +324,31 @@ input[type="radio"]:checked {
 }
 
 .item h3 {
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-left: 20px;
-    max-width: 220px;
-    font-size: clamp(1.2rem, 1.6rem, 1.9rem);
+    margin-top: 10px;
+    font-size: clamp(1.2rem, 1.3rem, 2.4rem);
     overflow: hidden;
-    height: 80px;
-    font-size: clamp(1.2rem, 1.6vw, 1.4rem) !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .item img {
-    width: 100px;
-    height: 100%;
+    width: 227px;
+    height: 190px !important;
     object-fit: cover;
+    border-radius: 4px;
     transition: all 0.3s;
-}
-
-.send-plus-min {
     margin-left: auto;
+    margin-right: auto;
 }
-
+/* Плюс минус */
 .send-plus-min .plus-min {
     display: flex;
     justify-content: center;
-    flex-direction: column;
     font-size: 1.7rem;
     position: relative;
-    height: 50px;
+    height: 40px;
     text-align: center;
-    margin-right: 60px !important;
 }
 
+/* Увеличение кнопок + и - */
 .send-plus-min .plus {
     transition: all 0.15s;
     margin: 0;
@@ -359,6 +373,7 @@ input[type="radio"]:checked {
     height: auto;
     border: none;
     background-color: #e7e7e700 !important;
+    margin: 0 20px 0px;
     text-align: center;
     align-items: top;
     font-size: 1.5rem;
@@ -377,16 +392,18 @@ input[type="number"]::-webkit-inner-spin-button {
     justify-content: center;
     position: relative;
     align-items: center;
-    height: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-.send-plus-min button {
+/* кнопка добавления */
+.send-plus-min .send {
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
     right: 0;
-    height: 100%;
+    height: 40px;
     width: 40px;
     border: none;
     background-color: #252525d9;
@@ -395,8 +412,7 @@ input[type="number"]::-webkit-inner-spin-button {
     transition: all 0.2s;
     color: #fff;
 }
-
-.send-plus-min button:hover {
+.send-plus-min .send:hover {
     color: #fff;
 }
 
@@ -405,24 +421,34 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 /* Скрываем иконку галочки по умолчанию */
-.send-plus-min button .bx-check {
+.send-plus-min .send .bx-check {
     display: none;
     opacity: 0;
     transform: scale(0);
 }
 
 /* Когда кнопка нажата */
-.send-plus-min button.sold .bx-dish {
+.send-plus-min .send.sold .bx-dish {
     display: none;
     opacity: 0;
     transform: scale(0);
+
 }
 
-.send-plus-min button.sold .bx-check {
+.send-plus-min .send.sold .bx-check {
     display: block;
     opacity: 1; /* Показываем галочку */
     transform: scale(1.4); /* Увеличиваем галочку */
     animation: Check 0.4s forwards;
+}
+
+@keyframes Check {
+    0% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
 }
 
 /* анимации для кнопок */

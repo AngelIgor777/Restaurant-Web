@@ -105,6 +105,11 @@ const renderHeader = () => `
       </header>
       `;
 const renderBody= () =>`
+<div class="buttonsend">
+          <a class='addbutton' type="button"  href='order.html'>
+            <i class='bx bx-list-ol'></i>
+          </a>
+        </div>
         <div class="addbody">
       <div class="searchFind">
         <div class="findinput">
@@ -116,9 +121,7 @@ const renderBody= () =>`
           </form>
         </div>
          <div class="result_table">
-            <div class='result'>
-            <!-- Сюда будут добавляться результаты поиска -->
-            </div>
+            
          </div>
       
          </div>
@@ -146,23 +149,6 @@ const renderBody= () =>`
                   </table>
                 </div>
         </div>
-
-        <div class="userFind">
-        <div class="findinput">
-          <form>
-            <div class="input-group searchgroup">
-             <input class="form-control" type="search" id='searchuser' placeholder="Введите запрос..." aria-label="Поиск">
-          </div>
-            
-          </form>
-        </div>
-         <div class="result_table_user result_table">
-            <div class='result-user result'>
-            <!-- Сюда будут добавляться результаты поиска -->
-            </div>
-         </div>
-      
-         </div>
 
         <div class='sendform'>
         
@@ -254,83 +240,80 @@ async function Addsendform() {
           }
           
           // Шаблон формы
-          form.innerHTML = `
-          <div class="form-check check-box">
-              <input type="checkbox" class="form-check-input" id="check-zak" />
-              <label class="form-check-label" for="check-zak">Заказ на дом</label>
-          </div>
-            <div class='inputad-container' style='display:none;'>
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="street" placeholder="${texts.street}" />
-                <label for="street">${texts.street}</label>
+            form.innerHTML = `
+            <div class="form-check check-box">
+                <input type="checkbox" class="form-check-input" id="check-zak" />
+                <label class="form-check-label" for="check-zak">Заказ на дом</label>
+            </div>
+              <div class='inputad-container' style='display:none;'>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="street" placeholder="${texts.street}" />
+                  <label for="street">${texts.street}</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="home" placeholder="${texts.home}" />
+                  <label for="home">${texts.home}</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" maxlength="9" id="tel" placeholder="${texts.tel}" />
+                  <label for="tel">${texts.tel}</label>
+                </div>
               </div>
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="home" placeholder="${texts.home}" />
-                <label for="home">${texts.home}</label>
+              <div class='inputtab-container' style='display:none;'>
+                  <div class="grid" id="number-grid"></div>
+                  <p>Выбрано число: <span id="selected-number">нет</span></p>
               </div>
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" maxlength="9" id="tel" placeholder="${texts.tel}" />
-                <label for="tel">${texts.tel}</label>
+            
+              
+              <div class="mb-3">
+                <label>
+                  <input type="radio" id="Cash" name="paymentMethod" value="CASH" />
+                  ${texts.cash}
+                </label>
+                <label style="margin-left: 15px;">
+                  <input type="radio" id="Card" name="paymentMethod" value="CARD" />
+                  ${texts.card}
+                </label>
               </div>
-            </div>
-            <div class='inputtab-container' style='display:none;'>
-              <div class="slider-container">
-                <label for="table" class="form-label">${texts.selectTable}</label>
-                <input type="range" class="form-range" id="table" min="1" max="10" value="5">
-                <p>${texts.tableNum} <span id="sliderValue">5</span></p>
-              </div>
-            </div>
-            <div class="form-floating mb-3" id="coupon-container1" style="display:none;">
-              <input type="text" class="form-control" id="coupon" placeholder="${texts.couponAll}" />
-              <label for="coupon">${texts.couponAll}</label>
-            </div>
-            <div class="form-floating mb-3" id="coupon-container2" style="display:none;">
-              <input type="text" class="form-control" id="couponIt" placeholder="${texts.couponOne}" />
-              <label for="coupon">${texts.couponOne}</label>
-            </div>
-            <div class="form-check couponch">
-              <input type="checkbox" class="form-check-input" id="couponCheckbox" />
-              <label class="form-check-label" for="couponCheckbox">${texts.hasCoupon}</label>
-            </div>
-            <div class="mb-3">
-              <label>
-                <input type="radio" id="Cash" name="paymentMethod" value="CASH" />
-                ${texts.cash}
-              </label>
-              <label style="margin-left: 15px;">
-                <input type="radio" id="Card" name="paymentMethod" value="CARD" />
-                ${texts.card}
-              </label>
-            </div>
-            <button type="button" class="btn btn-success updateMod" style="font-size: 1.2rem">
-                Заказать
-              </button>
-          `;
-          
-      
+              <button type="button" class="btn btn-success updateMod" style="font-size: 1.2rem">
+                  Заказать
+                </button>
+            `;
+          // это для купонов но можно поменять на "заказ с собой"
+      //  <div class="form-check couponch">
+      //         <input type="checkbox" class="form-check-input" id="couponCheckbox" />
+      //         <label class="form-check-label" for="couponCheckbox">${texts.hasCoupon}</label>
+      //       </div>
           cont.appendChild(form);
-      
+          const grid = document.getElementById("number-grid");
+         
+          for (let i = 1; i <= 10; i++) {
+              const cell = document.createElement("div");
+              cell.className = "cell";
+              cell.textContent = i;
+              cell.onclick = () => selectCell(cell);
+              grid.appendChild(cell);
+          }
+
           // Получаем элемент слайдера и элемент для отображения значения
-        const slider = document.getElementById('table');
-        const sliderValue = document.getElementById('sliderValue');
+        // const slider = document.getElementById('table');
+        // const sliderValue = document.getElementById('selected-number');
         
-        // Устанавливаем начальное значение в span
-        sliderValue.textContent = slider.value;
+        // // Устанавливаем начальное значение в span
+        // sliderValue.textContent = slider.value;
       
-        // Обработчик события для обновления значения при изменении слайдера
-        slider.addEventListener('input', function() {
-          sliderValue.textContent = slider.value;  // Обновляем текст в span
-        });
-      
+        // // Обработчик события для обновления значения при изменении слайдера
+        // slider.addEventListener('input', function() {
+        //   sliderValue.textContent = slider.value;  // Обновляем текст в span
+        // });
+          
+        
           const couponCheckbox = document.getElementById('couponCheckbox');
-          const couponContainer1 = document.getElementById('coupon-container1');
-          const couponContainer2 = document.getElementById('coupon-container2');
       
           // Обработчик для чекбокса
-          couponCheckbox.addEventListener('change', () => {
-            toggleVisibility(couponContainer1, couponCheckbox.checked);
-            toggleVisibility(couponContainer2, couponCheckbox.checked);
-          });
+          // couponCheckbox.addEventListener('change', () => {
+           
+          // });
       
           const check = document.getElementById('check-zak');
           console.log(check.checked);
@@ -369,7 +352,17 @@ async function Addsendform() {
       
 }
 
+// функция для получения номера
+function selectCell(cell) {
+  // Убираем выделение со всех ячеек
+  document.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
 
+  // Выделяем текущую ячейку
+  cell.classList.add('selected');
+
+  // Обновляем выбранное число
+  document.getElementById('selected-number').textContent = cell.textContent;
+}
 // Функция для проверки полей
 function validateField(value, fieldName) {
         if (!value || value.trim() === '') {
@@ -401,20 +394,21 @@ function getFormData(isAddressForm) {
             home,
             tel,
             paymentMethod: paymentMethod.value,
-            coupon: document.getElementById('coupon').value.trim() || null,
-            couponit: document.getElementById('couponIt').value.trim() || null
+            coupon: null,
+            couponit: null
           };
         } else {
-          const num = document.getElementById("table").value.trim();
+          const num = document.getElementById("selected-number").textContent.trim();
+          console.log(num);
           const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
           if (!validateField(num, 'Номер столика') || !paymentMethod) {
             return false;
           }
-      
+          
           data = {
             paymentMethod: paymentMethod.value,
-            coupon: document.getElementById('coupon').value.trim() || null,
-            couponit: document.getElementById('couponIt').value.trim() || null
+            coupon: null,
+            couponit:null
           };
         }
         return data;
@@ -427,12 +421,12 @@ function handleOrderSubmission(orderData, isAddressForm) {
           productId: item.id,
           quantity: item.quantity
         }));
-      
+        console.log(document.getElementById("selected-number").value);
         let book = {
           orderProductRequestDTO: orderRequest,
           paymentMethod: orderData.paymentMethod,
           orderInRestaurant: !isAddressForm,
-          tableRequestDTO: isAddressForm ? null : { number: document.getElementById("table").value },
+          tableRequestDTO: isAddressForm ? null : { number: document.getElementById("selected-number").textContent },
           existDiscountCodes: orderData.coupon || orderData.couponit ? true : false,
           productDiscountCode: orderData.couponit || "",
           globalDiscountCode: orderData.coupon || "",
@@ -623,48 +617,7 @@ function checkScroll(container) {
 let pageus = 0; // Начинаем с 0
 let isLoadingus = false; // Флаг загрузки
 
-async function loadUsers(query) {
-    if (isLoadingus) return; // Предотвращаем повторные запросы
-    isLoadingus = true; // Устанавливаем флаг загрузки
-    const apiUrl = `${host}/api/v1/users/search?query=${encodeURIComponent(query)}&page=${pageus}&size=10`;
-    
-    try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        const container = document.querySelector('.result-user');
-        
-        console.log(data);
-  
-        const userItems = data.content.map((user) => {
-            const userItem = document.createElement('div');
-            userItem.className = `user-item visible`;
-            userItem.id = `user-${user.id}`;
-            userItem.innerHTML = `
-              <img class="img-cost" src="${user.photoUrl || "./img/default_user.png"}" alt="${user.firstname}" />
-              <h3 class="user-first">${user.firstname}</h3>
-              ${user.username ? `<h3 class="user-name">${user.username}</h3>` : ''}
-              <button class="alege" data-id='${user.uuid}'><i class='bx bx-user-check'></i></i> <i class='bx bx-check'></i></button>
-            `;
-            return userItem;
-        });
-        
-        container.addEventListener('scroll', () => checkScrollus(container));
-        container.append(...userItems);
-        pageus++;
-    } catch (error) {
-        console.error('Ошибка при загрузке пользователей:', error);
-    } finally {
-        isLoadingus = false; // Сбрасываем флаг загрузки
-    }
-}
-// Назначаем обработчик прокрутки
-function checkScrollus(container) {
-    if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
-        const searchQuery = document.querySelector("#searchuser").value; 
-        console.log(231);
-        loadUsers(searchQuery); // Передаём актуальный поисковый запрос
-    }
-}
+
 
 
 
@@ -691,20 +644,7 @@ async function FindTovar() {
           loadProducts(searchInput.value);
         });
 
-        document.querySelector(".result_table_user").addEventListener('click', function(e){
-          if (e.target.matches(".alege") || e.target.closest(".alege")) {
-            const button = e.target.closest(".alege");
-            button.classList.add("sold");
-            user=button.getAttribute('data-id');
 
-
-            // Убираем класс sold через 1 секунду
-            setTimeout(function () {
-              button.classList.remove("sold");
-          }, 1000); // 1 секунда анимации
-      
-        }
-        });
         // Поиск по нажатию кнопки
         searchInput.addEventListener("input", function() {
           const container = document.querySelector('.result_table');
@@ -713,11 +653,7 @@ async function FindTovar() {
           loadProducts(searchInput.value);
         });
 
-        document.querySelector('#searchuser').addEventListener('input', (event) => {
-          pageus = 0;
-          document.querySelector('.result-user').innerHTML = '';
-          loadUsers(event.target.value);
-      });
+
       
         // Поиск при нажатии Enter в поле ввода
         searchInput.addEventListener("keypress", function(event) {
@@ -869,7 +805,7 @@ async function Registr() {
 
 // Автоматическое подключение при загрузке страницы
 window.onload = async function() {
-    document.querySelector('.app').innerHTML=renderHeader()+renderBody()+renderFooter();
+    document.querySelector('.app').innerHTML=renderBody()+renderFooter();
     FindTovar();
     Registr();
 };

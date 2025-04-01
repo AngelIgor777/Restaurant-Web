@@ -115,147 +115,121 @@ const renderFooter = () => `
       </footer>`;
 const renderMenu = () => `
 <div class="container-fluid cat">
-        <div class="row">
-          <div class="col-12 category-content">
-          
-          <div class="input-group searchgroup">
-             <input class="form-control" type="search" id='search-input' placeholder="Введите запрос..." aria-label="Поиск">
-             <button class="btn btn-secondary" type="button" id='search-button'><i class='bx bx-search' ></i></button>
-          </div>
-            <h1 class="title">
-              <a
-                data-bs-toggle="collapse"
-                href="#Category"
-                id='menutext'
-                role="button"
-                aria-expanded="false"
-                aria-controls="Category"
-                > <i class="bi bi-chevron-down"></i>Меню</a
-              >
-            </h1>
-            <!-- Сюда динамически подгружать категории -->
-            <div class="collapse" id="Category">
-              <div class="category">
-                <ul class="category-list">
-                  
-                </ul>
-              </div>
-            </div>
-          </div>
+  <div class="row">
+    <div class="col-12 category-content">
+      <div class="input-group searchgroup">
+        <input class="form-control" type="search" id="search-input" placeholder="Введите запрос..." aria-label="Поиск">
+        <button class="btn btn-secondary" type="button" id="search-button">
+          <i class='bx bx-search'></i>
+        </button>
+      </div>
+      <h1 class="title">
+        <a data-bs-toggle="collapse" href="#Category" id="menutext" role="button" aria-expanded="false" aria-controls="Category">
+          <i class="bi bi-chevron-down"></i>Меню
+        </a>
+      </h1>
+      <div class="collapse" id="Category">
+        <div class="category">
+          <ul class="category-list"></ul>
         </div>
-        <div class="row">
-          <div class="col-12 containe" style="height: 2000px; opacity:0">
-            <div class="menu-container text-center col-sm-6 col-md-4 col-lg-4 container">
-           
-              <!-- Сюда будет загружаться меню -->
-            </div>
-          </div>
-        </div>
-        <!-- Для пагинации -->
-        <div class="pagcontainer">
-          <ul class="pagul">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 containe" style="height: 2000px; opacity:0">
+      <div class="menu-container text-center col-sm-6 col-md-4 col-lg-4 container"></div>
+    </div>
+  </div>
+  <div class="pagcontainer">
+    <ul class="pagul"></ul>
+  </div>
 
-          </ul>
-     </div>
-        <!-- Кнопка отправки -->
-        <div class="buttonsend">
-          <a type="button" data-bs-toggle="modal" data-bs-target="#Modalwindow">
-            <i class="bx bx-cart-download"></i>
-          </a>
-          <p class="colvo">0</p>
+  <div class="buttonsend">
+    <a type="button" data-bs-toggle="modal" data-bs-target="#Modalwindow">
+      <i class="bx bx-cart-download"></i>
+    </a>
+    <p class="colvo">0</p>
+  </div>
+
+  <div class="buthistory" id="orderHistoryBtn">
+    <a type="button" data-bs-toggle="modal" data-bs-target="#HistoryModal">
+      <i class='bx bx-history'></i>
+    </a>
+  </div>
+
+  <div class="genorder" id="GeneralOrderBtn">
+    <a type="button" data-bs-toggle="modal" data-bs-target="#GeneralOrder">
+      <i class='bx bx-collection'></i>
+    </a>
+  </div>
+
+  <div class="modal fade orderList" id="Modalwindow" tabindex="-1" aria-labelledby="ModalwindowTitle">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content menuorder">
+        <div class="modal-header">
+          <h1 id="ModalwindowTitle">Ваш заказ <span class='chosen'><i class='bx bx-star'></i></span></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <!--Кнопка истории -->
-        <div class="buthistory" id="orderHistoryBtn">
-          <a type="button" data-bs-toggle="modal">
-            <i class='bx bx-history'></i>
-          </a>
-        </div>
-          
-        <!-- Модальное окно -->
-        <div
-          class="modal fade orderList"
-          id="Modalwindow"
-          tabindex="-1"
-          aria-labelledby="Modalwindow"
-        >
-          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content menuorder">
-              <div class="modal-header">
-                <h1>Ваш заказ<span class='chosen'><i class='bx bx-star' ></i></span></h1>
-                
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                
-                <div class="order">
-                  <table class="ord table">
-                    <thead>
-                      <tr>
-                        <th style="text-align: center;">№</th>
-                        <th style="text-align: center;">Название</th>
-                        <th style="text-align: center;">Цена</th>
-                        <th style="text-align: center;">Количество</th>
-                        <th></th>
-                        
-                      </tr>
-                    </thead>
-                    <tbody class="ordorlist">
-  
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <div class="form-check check-box">
-                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                  <label class="form-check-label" for="flexCheckDefault">
-                    Заказ на дом
-                  </label>
-                </div>
-                <button
-                  type="button"
-                  class="btn decline orderButtons"
-                  data-bs-dismiss="modal"
-                  style="font-size: 1.2rem"
-                >
-                  Отмена
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-success ordersend"
-                  style="font-size: 1.4rem"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                >
-                  Подтвердить
-                </button>
-              </div>
-            </div>
+        <div class="modal-body">
+          <div class="order">
+            <table class="ord table">
+              <thead>
+                <tr>
+                  <th style="text-align: center;">№</th>
+                  <th style="text-align: center;">Название</th>
+                  <th style="text-align: center;">Цена</th>
+                  <th style="text-align: center;">Количество</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody class="ordorlist"></tbody>
+            </table>
           </div>
         </div>
+        <div class="modal-footer">
+          <div class="form-check check-box">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">Заказ на дом</label>
+          </div>
+          <button type="button" class="btn decline orderButtons" data-bs-dismiss="modal" style="font-size: 1.2rem">Отмена</button>
+          <button type="button" class="btn btn-success ordersend" style="font-size: 1.4rem" data-bs-dismiss="modal" aria-label="Close">Подтвердить</button>
+        </div>
       </div>
-      <!-- history -->
-<div class="modal fade histmod" id="HistoryModal" tabindex="-1" role="dialog" aria-labelledby="HistoryModalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-fullscreen" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="HistoryModalTitle">История</h2>
-        <button
-          type="button"
-          class="btn-close histclose"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+    </div>
+  </div>
+
+  <div class="modal fade histmod" id="HistoryModal" tabindex="-1" aria-labelledby="HistoryModalTitle">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="HistoryModalTitle">История</h2>
+          <button type="button" class="btn-close histclose" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="historyBody"></div>
+        <div class="modal-footer"></div>
       </div>
-      <div class="modal-body" id="historyBody">
-        
-      </div>
-      <div class="modal-footer">
+    </div>
+  </div>
+
+  <div class="modal fade" id="GeneralOrder" tabindex="-1" aria-labelledby="GeneralOrderTitle">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="GeneralOrderTitle">Общие заказы</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="genorderbody">
+            <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Код для подключения" aria-label="Код для подключения" aria-describedby="basic-addon2">
+                 <div class="input-group-append">
+                    <span class="input-group-btn"><button type="button" class="connectbtn">Подключиться</button></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+         <button type="button" class="btn decline" data-bs-dismiss="modal" style="font-size: 1.2rem">Отмена</button>
+          <button type="button" class="btn btn-success" style="font-size: 1.4rem">Создать группу</button>
+        </div>
       </div>
     </div>
   </div>
@@ -714,7 +688,7 @@ async function WeekTop() {
 
     // Делегирование события на родительский элемент
     document.querySelector('.menu-container').addEventListener("click", function (e) {
-
+        console.log(2423);
         // Находим родительский элемент с классом .plus-min
         const plusmin = e.target.closest(".plus-min");
 
@@ -775,6 +749,7 @@ async function WeekTop() {
                 }, 1000); // 1 секунда анимации
             }
         }
+       
     });
 }
 
@@ -891,6 +866,7 @@ async function fetchMenuItems(categoryIds, page) {
                 </div>
                 <h3 class="name">${name}</h3>
                 <div class="send-plus-min">
+                <button class="fastsend" data-bs-toggle="modal" data-bs-target="#Modalwindow"><i class='bx bxs-zap'></i><i class='bx bx-check'></i></button>
                     <div class="plus-min">
                         <p class="min"><i class="bx bx-minus-circle"></i></p>
                         <input type="number" value="1" maxlength="2" min="0" disabled/>
@@ -982,6 +958,7 @@ async function JustFetchMenu(categoryIds, page, size) {
                     </div>
                     <h3 class="name">${name}</h3>
                     <div class="send-plus-min">
+                    <button class="fastsend" data-bs-toggle="modal" data-bs-target="#Modalwindow"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
                         <div class="plus-min">
                             <p class="min"><i class="bx bx-minus-circle"></i></p>
                             <input type="number" value="1" maxlength="2" min="0" disabled/>
@@ -1648,6 +1625,46 @@ async function Hachchange() {
                     }, 1000); // 1 секунда анимации
                 }
             }
+             // Кнопка быстрой отправки
+        if (e.target && (e.target.matches(".fastsend") || e.target.closest(".fastsend"))) {
+            const but = e.target.closest(".fastsend");
+            const buttosend = document.querySelector("p.colvo");
+            if (but) {
+                // Добавляем класс sold для анимации
+                but.classList.add("sold");
+                let order = JSON.parse(localStorage.getItem('order'));
+                let totalcost = JSON.parse(localStorage.getItem('totalcost'));
+                console.log(order);
+                // Находим поле ввода количества
+                const input = but.closest(".send-plus-min").querySelector("input");
+                let quantity = parseInt(input.value, 10);
+
+                // Находим данные товара
+                const tovarname = but.closest(".item").querySelector('.name').textContent;
+                const tovarid = parseInt(but.closest(".item").id.replace(/[^0-9]/g, ""));
+                console.log(tovarid);
+                const price = parseFloat(but.closest(".item").querySelector('.cost').textContent) * quantity;
+                quant += quantity;
+                // Добавляем заказ в массив
+                totalcost += price;
+                if (order.some(item => item.tovarname === tovarname)) {
+                    let index = order.findIndex(item => item.tovarname === tovarname);
+                    console.log(order[index]);
+                    order[index].price += price;
+                    order[index].quantity += quantity;
+                } else {
+                    // Добавляем заказ в массив
+                    order.push({id: tovarid, tovarname: tovarname, quantity: quantity, price: price});
+                }
+                localStorage.setItem('order', JSON.stringify(order));
+                localStorage.setItem('totalcost', JSON.stringify(totalcost));
+                updateModal(order);
+                // Убираем класс sold через 1 секунду
+                setTimeout(function () {
+                    but.classList.remove("sold");
+                }, 1000); // 1 секунда анимации
+            }
+        }
         });
         // Кнопка отправки
         document.querySelector('.ordersend').addEventListener('click', function () {

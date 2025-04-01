@@ -360,7 +360,7 @@ function displayOrderBB(data) {
           ${formatProducts(order.products)}
       </div>
       <div class="buttonsall">
-        <button class="confirm" data-id="${order.id}">Подтвердить</button>
+        <button class="confirm" data-id="${order.id}">Отправить на кухню</button>
         <button class="close" data-id="${order.id}">Удалить</button>
         </div>
       `
@@ -407,7 +407,7 @@ function displayOrder(data) {
             ${formatProducts(order.products)}
         </div>
         <div class="buttonsall">
-        <button class="confirm" data-id="${order.id}">Подтвердить</button>
+        <button class="confirm" data-id="${order.id}">Отправить на кухню</button>
         <button class="close" data-id="${order.id}">Удалить</button>
         </div>
         `

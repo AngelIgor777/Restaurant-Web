@@ -288,7 +288,16 @@ header {
         text-shadow: 0 0 5px rgb(255, 255, 255);
     }
 }
-
+.connectbtn{
+    background-color: #87ce66;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 1.2rem !important;
+    font-family: "Comfortaa", serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+}
 /* modal */
 .menuorder {
     background-color: rgb(210, 209, 209) !important;
@@ -315,6 +324,9 @@ header {
 .decline {
     background-color: #3f3f3f;
     color: #fff !important;
+}
+.decline:hover{
+    background-color: #3f3f3fc6;
 }
 
 .swal2-popup {
@@ -677,8 +689,49 @@ input[type="number"]::-webkit-inner-spin-button {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+/* кнока быстрого заказа */
+.menu-container .send-plus-min .fastsend {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: -40px;
+    height: 40px;
+    width: 40px;
+    border: none;
+    background-color:  #FFD700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.item:hover .fastsend{
+    left: 0 !important;
+}
+.menu-container .send-plus-min .fastsend:hover {
+    color: #fff;
+}
+/* Скрываем иконку галочки по умолчанию */
+.menu-container .send-plus-min .fastsend .bx-check {
+    display: none;
+    opacity: 0;
+    transform: scale(0);
+}
 
-.menu-container .send-plus-min button {
+/* Когда кнопка нажата */
+.menu-container .send-plus-min .fastsend.sold .bxs-zap {
+    display: none;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.menu-container .send-plus-min .fastsend.sold .bx-check {
+    display: block;
+    opacity: 1; /* Показываем галочку */
+    transform: scale(1.4); /* Увеличиваем галочку */
+    animation: Check 0.4s forwards;
+}
+/* кнопка добавления */
+.menu-container .send-plus-min .send {
     position: absolute;
     display: flex;
     justify-content: center;
@@ -693,7 +746,7 @@ input[type="number"]::-webkit-inner-spin-button {
     transition: all 0.2s;
 }
 
-.menu-container .send-plus-min button:hover {
+.menu-container .send-plus-min .send:hover {
     color: #fff;
 }
 
@@ -702,20 +755,20 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 /* Скрываем иконку галочки по умолчанию */
-.menu-container .send-plus-min button .bx-check {
+.menu-container .send-plus-min .send .bx-check {
     display: none;
     opacity: 0;
     transform: scale(0);
 }
 
 /* Когда кнопка нажата */
-.menu-container .send-plus-min button.sold .bx-dish {
+.menu-container .send-plus-min .send.sold .bx-dish {
     display: none;
     opacity: 0;
     transform: scale(0);
 }
 
-.menu-container .send-plus-min button.sold .bx-check {
+.menu-container .send-plus-min .send.sold .bx-check {
     display: block;
     opacity: 1; /* Показываем галочку */
     transform: scale(1.4); /* Увеличиваем галочку */
@@ -839,7 +892,24 @@ input[type="number"]::-webkit-inner-spin-button {
     height: 100%;
     z-index: 200;
 }
-
+/* General order btn */
+.genorder{
+    position: fixed;
+    background-color: #fff;
+    right: 30px;
+    bottom: 190px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1.6rem;
+    transition: all 0.15s;
+    z-index: 1000;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+}
 /* History button */
 .buthistory {
     position: fixed;
@@ -1321,8 +1391,22 @@ input[type="number"]::-webkit-inner-spin-button {
     .singin {
         padding-right: 10px;
     }
-
-    .menu-container .send-plus-min button {
+    /* кнопка быстрого заказа */
+    .menu-container .send-plus-min .fastsend {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 30px;
+        width: 30px;
+        bottom: 0;
+        background-color:  #FFD700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    /* кнопка добавления */
+    .menu-container .send-plus-min .send {
         position: absolute;
         display: flex;
         justify-content: center;
@@ -1367,8 +1451,22 @@ input[type="number"]::-webkit-inner-spin-button {
         align-items: center;
         margin-top: 10px;
     }
-
-    .menu-container .send-plus-min button {
+    /* кнопка быстрого заказа */
+    .menu-container .send-plus-min .fastsend {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 30px;
+        width: 30px;
+        bottom: 20px;
+        background-color:  #FFD700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+/* кнопка добавления заказа */
+    .menu-container .send-plus-min .send {
         position: relative;
         right: 0;
         bottom: -10px;
