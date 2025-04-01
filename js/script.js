@@ -832,7 +832,6 @@ async function fetchProductTypes() {
 
 // Проверка что это в первый раз
 let first = true;
-
 // Получение данных меню
 async function fetchMenuItems(categoryIds, page) {
     try {
@@ -907,6 +906,7 @@ async function fetchMenuItems(categoryIds, page) {
         menuContainer.appendChild(fragment);
 
         // 5. Обновляем Isotope
+        console.log(first);
         if (first) {
             first = false
             await initializeIsotope();
@@ -1539,9 +1539,10 @@ async function Hachchange() {
         }
         document.querySelector('.loadcont').style.display = 'flex';
 
-
+        // устонавливаем как true чтобы было как в первый раз
+        first=true;
         // загрузка товаров
-
+    
         await fetchProductTypes();
 
         // запуск всех нужных функ. после загрузки самого сайта
@@ -1551,6 +1552,7 @@ async function Hachchange() {
         ExitButton();
         revealCards();
         Language();
+        
         // scrol();
         try {
             const token = JSON.parse(localStorage.getItem('accessToken'));
