@@ -117,8 +117,10 @@ const renderBody= () =>`
             <div class="input-group searchgroup">
              <input class="form-control" type="search" id='search' placeholder="Введите запрос..." aria-label="Поиск">
           </div>
-            
           </form>
+        </div>
+        <div class="category">
+          <ul class="category-list"></ul>
         </div>
          <div class="result_table">
             
@@ -202,6 +204,127 @@ async function ChosenOne() {
         ordcont.innerHTML = ` <h6 class="itog-cost">${total} ${totalcost}<h6> `;
       
         updateModal(JSON.parse(localStorage.getItem('order')));
+}
+let pagepro = 0; // Начинаем с 0
+let isLoadingpro = false; // Флаг загрузки
+async function loadItems(id) {
+        if (isLoadingpro) return; // Предотвращаем повторные запросы
+          isLoadingpro = true; // Устанавливаем флаг загрузки
+        const apiUrl = `${host}/api/v1/products?typeId=${id}&page=${pagepro}&size=20`;
+        
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            const container = document.querySelector('.result_table');
+            
+            console.log(data);
+      
+            const photoRequests = data.content.map(async (product) => {
+                try {
+                    const photoResponse = await fetch(`${host}/api/v1/photos/product/${product.id}`);
+                    const photoData = await photoResponse.json();
+                    return { ...product, imageUrl: photoData[0]?.url || 'path/to/default-image.jpg' };
+                } catch (photoError) {
+                    console.error(`Ошибка при загрузке фото для продукта ${product.id}`, photoError);
+                    return { ...product, imageUrl: 'path/to/default-image.jpg' };
+                }
+            });
+      
+            const productsWithPhotos = await Promise.all(photoRequests);
+      
+            const menuItems = productsWithPhotos.map((product) => {
+                const menuItem = document.createElement('div');
+                menuItem.className = `col-sm-6 col-md-4 col-lg-1 item visible`;
+                menuItem.id = `item-${product.id}`;
+                menuItem.innerHTML = `
+                  <img class="img-cost" src="${product.imageUrl}" alt="${product.name}" />
+                  <h3 class="nameTov">${product.name}</h3>
+                  <h3 class="costTov">${product.price} MDL</h3>
+                  <div class="send-plus-min">
+                    <div class="plus-min">
+                      <p class="min"><i class="bx bx-minus-circle"></i></p>
+                      <input type="number" value="1" maxlength="2" min="0" readonly />
+                      <p class="plus"><i class="bx bx-plus-circle"></i></p>
+                    </div>
+                    <button class="send"><i class="bx bx-dish"></i> <i class='bx bx-check'></i></button>
+                  </div>
+                `;
+                return menuItem;
+            });
+            container.addEventListener('scroll', () => checkScroll(container)); 
+            container.append(...menuItems);
+            pagepro++;
+        } catch (error) {
+            console.error('Ошибка при загрузке товаров:', error);
+        }finally {
+          isLoadingpro = false; // Сбрасываем флаг загрузки
+      }
+}
+// Получение данных категорий с сервера
+async function fetchProductTypes() {
+  try {
+
+      const response = await fetch(`${host}/api/v1/product-types`);
+      const data = await response.json();
+
+      if (data.content && Array.isArray(data.content)) {
+          const productList = document.querySelector('.category-list');
+          productList.innerHTML = '<li ><a class="active" data-filter="*">Все</a></li>'; // Очистка списка
+
+          // Создаем категории
+          for (const item of data.content) {
+              const listItem = document.createElement('li');
+              const link = document.createElement('a');
+
+              // создание рум версии категорий
+              let namerum = item.name;
+              console.log(namerum, item.id);
+              if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+                  const respo = await fetch(`${host}/api/v1/product-type-translations/${item.id}?lang=ro`, {
+                      method: "GET"
+                  });
+
+                  if (!respo.ok) throw new Error(`Ошибка HTTP: ${respo.status}`);
+
+                  const dat = await respo.json();
+                  namerum = dat.name;
+                  console.log(dat);
+              }
+              link.textContent = `${namerum}`;
+              link.setAttribute('data-filter', `.${item.id}`);
+              listItem.appendChild(link); // Вставляем ссылку в элемент списка
+              productList.appendChild(listItem);
+          }
+          document.querySelectorAll('.category-list a').forEach(it=>{
+            it.addEventListener('click', async function () {
+              document.querySelector('.category-list .active').classList.remove('active');
+              it.classList.add('active');
+      
+              let selector = it.dataset.filter || '*';
+      
+              if (selector === '*') {
+                  page=0;
+                  const container = document.querySelector('.result_table');
+                  container.innerHTML='';
+                  loadProducts("");
+              } else {
+                  let ids = parseInt(selector.replace('.', ''));
+                  console.log(ids)
+                  pagepro=0;
+                  const container = document.querySelector('.result_table');
+                  container.innerHTML='';
+                  loadItems(ids);
+              }
+          });
+          });
+
+
+      } else {
+          console.error('Неверный формат данных:', data);
+      }
+  } catch (error) {
+      console.error('Ошибка при запросе данных категорий:', error);
+  }
 }
 async function Addsendform() {
       
@@ -553,7 +676,6 @@ async function updateModal(order) {
 }
 let page = 0; // Начинаем с 0
 let isLoading = false; // Флаг загрузки
-
 async function loadProducts(query) {
         if (isLoading) return; // Предотвращаем повторные запросы
           isLoading = true; // Устанавливаем флаг загрузки
@@ -633,6 +755,7 @@ async function FindTovar() {
             return;
         }
         loadProducts("");
+        fetchProductTypes();
         // поле для ввода данных
         Addsendform();  
         // Запрещаем стандартное поведение формы
