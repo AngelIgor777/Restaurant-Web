@@ -894,7 +894,7 @@ async function fetchMenuItems(categoryIds, page) {
         if (tran) {
             revealCards();
         }
-
+        revealCards();
     } catch (error) {
         console.error('Ошибка при запросе данных меню:', error);
     }
