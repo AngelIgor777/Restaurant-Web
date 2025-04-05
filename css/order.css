@@ -166,6 +166,7 @@ b {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    flex: 1;
 }
 
 .result_table {
@@ -215,7 +216,7 @@ b {
 }
 
 .searchFind {
-    width: 70%;
+    width: 60%;
     margin-top: 60px;
     display: flex;
     flex-direction: column;
