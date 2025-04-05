@@ -662,7 +662,7 @@ async function WeekTop() {
             delay: 3000, // Автоматическое пролистывание каждые 3 секунды
             disableOnInteraction: false, // Автопрокрутка не останавливается при взаимодействии
         }, pagination: {
-            el: ".swiper-pagination", clickable: false, dynamicBullets: true,
+            el: ".swiper-pagination", clickable: true, dynamicBullets: true,
         }, navigation: {
             nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev",
         },
@@ -882,7 +882,7 @@ async function fetchMenuItems(categoryIds, page) {
         menuContainer.appendChild(fragment);
 
         // 5. Обновляем Isotope
-        console.log(first);
+        
         if (first) {
             first = false
             await initializeIsotope();
@@ -1192,6 +1192,7 @@ async function initializeIsotope() {
                 .attr('data-page', i)
                 .on('click', function () {
                     var page = parseInt($(this).attr('data-page'));
+                    
                     showPage(page);
                 });
 
@@ -1266,7 +1267,9 @@ async function initializeIsotope() {
     $('.category-list a').on('click', async function () {
         $('.category-list .active').removeClass('active');
         $(this).addClass('active');
-
+        // обнуляем что кнопка поиска нажата
+        searchClicked=false;
+        
         selector = $(this).attr('data-filter') || '*';
         var allItems = selector === '*' ? $container.find('.item') : $container.find(selector);
 
@@ -1503,7 +1506,8 @@ async function Hachchange() {
 
         window.scrollTo(0, 1);
         // document.querySelector('body').style.backgroundImage = backgroundImage;
-        document.querySelector('body').style.background = `linear-gradient(to bottom, #222222, #3a3a3a, #525252)`;
+        // document.querySelector('body').style.background = `linear-gradient(to bottom, #222222, #3a3a3a, #525252)`;
+        document.querySelector('body').style.backgroundImage = "url(./img/menuback.jpg)";
         document.querySelector('body').classList.add('bodyc');
         document.querySelector('.app').style.display = 'none';
         menusect.innerHTML = '';
@@ -2008,7 +2012,8 @@ async function Hachchange() {
         });
     } else if (hash && hash.startsWith('#item-')) {
         window.scrollTo(0, 1);
-        document.querySelector('body').style.background = `linear-gradient(to bottom, #222222, #3a3a3a, #525252)`;
+        // document.querySelector('body').style.background = `linear-gradient(to bottom, #222222, #3a3a3a, #525252)`;
+        document.querySelector('body').style.backgroundImage = "url(./img/menuback.jpg)";
         document.querySelector('body').classList.add('bodyc');
         const menuItem = document.querySelector(hash);
         if (!localStorage.getItem("onlyItem")) {
