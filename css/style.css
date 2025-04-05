@@ -453,6 +453,7 @@ header {
     width: 100%;
     padding: 0;
     margin: 10px 30px;
+    gap: 10px;
 }
 
 .category ul li {
@@ -461,7 +462,7 @@ header {
 }
 
 .category ul li a {
-    padding: 5px 40px;
+    padding: 5px 35px;
     font-size: 1.4rem;
     color: rgb(255, 255, 255) !important;
     text-decoration: none;
