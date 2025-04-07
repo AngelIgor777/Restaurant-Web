@@ -286,7 +286,7 @@ const renderTitle = () => `
         <a href="#menu">Наше Меню</a></button>
       </div>
       <section class='menuContainer'>
-      <div class="aboutourgroup container-fluid">
+      <div class="aboutourgroup container-fluid up-on-scroll">
         <div class="commantname">Наша Команда</div>
         <div class="command-imgs">
             <div class="command-img">
@@ -298,7 +298,7 @@ const renderTitle = () => `
         </div>
       </div>
       </section>
-       <section class="contact-us">
+       <section class="contact-us up-on-scroll">
     <form class='mes'>
         <div class="inputs">
             <h3 class="contactTitle" id="Contacts">Свяжитесь с нами</h3>
@@ -2251,6 +2251,17 @@ async function Hachchange() {
         document.querySelector('.app').style.display = 'none';
         menusect.innerHTML = '';
         menusect.innerHTML = renderTitle() + renderFooter();
+        // для анимации
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+              }
+            });
+          });
+          document.querySelectorAll('.up-on-scroll').forEach(el => {
+            observer.observe(el);
+          });
         // кнопка загрузки
         const loadingScreens = document.getElementsByClassName('loader');
         for (let loadingScreen of loadingScreens) {
@@ -2465,7 +2476,7 @@ function ChangeTitlerum() {
       </div>
       
       <section class='menuContainer'>
-      <div class="aboutourgroup container-fluid">
+      <div class="aboutourgroup container-fluid up-on-scroll">
         <div class="commantname">Echipa noastră</div>
         <div class="command-imgs">
             <div class="command-img">
@@ -2478,7 +2489,7 @@ function ChangeTitlerum() {
       </div>
       </section>
       
-      <section class="contact-us">
+      <section class="contact-us up-on-scroll">
     <form class='mes'>
         <div class="inputs">
             <h3 class="contactTitle" id="Contacts">Contactați-ne</h3>
