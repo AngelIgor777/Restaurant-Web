@@ -1,4 +1,6 @@
-const host = "http://46.229.212.34:9091";
+// const host = "http://46.229.212.34:9091";
+const host = "http://localhost:9091";
+
 // Закрытие меню
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
@@ -1535,16 +1537,6 @@ async function Hachchange() {
         Language();
         
         // scrol();
-        try {
-            const token = JSON.parse(localStorage.getItem('accessToken'));
-            if (token) {
-                document.querySelector('.logo').addEventListener('click', function () {
-                    window.location.href = 'http://127.0.0.1:9092/Coffe/panel.html';
-                });
-            }
-        } catch (error) {
-            console.log('')
-        }
         let order = JSON.parse(localStorage.getItem('order'));
         const buttosend = document.querySelector("p.colvo");
         buttosend.innerHTML = order.length;
@@ -2278,60 +2270,108 @@ async function Hachchange() {
             }
         });
     }
-
 }
 
 const menusect = document.querySelector(".app");
 
-function getUUIDFromURL() {
+function jwtIsNotExpired(token) {
+    try {
+        let payloadBase64 = token.split('.')[1];
+        let payloadJson = atob(payloadBase64);
+        let payload = JSON.parse(payloadJson);
+
+        let expTime = payload.exp * 1000; // exp в секундах, переводим в миллисекунды
+        let currentTime = Date.now();
+
+        return expTime >= currentTime;
+    } catch (error) {
+        console.error("Ошибка декодирования JWT:", error);
+        return true; // Если не удалось декодировать, считаем токен недействительным
+    }
+}
+
+async function getUUIDFromURL() {
     const hash = window.location.hash; // Получаем часть после #
     const match = hash.match(/#menu\/([a-f0-9\-]{36})/i); // Регулярка для UUID
-    return match ? match[1] : null; // Возвращаем UUID или null, если не найден
+    let existUUID = JSON.parse(localStorage.getItem('uuid'));
+
+    let uuid = match ? match[1] : existUUID;
+
+    if (uuid) {
+        let accessToken = localStorage.getItem("accessToken");
+
+        if (accessToken && jwtIsNotExpired(accessToken)) {
+            console.log("Токен актуален, запрос не требуется.");
+            return uuid; // Используем существующий токен
+        }
+
+        try {
+            console.log("Токен истёк или отсутствует, выполняем запрос...");
+            let response = await fetch(`${host}/api/v1/jwt?userUUID=${uuid}`, {method: "POST"});
+
+            if (!response.ok) {
+                throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+            }
+
+            let jwtResponse = await response.json();
+            console.log("Новый JWT получен:", jwtResponse);
+
+            localStorage.setItem("accessToken", jwtResponse.accessToken);
+        } catch (error) {
+            console.error("Ошибка при получении JWT:", error);
+        }
+    }
+    return uuid;
 }
 
 async function getReg(uuid1) {
-    try {
-        // Получаем данные пользователя
-        let response = await fetch(`${host}/api/v1/users/${uuid1}`);
-        let data = await response.json();
-
-
-        // Сохраняем данные адреса, если они еще не сохранены
-        if (!localStorage.getItem("addressResponseDTO") && data.addressResponseDTO) {
-            localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO));
-        }
-
-        // Получаем изображение
-        let imageResponse = data.photoUrl;
-
-        // Вставляем изображение в элементы
-        if (imageResponse) {
-            document.querySelectorAll(".userimg").forEach(im => {
-                im.innerHTML = `<img src="${imageResponse}" alt="User Image">`;
+    let accessToken = JSON.parse(localStorage.getItem('accessToken'));
+    console.log("access token: " + accessToken)
+    if (uuid1) {
+        try {
+            // Получаем данные пользователя
+            let response = await fetch(`${host}/api/v1/users/${uuid1}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                }
             });
-        } else {
-            throw new Error("Изображение не найдено");
-        }
+            let data = await response.json();
+            // Сохраняем данные адреса, если они еще не сохранены
+            if (!localStorage.getItem("addressResponseDTO") && data.addressResponseDTO) {
+                localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO));
+            }
+            // Получаем изображение
+            let imageResponse = data.photoUrl;
+            // Вставляем изображение в элементы
+            if (imageResponse) {
+                document.querySelectorAll(".userimg").forEach(im => {
+                    im.innerHTML = `<img src="${imageResponse}" alt="User Image">`;
+                });
+            } else {
+                throw new Error("Изображение не найдено");
+            }
 
-    } catch (error) {
-        console.error("Ошибка запроса:", error);
+        } catch (error) {
+            console.error("Ошибка запроса:", error);
+        }
     }
 }
 
 async function Registr() {
     // let params = new URLSearchParams(window.location.search);
-    let uuid = getUUIDFromURL();
-    console.log(uuid);
+    let uuid = await getUUIDFromURL(); // Ждём завершения getUUIDFromURL
+    console.log("UUID:", uuid);
     if (!localStorage.getItem("uuid")) {
         if (uuid) {
             localStorage.setItem("uuid", JSON.stringify(uuid));
-            getReg(uuid);
+            await getReg(uuid);
         }
     } else {
         let uuid1 = JSON.parse(localStorage.getItem("uuid"));
 
         if (uuid1) {
-            getReg(uuid1);
+            await getReg(uuid);
         }
     }
 }

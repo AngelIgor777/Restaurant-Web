@@ -1,6 +1,15 @@
-const host = "http://46.229.212.34:9091";
+// const host = "http://46.229.212.34:9091";
+const host = "http://localhost:9091";
 
-let allOrders = []; // Store all loaded orders
+let allPENDINGOrders = []; // Store all loaded orders
+let allCOMPLETEDOrders = []; // Store all loaded orders
+let allCONFIRMEDOrders = []; // Store all loaded orders
+
+function pushUniqueOrder(orderArray, newOrder) {
+    if (!orderArray.some(order => order.orderResponseDTO.id === newOrder.orderResponseDTO.id)) {
+        orderArray.push(newOrder);
+    }
+}
 
 function checkAdminAccess() {
     const token = localStorage.getItem("accessToken");
@@ -34,70 +43,43 @@ function parseJwt(token) {
 
 checkAdminAccess();
 
+let currentOrdersPageStatus = "PENDING";
+
 
 const token = JSON.parse(localStorage.getItem('accessToken')); // Получаем токен
 
-const renderHeader = () => `
-<header class="header">
-        <nav class="navbar navbar-expand-lg navcont">
-          <div class="container-fluid">
-            <h1 class="logo"><a href="panel.html" style='text-decoration:none'><img src="./css/Park.png" alt="" /> </a></h1>
-            <span class="buttonsing-1 d-flex flex-row">
-              <div class="dropdown  singin">
-                
-                <ul class="dropdown-menu text-small shadow dropdown-menu-start">
-                  <li><a class="dropdown-item" href="#" style="color: black;">Профиль</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item exit" href="#" style="color: black;">Выход</a></li>
-                </ul>
-                <a href="#" class="userimg d-flex align-items-center flex-row-reverse link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class='bx bxs-user-circle singinuser' ></i>
-                </a>
-              </div>
-    
-              <button
-              class="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarcont"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span><i class="bx bx-menu"></i></span>
-            </button>
-            
-            </span>
-            
-            <div class="collapse navbar-collapse" id="navbarcont">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item active"><a href="index.html#menu">Меню</a></li>
-                <li class="nav-item"><a href="index.html#about">О нас</a></li>
-                <li class="nav-item"><a href="index.html#Contacts">Контакты</a></li>
-              </ul>
-            </div>         
-          </div>
-        </nav>
-      </header>
-      `;
 const renderBody = () => `
-        <div class="findinput">
-          <form  id="searchOrderInput">
-            <div class="input-group searchgroup">
-              <input class="form-control" type="search" id='searchOrderInput' placeholder="Проверочный код..." aria-label="Поиск">
-            </div>
-          </form>
-        </div>
+  <div class="findinput" style="display: flex; flex-direction: column; align-items: flex-end;">
+    
+    <!-- Two beautiful buttons on top right -->
+    <div class="order-top-buttons">
+      <button class="btn btn-primary orderTypesButton" id="orderTypesPENDINGButton" type="button">
+        Текущие <span class="badge" id="pendingCount">0</span>
+      </button>
+      <button class="btn btn-primary orderTypesButton" id="orderTypesCOMPLETEDButton" type="button">
+        В процессе <span class="badge" id="completedCount">0</span>
+      </button>
+      <button class="btn btn-primary orderTypesButton" id="orderTypesCONFIRMEDButton" type="button">
+        Выполненные <span class="badge" id="confirmedCount">0</span>
+      </button>
+    </div>
 
+    <!-- Search input below the buttons -->
+    <form id="searchOrderInput" style="width: 100%;">
+      <div class="input-group searchgroup">
+        <input class="form-control" type="search" id="searchOrderInputField" placeholder="Проверочный код..." aria-label="Поиск">
+      </div>
+    </form>
+
+  </div>
+    
         <div class='ordertop'>
         <div class='topcont swiper'>
             <div class="card-cont menu-container">
                 <div class="swiper-wrapper" id='messages'>
 
-
                 </div>
-             </div>
-               
+            </div>
             <div class="swiper-button-prev">
             <i class='bx bx-left-arrow-alt'></i>
             </div>
@@ -220,43 +202,13 @@ const renderBody = () => `
     </div>
   </div>
 </div>
-
     <!-- Кнопка отправки -->
         <div class="buttonsend">
           <a class='addbutton' type="button"  href='zakord.html'>
             <i class='bx bx-plus'></i>
           </a>
         </div>
-
 `
-const renderFooter = () => `
-      <footer>
-        <div class="container-fluid foot">
-          <div class="row text-center">
-            <h1 class="col-12" id="about"><b>PARKTOWN COFFEE</b></h1>
-          </div>
-          <div class="row text-center">
-            <div class="col-md-4 part">
-              <h3>Адрес</h3>
-              <h5>Lenin 81/a</h5>
-              <h5>Copceac</h5>
-            </div>
-            <div class="col-md-4 part">
-              <h3>Время работы</h3>
-              <h5>с 8:00 до 22:00</h5>
-              <h5>Кухня до 21:00</h5>
-            </div>
-            <div class="col-md-4 part">
-              <h3>Контакты</h3>
-              <h5>тел: 078299844</h5>
-            </div>
-          </div>
-          <p>Acest website a fost realizat în cadrul
-          competiției „Tekwill Junior Ambassadors” organizată de proiectul „Tekwill în Fiecare
-          Școală” și nu reflectă neapărat opinia proiectului.</p>
-        </div>
-      </footer>`;
-
 
 let stompClient = null;
 
@@ -276,25 +228,32 @@ function connectWebSocket() {
             // Подписка на канал
             stompClient.subscribe('/topic/orders', function (response) {
                 const orderData = JSON.parse(response.body); // Парсим ответ
-                displayOrderBB(orderData);
+                let orderStatus = orderData.orderResponseDTO.status;
+                if (currentOrdersPageStatus === "PENDING") {
+                    displayOrder(orderData, orderStatus, true);
+                }
+                incrementOrderCounterValueByCounterId("pendingCount");
+
             });
-        },
+        }
+        ,
+
         function (error) {
             console.error("Ошибка подключения:", error); // Выводим ошибку подключения
             displayMessage("Ошибка подключения: " + error);
         }
-    );
+    )
+    ;
 }
 
 // Функция для отображения всех заказов
-function loadAllOrders() {
-
+function loadAllOrders(status, ordersArray) {
     if (!token) {
         displayMessage("Ошибка: JWT-токен отсутствует");
         return;
     }
     console.log(token);
-    fetch(`${host}/api/v1/orders`, {
+    fetch(`${host}/api/v1/orders?status=${status}`, {
         method: "GET",
         headers: {
             "Authorization": "Bearer " + token,
@@ -304,20 +263,34 @@ function loadAllOrders() {
             if (!response.ok) {
                 throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
             }
+            const messageDiv = document.getElementById("messages"); // div for all orders
+            messageDiv.innerHTML = '';
             return response.json();
         })
         .then(orders => {
             orders.reverse().forEach(orderData => {
-                allOrders.push(orderData)
-                displayOrder(orderData);
+                pushUniqueOrder(ordersArray, orderData)
+                displayOrder(orderData, status, false);
             });
-            confirmbut();
+            removeAllOrderFromArraysBesideLoaded(status);
         })
         .catch(error => {
             displayMessage("Ошибка загрузки заказов: " + error);
         });
 }
 
+function removeAllOrderFromArraysBesideLoaded(status) {
+    if (status === "PENDING") {
+        allCONFIRMEDOrders = [];
+        allCOMPLETEDOrders = [];
+    } else if (status === "COMPLETED") {
+        allCONFIRMEDOrders = [];
+        allPENDINGOrders = [];
+    } else if (status === "CONFIRMED") {
+        allCOMPLETEDOrders = [];
+        allPENDINGOrders = [];
+    }
+}
 
 function displayMessage(message) {
     const messageDiv = document.getElementById("messages");
@@ -327,62 +300,33 @@ function displayMessage(message) {
     messageDiv.appendChild(messageElement);
 }
 
-function displayOrderBB(data) {
-    const messageDiv = document.getElementById("messages");
-    const messageElement = document.createElement("div");
-
-    const order = data.orderResponseDTO;
-    allOrders.push(order);
-    console.log("All orders: " + allOrders)
-    messageElement.className = `order it-${order.id} swiper-slide`;
-
-    // Displaying basic order details
-    messageElement.innerHTML = `
-      <h2>Проверочный код: ${data.otp ?? 'Не указано'}</h2>
-      <details>
-      <summary>
-      <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
-      <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'} lei</p>
-      <p class="orderOutOfRest">${formatAddress(data.addressResponseDTO)}</p>
-      <p id="orderOutOfRest">${formatphone(data.phoneNumber)}</p>
-      <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
-      <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
-      <p class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></p>
-      </summary>
-      <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
-      <p><span>Внутри заведения:</span> ${data.orderInRestaurant ? 'Да' : 'Нет'}</p>
-      <p><span>Коды скидки:</span> ${data.existDiscountCodes ? 'Есть' : 'Нет'}</p>
-      <p><span>Код продукта скидки:</span> ${data.productDiscountCode ?? 'Нет'}</p>
-      <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
-      </details>
-      <div class="products">
-          <strong>Продукты:</strong>
-          ${formatProducts(order.products)}
-      </div>
-      <div class="buttonsall">
-        <button class="confirm" data-id="${order.id}">Отправить на кухню</button>
-        <button class="close" data-id="${order.id}">Удалить</button>
-        </div>
-      `
-    ;
-    messageDiv.prepend(messageElement); // Добавить в начало
-    Swip();
-    confirmbut();
-
-    // Автопрокрутка вниз
-    messageDiv.scrollTop = messageDiv.scrollHeight;
-
-}
-
-function displayOrder(data) {
+function displayOrder(data, status, fromWebSocket) {
     const messageDiv = document.getElementById("messages");
     const messageElement = document.createElement("div");
 
     const order = data.orderResponseDTO;
 
-    // Добавление клаасов
+    // Генерация кнопок в зависимости от статуса
+    let buttonsHTML = "";
+    if (status === "PENDING") {
+        buttonsHTML = `
+            <button class="confirm" data-id="${order.id}">Выполнено</button>
+            <button class="complete" data-id="${order.id}">Распечатать</button>
+            <button class="close" data-id="${order.id}">Удалить</button>
+        `;
+    } else if (status === "COMPLETED") {
+        buttonsHTML = `
+            <button class="confirm" data-id="${order.id}">Выполнено</button>
+            <button class="close" data-id="${order.id}">Удалить</button>
+        `;
+    } else if (status === "CONFIRMED") {
+        buttonsHTML = `
+            <button class="close" data-id="${order.id}">Удалить</button>
+        `;
+    }
+
+    // Создание блока заказа
     messageElement.className = `order it-${order.id} swiper-slide`;
-    // Displaying basic order details
     messageElement.innerHTML = `
       <h2>Проверочный код: ${data.otp ?? 'Не указано'}</h2>
         <details>
@@ -392,8 +336,8 @@ function displayOrder(data) {
         <p>${formatAddress(data.addressResponseDTO)}</p>
         <p>${formatphone(data.phoneNumber)}</p>
         <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
-        <p class='and'style='text-align: right; opacity:0.7;'>Ещё...</p>
-        <p class='andv'style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up' ></i></p>
+        <p class='and' style='text-align: right; opacity:0.7;'>Ещё...</p>
+        <p class='andv' style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up'></i></p>
         </summary>
         <p><span>Общее время готовки:</span> ${formatTime(order.totalCookingTime)}</p>
         <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
@@ -407,48 +351,108 @@ function displayOrder(data) {
             ${formatProducts(order.products)}
         </div>
         <div class="buttonsall">
-        <button class="confirm" data-id="${order.id}">Отправить на кухню</button>
-        <button class="close" data-id="${order.id}">Удалить</button>
+            ${buttonsHTML}   <!-- вставляем сгенерированные кнопки -->
         </div>
-        `
-    ;
-    messageDiv.appendChild(messageElement);
-
+    `;
+    if (fromWebSocket === true) {
+        messageDiv.prepend(messageElement); // Добавить в начало
+    } else if (fromWebSocket === false) {
+        messageDiv.appendChild(messageElement);
+    }
+    Swip();
+    // confirmbut();
     // Автопрокрутка вниз
+    addOrderListeners(order.id)
     messageDiv.scrollTop = messageDiv.scrollHeight;
 }
 
-function confirmbut() {
-    console.log(document.querySelectorAll('.confirm'));
-    document.querySelectorAll('.confirm').forEach(el => {
-        el.addEventListener('click', function () {
-            const id = el.getAttribute('data-id');
-            if (id) {
-                console.log(`Подтвержден заказ с ID: ${id}`);
-                el.innerHTML = "<i class='bx bx-check'></i>";
-                setTimeout(() => {
-                    // Изменяем текст кнопки после 2 секунд
-                    el.innerHTML = "Подтверждено";
-                    fetch(`${host}/api/v1/orders/confirm/${id}`, {
+function addOrderListeners(orderId) {
+    const completeButton = document.querySelector(`.complete[data-id="${orderId}"]`);
+    const confirmButton = document.querySelector(`.confirm[data-id="${orderId}"]`);
+    const closeButton = document.querySelector(`.close[data-id="${orderId}"]`);
+
+    if (completeButton) {
+        completeButton.addEventListener('click', async function () {
+            const id = completeButton.getAttribute('data-id');
+            if (!id) {
+                console.log("data-id не найден");
+                return;
+            }
+
+            console.log(`Подтвержден заказ с ID: ${id}`);
+            completeButton.innerHTML = "<i class='bx bx-check'></i>";
+            completeButton.disabled = true;
+
+            setTimeout(() => {
+                completeButton.innerHTML = "Отправлено";
+            }, 100);
+
+            try {
+                const response = await fetch(`${host}/api/v1/orders/${id}/print`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                    }
+                });
+
+                if (response.ok) {
+                    incrementOrderCounterValueByCounterId("completedCount");
+                    decrementOrderCounterValueByCounterId("pendingCount");
+                    setTimeout(() => {
+                        document.querySelector(`.it-${id}`)?.classList.add('confirmed');
+                    }, 500);
+                } else {
+                    handleError(completeButton, "Ошибка при отправке заказа");
+                }
+            } catch (error) {
+                handleError(completeButton, "Ошибка:", error);
+            }
+        });
+    }
+
+    if (confirmButton) {
+        confirmButton.addEventListener('click', async function () {
+            const id = confirmButton.getAttribute('data-id');
+            if (!id) {
+                console.log("data-id не найден");
+                return;
+            }
+
+            confirmButton.innerHTML = "<i class='bx bx-check'></i>";
+
+            setTimeout(async () => {
+                try {
+                    await fetch(`${host}/api/v1/orders/confirm/${id}`, {
                         method: "POST",
                         headers: {
                             "Authorization": "Bearer " + token,
                         }
                     });
-                }, 100);
-                setTimeout(() => {
-                    // Изменяем текст кнопки после 2 секунд
-                    document.querySelector(`.it-${id}`).classList.add('confirmed')
-                }, 500);
-            } else {
-                console.log("data-id не найден");
-            }
+                    incrementOrderCounterValueByCounterId("confirmedCount");
+                    if (currentOrdersPageStatus === "PENDING") {
+                        decrementOrderCounterValueByCounterId("pendingCount");
+                    } else if (currentOrdersPageStatus === "COMPLETED") {
+                        decrementOrderCounterValueByCounterId("completedCount");
+                    }
+                    setTimeout(() => {
+                        document.querySelector(`.it-${id}`)?.classList.add('confirmed');
+                    }, 500);
+                } catch (error) {
+                    console.error("Ошибка при подтверждении заказа:", error);
+                }
+            }, 100);
         });
-    });
-    document.querySelectorAll('.close').forEach(el => {
-        el.addEventListener('click', async function () {
-            const id = el.getAttribute('data-id');
-            if (id) {
+    }
+
+    if (closeButton) {
+        closeButton.addEventListener('click', async function () {
+            const id = closeButton.getAttribute('data-id');
+            if (!id) {
+                console.log("data-id не найден");
+                return;
+            }
+
+            try {
                 const result = await Swal.fire({
                     title: "Вы уверены?",
                     text: "Вы не сможете это восстановить!",
@@ -467,14 +471,136 @@ function confirmbut() {
                             "Authorization": `Bearer ${token}`
                         }
                     });
-                    console.log(response);
-                    document.querySelector(`.it-${id}`).style.display = 'none';
+                    decrementOrderCounterByOpenOrdersType();
+                    if (response.ok) {
+                        document.querySelector(`.it-${id}`).style.display = 'none';
+                    } else {
+                        console.error("Ошибка при удалении заказа");
+                    }
                 }
-            } else {
+            } catch (error) {
+                console.error("Ошибка удаления заказа:", error);
+            }
+        });
+    }
+}
+
+
+function confirmbut() {
+    document.querySelectorAll('.complete').forEach(el => {
+        el.addEventListener('click', async function () {
+            const id = el.getAttribute('data-id');
+            if (!id) {
                 console.log("data-id не найден");
+                return;
+            }
+
+            console.log(`Подтвержден заказ с ID: ${id}`);
+            el.innerHTML = "<i class='bx bx-check'></i>";
+            el.disabled = true;
+
+            setTimeout(() => {
+                el.innerHTML = "Отправлено";
+            }, 100);
+
+            try {
+                const response = await fetch(`${host}/api/v1/orders/${id}/print`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                    }
+                });
+
+                if (response.ok) {
+                    incrementOrderCounterValueByCounterId("completedCount");
+                    decrementOrderCounterValueByCounterId("pendingCount")
+                    setTimeout(() => {
+                        document.querySelector(`.it-${id}`)?.classList.add('confirmed');
+                    }, 500);
+                } else {
+                    handleError(el, "Ошибка при отправке заказа");
+                }
+            } catch (error) {
+                handleError(el, "Ошибка:", error);
             }
         });
     });
+
+    document.querySelectorAll('.confirm').forEach(el => {
+        el.addEventListener('click', async function () {
+            const id = el.getAttribute('data-id');
+            if (!id) {
+                console.log("data-id не найден");
+                return;
+            }
+
+            el.innerHTML = "<i class='bx bx-check'></i>";
+
+            setTimeout(async () => {
+                try {
+                    await fetch(`${host}/api/v1/orders/confirm/${id}`, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer " + token,
+                        }
+                    });
+                    incrementOrderCounterValueByCounterId("confirmedCount");
+                    decrementOrderCounterValueByCounterId("completedCount")
+                    setTimeout(() => {
+                        document.querySelector(`.it-${id}`)?.classList.add('confirmed');
+                    }, 500);
+                } catch (error) {
+                    console.error("Ошибка при подтверждении заказа:", error);
+                }
+            }, 100);
+        });
+    });
+
+    document.querySelectorAll('.close').forEach(el => {
+        el.addEventListener('click', async function () {
+            const id = el.getAttribute('data-id');
+            if (!id) {
+                console.log("data-id не найден");
+                return;
+            }
+
+            try {
+                const result = await Swal.fire({
+                    title: "Вы уверены?",
+                    text: "Вы не сможете это восстановить!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#2F9262",
+                    cancelButtonColor: "#3f3f3f",
+                    confirmButtonText: "Да, удалить!",
+                    cancelButtonText: "Отмена"
+                });
+
+                if (result.isConfirmed) {
+                    const response = await fetch(`${host}/api/v1/orders/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    });
+                    decrementOrderCounterByOpenOrdersType();
+                    if (response.ok) {
+                        document.querySelector(`.it-${id}`).style.display = 'none';
+                    } else {
+                        console.error("Ошибка при удалении заказа");
+                    }
+                }
+            } catch (error) {
+                console.error("Ошибка удаления заказа:", error);
+            }
+        });
+    });
+}
+
+function handleError(el, message, error = null) {
+    console.error(message, error || '');
+    el.innerHTML = "Ошибка";
+    el.disabled = false;
 }
 
 function formatProducts(products) {
@@ -558,58 +684,6 @@ function formDate(longDate) {
     return `${day} ${month} ${hours}:${minutes}`;
 }
 
-function getUUIDFromURL() {
-    const hash = window.location.hash; // Получаем часть после #
-    const match = hash.match(/#menu\/([a-f0-9\-]{36})/i); // Регулярка для UUID
-    return match ? match[1] : null; // Возвращаем UUID или null, если не найден
-}
-
-async function getReg(uuid1) {
-    try {
-        // Получаем данные пользователя
-        let response = await fetch(`${host}/api/v1/users/${uuid1}`);
-        let data = await response.json();
-
-
-        // Сохраняем данные адреса, если они еще не сохранены
-        if (!localStorage.getItem("addressResponseDTO") && data.addressResponseDTO) {
-            localStorage.setItem('addressResponseDTO', JSON.stringify(data.addressResponseDTO));
-        }
-
-        // Получаем изображение
-        let imageResponse = data.photoUrl;
-
-        // Вставляем изображение в элементы
-        if (imageResponse) {
-            document.querySelectorAll(".userimg").forEach(im => {
-                im.innerHTML = `<img src="${imageResponse}" alt="User Image">`;
-            });
-        } else {
-            throw new Error("Изображение не найдено");
-        }
-
-    } catch (error) {
-        console.error("Ошибка запроса:", error);
-    }
-}
-
-async function Registr() {
-    // let params = new URLSearchParams(window.location.search);
-    let uuid = getUUIDFromURL();
-    console.log(uuid);
-    if (!localStorage.getItem("uuid")) {
-        if (uuid) {
-            localStorage.setItem("uuid", JSON.stringify(uuid));
-            getReg(uuid);
-        }
-    } else {
-        let uuid1 = JSON.parse(localStorage.getItem("uuid"));
-        if (uuid1) {
-            getReg(uuid1);
-        }
-    }
-}
-
 
 let swiper;
 
@@ -617,7 +691,7 @@ function Swip() {
     swiper = new Swiper('.card-cont', {
         loop: false,  // Если элементы дублируются, зацикливание включено
         spaceBetween: 32,  // Уменьшаем расстояние между карточками
-        slidesPerView: "auto",  // Автоматическая ширина слайдов (убедитесь, что слайды одинаковы по размеру)
+        slidesPerView: "auto",  // Автоматическая ширина слайдов
         centeredSlides: true,  // Центрируем слайды
         loopAdditionalSlides: 5,  // Увеличиваем количество дополнительных слайдов для зацикливания
         pagination: {
@@ -643,7 +717,6 @@ function Swip() {
 }
 
 function Swipto(id) {
-    // Убедитесь, что swiper инициализирован
     if (!swiper) {
         console.error('Swiper не был инициализирован!');
         return;
@@ -666,31 +739,66 @@ function Swipto(id) {
     swiper.slideTo(1);
 }
 
-function ExitButton() {
-    document.querySelector('.exit').addEventListener('click', function () {
-        if (localStorage.getItem('uuid')) {
-            localStorage.removeItem('uuid');
-            localStorage.removeItem('addressResponseDTO');
+async function updateOrderCounters() {
+    try {
+        const response = await fetch(`${host}/api/v1/orders/countStats`, {
+            headers: {
+                "Authorization": "Bearer " + token,
+            }
+        });
+
+        if (!response.ok) {
+            console.error("Ошибка при получении статистики заказов");
+            return;
         }
-    });
+
+        const data = await response.json();
+
+        // Update your counters on the page
+        setCounterValue("pendingCount", data.pendingOrders);
+        setCounterValue("completedCount", data.completedOrders);
+        setCounterValue("confirmedCount", data.confirmedOrders);
+
+    } catch (error) {
+        console.error("Ошибка запроса статистики заказов:", error);
+    }
+}
+
+function setCounterValue(counterId, value) {
+    const element = document.getElementById(counterId);
+    if (element) {
+        element.textContent = value;
+    } else {
+        console.warn(`Элемент с ID ${counterId} не найден`);
+    }
 }
 
 // Автоматическое подключение при загрузке страницы
 window.onload = async function () {
-    document.querySelector('.app').innerHTML = renderHeader() + renderBody() + renderFooter();
-
-    Registr(); //Изменение лого
+    document.querySelector('.app').innerHTML = renderBody();
+    initializeButtons();  // 2. Add event listeners to buttons!
     await connectWebSocket();  // Подключение к WebSocket
-    await loadAllOrders();  // Загрузка всех заказов
+    await loadAllOrders("PENDING", allPENDINGOrders);  // Загрузка всех заказов
     Swip();
-    ExitButton();
+    await updateOrderCounters();
 };
+
+
+function getOrdersByCurrentPageStatusClicked() {
+    if (currentOrdersPageStatus === "PENDING") {
+        return allPENDINGOrders
+    } else if (currentOrdersPageStatus === "COMPLETED") {
+        return allCOMPLETEDOrders
+    } else if (currentOrdersPageStatus === "CONFIRMED") {
+        return allCONFIRMEDOrders
+    }
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     event.preventDefault()
     const observer = new MutationObserver(() => {
         const searchInput = document.getElementById("searchOrderInput");
-        const messageDiv = document.getElementById("messages");
+        const messageDiv = document.getElementById("messages"); // div for all orders
 
         if (searchInput) {
             observer.disconnect(); // Stop observing once found
@@ -701,12 +809,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!query) {
                     // 🛠️ If the input is empty, reload all orders instead of clearing
                     messageDiv.innerHTML = "";
-                    allOrders.forEach(order => displayOrderBB(order));
-                    return;
-                }
-
-                if (!query) {
-                    messageDiv.innerHTML = "";
+                    let ordersByCurrentPageStatusClicked = getOrdersByCurrentPageStatusClicked();
+                    console.debug("orders By Current Page Status Clicked: ", ordersByCurrentPageStatusClicked);
+                    ordersByCurrentPageStatusClicked.forEach(order => displayOrder(order, order.orderResponseDTO.status, false));
                     return;
                 }
                 try {
@@ -724,7 +829,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     const data = await response.json();
                     messageDiv.innerHTML = ""; // Clear previous content
-                    displayOrderBB(data);
+                    displayOrder(data, data.orderResponseDTO.status, false);
                 } catch (error) {
 
                 }
@@ -735,3 +840,67 @@ document.addEventListener("DOMContentLoaded", function () {
     // Observe changes in the body to detect when dynamic elements are added
     observer.observe(document.body, {childList: true, subtree: true});
 });
+
+function initializeButtons() {
+    const orderTypesCOMPLETEDButton = document.getElementById("orderTypesCOMPLETEDButton");
+    const orderTypesCONFIRMEDButton = document.getElementById("orderTypesCONFIRMEDButton");
+    const orderTypesPENDINGButton = document.getElementById("orderTypesPENDINGButton");
+
+    if (orderTypesCOMPLETEDButton) {
+        orderTypesCOMPLETEDButton.addEventListener("click", () => {
+            loadAllOrders("COMPLETED", allCOMPLETEDOrders);
+            currentOrdersPageStatus = "COMPLETED";
+        });
+    }
+
+    if (orderTypesCONFIRMEDButton) {
+        orderTypesCONFIRMEDButton.addEventListener("click", () => {
+            loadAllOrders("CONFIRMED", allCONFIRMEDOrders);
+            currentOrdersPageStatus = "CONFIRMED";
+        });
+    }
+
+    if (orderTypesPENDINGButton) {
+        orderTypesPENDINGButton.addEventListener("click", () => {
+            loadAllOrders("PENDING", allPENDINGOrders);
+            currentOrdersPageStatus = "PENDING";
+        });
+    }
+}
+
+function incrementOrderCounterValueByCounterId(id) {
+    let elementById = document.getElementById(id);
+    if (elementById) {
+        let count = parseInt(elementById.textContent, 10) || 0;
+        count++;
+        elementById.textContent = count;
+    }
+}
+
+function decrementOrderCounterValueByCounterId(id) {
+    let elementById = document.getElementById(id);
+    if (elementById) {
+        let count = parseInt(elementById.textContent, 10) || 0;
+        count--;
+        elementById.textContent = count;
+    }
+}
+
+function decrementOrderCounterByOpenOrdersType() {
+    if (currentOrdersPageStatus === "PENDING") {
+        decrementOrderCounterValueByCounterId("pendingCount");
+    } else if (currentOrdersPageStatus === "COMPLETED") {
+        decrementOrderCounterValueByCounterId("completedCount");
+    } else if (currentOrdersPageStatus === "CONFIRMED") {
+        decrementOrderCounterValueByCounterId("confirmedCount");
+    }
+}
+
+function set0OrderCounterValueByCounterId(id) {
+    let elementById = document.getElementById(id);
+    if (elementById) {
+        elementById.textContent = 0;
+    }
+}
+
+

@@ -38,33 +38,53 @@ body {
     margin-top: 100px;
 }
 
-.buttonsall .confirm {
-    padding: 10px;
-    border-radius: 10px;
+/*buttons for order manipulation */
+/* Container for buttons */
+.buttonsall {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center; /* Center buttons */
+    margin-top: 15px;
+}
+
+/* Base style for all buttons */
+.buttonsall button {
+    padding: 12px 20px;
+    border-radius: 30px;
     border: none;
     font-size: 18px;
-    background-color: #adbf6c;
     font-family: "Kurale", serif;
-    font-weight: 400;
     font-style: normal;
-    width: 180px;
-    position: absolute;
-    bottom: 30px;
+    font-weight: 600;
+    color: #000;
+    flex: 1 1 150px; /* Flex-grow, flex-shrink, flex-basis */
+    max-width: 200px;
+    min-width: 120px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Specific buttons */
+.buttonsall .complete {
+    background-color: #adbf6c;
+}
+
+
+.buttonsall .confirm {
+    background-color: #88c057;
 }
 
 .buttonsall .close {
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
     background-color: rgba(128, 25, 25, 0.9);
-    font-family: "Kurale", serif;
-    font-weight: 400;
-    font-style: normal;
-    width: auto;
-    position: absolute;
-    right: 240px;
-    bottom: 30px;
+    color: #fff;
 }
+
+/* Hover effects */
+.buttonsall button:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
 
 /* кнопка добавления и все её менюшки */
 .addbutton {
@@ -79,10 +99,6 @@ body {
 
 .modal-content {
     background-color: #00000081;
-}
-
-.findinput {
-    width: 100%;
 }
 
 .searchgroup {
@@ -173,7 +189,7 @@ b {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
     margin-bottom: 20px;
     width: 100%;
@@ -184,6 +200,7 @@ b {
     scrollbar-width: none; /* Для Firefox */
     -ms-overflow-style: none; /* Для IE и Edge */
 }
+
 .grid {
     display: grid;
     grid-template-columns: repeat(5, 50px);
@@ -207,6 +224,7 @@ b {
 .selected {
     background-color: lightblue;
 }
+
 .result_table::-webkit-scrollbar {
     display: none;
 }
@@ -339,6 +357,7 @@ input[type="radio"]:checked {
     margin-left: auto;
     margin-right: auto;
 }
+
 /* Плюс минус */
 .send-plus-min .plus-min {
     display: flex;
@@ -413,6 +432,7 @@ input[type="number"]::-webkit-inner-spin-button {
     transition: all 0.2s;
     color: #fff;
 }
+
 .send-plus-min .send:hover {
     color: #fff;
 }
@@ -813,3 +833,64 @@ summary::-webkit-details-marker {
 }
 
 
+.findinput {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 30px; /* <-- pushes down */
+    padding: 10px; /* optional nice spacing */
+}
+
+.findinput form {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.findinput .buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.order-top-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.order-top-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    padding: 10px;
+    margin-right: 20px;
+}
+
+.orderTypesButton {
+    position: relative;
+    background-color: #332f2f;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 18px;
+    font-family: "Kurale", serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.5s, transform 1s ease, opacity 1s ease; /* Increased transition time to 1s */
+}
+
+.orderTypesButton:hover {
+    background-color: #5d6c87;
+    transform: translateY(-5px);
+    opacity: 0.8; /* Make it slightly transparent */
+}
+
+.badge {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 3px 8px;
+    border-radius: 50%;
+    font-size: 14px;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+}

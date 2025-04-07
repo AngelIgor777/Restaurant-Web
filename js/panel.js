@@ -1,4 +1,6 @@
-const host = "http://46.229.212.34:9091";
+// const host = "http://46.229.212.34:9091";
+const host = "http://localhost:9091";
+
 function checkAdminAccess() {
     const token = localStorage.getItem("accessToken");
   
@@ -69,6 +71,7 @@ async function Statistiktable(start, end) {
         console.error('Ошибка при запросе данных меню:', error);
       }
 }
+
 async function Statistik() {
     document.querySelector('.categorylist').innerHTML = '';
     document.querySelectorAll('.catbut').forEach(el=>{
@@ -1347,7 +1350,7 @@ async function fetchProductTypes() {
 // все с изменением товаром
 async function Category(categoryIds){
 // создание или редактирование нового товара
-document.querySelector('button.confirm').addEventListener('click', async function(e) {
+document.querySelector('button.complete').addEventListener('click', async function(e) {
     let name = document.getElementById('name').value;
     let price = document.getElementById('price').value;
     let description = document.getElementById('description').value;

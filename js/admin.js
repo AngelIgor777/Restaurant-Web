@@ -1,4 +1,6 @@
-const host = "http://46.229.212.34:9091";
+// const host = "http://46.229.212.34:9091";
+const host = "http://localhost:9091";
+
 const renderHeader = () => `
 <header>
         <nav class="navbar navbar-expand-lg navcont">
