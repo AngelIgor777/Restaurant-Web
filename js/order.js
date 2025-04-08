@@ -1,5 +1,5 @@
-// const host = "http://46.229.212.34:9091";
-const host = "http://localhost:9091";
+const host = "http://46.229.212.34:9091";
+// const host = "http://localhost:9091";
 
 let allPENDINGOrders = []; // Store all loaded orders
 let allCOMPLETEDOrders = []; // Store all loaded orders
@@ -50,8 +50,6 @@ const token = JSON.parse(localStorage.getItem('accessToken')); // Получае
 
 const renderBody = () => `
   <div class="findinput" style="display: flex; flex-direction: column; align-items: flex-end;">
-    
-    <!-- Two beautiful buttons on top right -->
     <div class="order-top-buttons">
       <button class="btn btn-primary orderTypesButton" id="orderTypesPENDINGButton" type="button">
         Текущие <span class="badge" id="pendingCount">0</span>
@@ -328,7 +326,8 @@ function displayOrder(data, status, fromWebSocket) {
     // Создание блока заказа
     messageElement.className = `order it-${order.id} swiper-slide`;
     messageElement.innerHTML = `
-      <h2>Проверочный код: ${data.otp ?? 'Не указано'}</h2>
+         <h2>${order.id}</h2>
+         <h2>${data.otp ? `Проверочный код: ${data.otp}` : ""}</h2>
         <details>
         <summary>
         <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
@@ -678,7 +677,7 @@ function formDate(longDate) {
         "июля", "августа", "сентября", "октября", "ноября", "декабря"
     ];
     const month = months[date.getMonth()];
-    let hours = date.getHours() + 2;
+    let hours = date.getHours();
     hours.toString().padStart(2, "0");
     let minutes = date.getMinutes().toString().padStart(2, "0");
     return `${day} ${month} ${hours}:${minutes}`;
@@ -779,9 +778,17 @@ window.onload = async function () {
     initializeButtons();  // 2. Add event listeners to buttons!
     await connectWebSocket();  // Подключение к WebSocket
     await loadAllOrders("PENDING", allPENDINGOrders);  // Загрузка всех заказов
+    makeActivePendingButton();
     Swip();
     await updateOrderCounters();
 };
+
+function makeActivePendingButton() {
+    let orderTypesPENDINGButton = document.getElementById("orderTypesPENDINGButton");
+    if (orderTypesPENDINGButton) {
+        orderTypesPENDINGButton.classList.add("active");
+    }
+}
 
 
 function getOrdersByCurrentPageStatusClicked() {
@@ -846,10 +853,18 @@ function initializeButtons() {
     const orderTypesCONFIRMEDButton = document.getElementById("orderTypesCONFIRMEDButton");
     const orderTypesPENDINGButton = document.getElementById("orderTypesPENDINGButton");
 
+    const allButtons = [orderTypesCOMPLETEDButton, orderTypesCONFIRMEDButton, orderTypesPENDINGButton];
+
+    function setActive(button) {
+        allButtons.forEach(btn => btn.classList.remove("active")); // remove active from all
+        button.classList.add("active"); // add active to the clicked button
+    }
+
     if (orderTypesCOMPLETEDButton) {
         orderTypesCOMPLETEDButton.addEventListener("click", () => {
             loadAllOrders("COMPLETED", allCOMPLETEDOrders);
             currentOrdersPageStatus = "COMPLETED";
+            setActive(orderTypesCOMPLETEDButton);
         });
     }
 
@@ -857,6 +872,7 @@ function initializeButtons() {
         orderTypesCONFIRMEDButton.addEventListener("click", () => {
             loadAllOrders("CONFIRMED", allCONFIRMEDOrders);
             currentOrdersPageStatus = "CONFIRMED";
+            setActive(orderTypesCONFIRMEDButton);
         });
     }
 
@@ -864,9 +880,11 @@ function initializeButtons() {
         orderTypesPENDINGButton.addEventListener("click", () => {
             loadAllOrders("PENDING", allPENDINGOrders);
             currentOrdersPageStatus = "PENDING";
+            setActive(orderTypesPENDINGButton);
         });
     }
 }
+
 
 function incrementOrderCounterValueByCounterId(id) {
     let elementById = document.getElementById(id);
