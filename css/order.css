@@ -851,17 +851,14 @@ summary::-webkit-details-marker {
     gap: 10px;
 }
 
-.order-top-buttons {
-    display: flex;
-    gap: 10px;
-}
 
 .order-top-buttons {
-    display: flex;
-    gap: 15px;
+    position: fixed; /* always on top */
+    gap: 10px;
     justify-content: flex-end;
     padding: 10px;
     margin-right: 20px;
+    z-index: 9999; /* very high to be on top */
 }
 
 .orderTypesButton {
@@ -894,3 +891,16 @@ summary::-webkit-details-marker {
     top: -8px;
     right: -8px;
 }
+
+.orderTypesButton.active {
+    background-color: #ffffff; /* blue background */
+    color: #000000;
+    transform: scale(1.05); /* make button a little bigger */
+
+    .badge {
+        background-color: #000000;
+        color: #ffffff;
+    }
+
+}
+
