@@ -1,5 +1,5 @@
-// const host = "http://46.229.212.34:9091";
-const host = "http://localhost:9091";
+const host = "http://46.229.212.34:9091";
+// const host = "http://localhost:9091";
 
 function checkAdminAccess() {
     const token = localStorage.getItem("accessToken");
@@ -133,6 +133,7 @@ async function Statistik() {
             const timeStart = this.getAttribute('data-timestart');
             const timeEnd = this.getAttribute('data-timeend');
             Statistiktable(timeStart, timeEnd); // Вызываем функцию статистики с нужными датами
+            pagcup(document.querySelector('#statpag'));
         });
     });
 
@@ -1182,13 +1183,13 @@ async function fetchProductTypes() {
                 const itemId = this.getAttribute("data-id");
                 Rumname(itemId);
             });
-        })
+        });
         document.querySelectorAll('.changecatlang').forEach(item=>{
             item.addEventListener('click', function(){
                 const itemId = this.getAttribute("data-id");
                 Rumcat(itemId);
             });
-        })
+        });
         
         document.querySelector('.categorylist').addEventListener('click', async (event) => {
             if (event.target.closest('.delete-item')) {
@@ -1287,6 +1288,7 @@ async function fetchProductTypes() {
                 console.log(typename);
                 document.getElementById('ischange').value=`${itemid}`;
                 document.getElementById('typename').value = typename;
+                
             }
 
         });
@@ -1409,6 +1411,7 @@ document.querySelector('button.complete').addEventListener('click', async functi
             }).then(data=>{
                 console.log('Success:', data);
                 Addtable(categoryIds);
+                
             }).catch(errr=>{
                 console.error('Error:', errr);
             });
@@ -1738,7 +1741,38 @@ function ExitButton() {
 
 document.querySelector('.cupon').addEventListener('click', Cupon);
 document.querySelector('.notifay').addEventListener('click', Notifications);
-document.querySelector('.static').addEventListener('click', Statistik);
+document.querySelector('.static').addEventListener('click', function(){
+    Swal.fire({
+        html: `
+        <div class="Enter">
+           <h1>Войти</h1>
+           <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="login" placeholder="Логин" />
+              <label for="login">Логин</label>
+           </div>
+           <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="password" placeholder="Пароль" />
+              <label for="pasword">Пароль</label>
+           </div>
+           
+        </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: "#2F9262",
+        cancelButtonColor: "#3f3f3f",
+        confirmButtonText: "Войти",
+        cancelButtonText: "Отмена",
+        preConfirm: () => {
+            const name = document.getElementById("login").value;
+            const pas = document.getElementById("password").value;
+            if(name && pas){
+                // это проверка логина и пороля
+                Statistik();
+            }
+        }
+    })
+
+});
 document.querySelector('.cattaloge').addEventListener('click', Closepagging);
 // Запуск
 Closepagging();

@@ -342,6 +342,15 @@ textarea{
     transform: scale(1.4); /* Увеличиваем галочку */
     animation: Check 0.4s forwards;
   }
+/* modal history window  */
+.histmod h1{
+    color: black !important;
+}
+/* если что это для описания товара */
+th:nth-child(4),
+    td:nth-child(4) {
+        display: none;
+    }
 @media (max-width:980px) {
     .one-category{
         background-color: #ffffff;
