@@ -564,7 +564,7 @@ header {
 
 .item .name {
     height: 80px;
-    font-size: clamp(1.2rem, 1.6vw, 1.4rem) !important;
+    font-size: clamp(0.2rem, 1.2vw, 1.2rem) !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -747,6 +747,7 @@ input[type="number"]::-webkit-inner-spin-button {
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
+    color:#d4d4d4;
 }
 
 .menu-container .send-plus-min .send:hover {
@@ -1354,7 +1355,7 @@ input[type="number"]::-webkit-inner-spin-button {
         z-index: 3000;
         margin: 0;
         height: 40px !important;
-        font-size: clamp(0.9rem, 0.6vw, 0.95rem) !important;
+        font-size: clamp(0.7rem, 0.4vw, 0.95rem) !important;
         display: flex;
         align-items: center;
         justify-content: center;
