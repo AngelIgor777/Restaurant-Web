@@ -366,11 +366,11 @@ header {
     margin-left: 10px;
 }
 
-.container-fluid button {
+.container-fluid .navbar-toggler, #search-button {
     position: relative;
     right: 10px;
     font-size: 2rem;
-    border-color: #fff;
+    border-color: #ffffff;
     color: #fff;
 }
 

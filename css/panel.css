@@ -129,9 +129,9 @@ textarea{
 }
 .mesform h2{
     font-family: "Comfortaa", serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
-  font-style: normal;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
   
 }
 .cuppons-al td, .cuppons-al th{
@@ -161,6 +161,19 @@ textarea{
     text-decoration: none;
     color: #fff;
   }
+/* кнопка для exel */
+.ExelDownload{
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+    border: none;
+    background-color:#b6c873;
+    margin-left: auto;
+    transition: all 0.3s;
+}
+.ExelDownload:hover{
+    background-color:#a0b162;
+}
 /* Время */
 .time{
     display: flex;
@@ -176,7 +189,7 @@ textarea{
     min-width: 70px;
     background-color: #e1e1e1;
     border: none;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
 }
 .time button.active{
     background-color: #a6a6a6;
@@ -191,6 +204,7 @@ textarea{
     border-radius: 0;
     background-color: #d0d0d0;
 }
+
 label::after{
     background-color: #ffffff00 !important;
 }
@@ -238,6 +252,13 @@ label::after{
 }
 .ordorlist td{
     font-size: clamp(0.9rem, 1.2vw, 1.8rem);
+}
+.catlist button{
+    position: relative;
+    right: 10px;
+    font-size: 2rem;
+    border-color: #ffffff;
+    color: #fff;
 }
 .allbuttons button, .otherbuttons button{
     padding: 10px !important;
@@ -355,6 +376,7 @@ label::after{
     transform: scale(1.4); /* Увеличиваем галочку */
     animation: Check 0.4s forwards;
   }
+
 /* modal history window  */
 .histmod h1{
     color: black !important;
@@ -364,6 +386,16 @@ th:nth-child(4),
     td:nth-child(4) {
         display: none;
     }
+
+.information{
+    display: flex;
+    flex-direction: column;
+    font-family: "Comfortaa", serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    font-size: clamp(0.5rem, 0.8vw, 2vw);
+}
 @media (max-width:980px) {
     .one-category{
         background-color: #ffffff;

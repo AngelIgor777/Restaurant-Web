@@ -35,7 +35,7 @@ const token=JSON.parse(localStorage.getItem('accessToken'));
 let allitems=[];
 async function Statistiktable(start, end) {
     try{
-        const statToken=JSON.parse(localStorage.getItem('statickToken'))
+        const statToken=JSON.parse(localStorage.getItem('statickToken'));
         if (!start) start = '2023-01-01T00:00:00';
         if (!end) end = '2025-01-31T23:59:59';
         const response = await fetch(`${host}/api/v1/statistics?from=${start}&to=${end}`, {
@@ -127,12 +127,76 @@ async function Statistik() {
         <p class='Totalcost' style="text-align:right;"></p>
         <p class='Totalorders' style="text-align:right;"></p>
         <p class='Earning' style="text-align:right;"></p>
+        <button class="ExelDownload">Скачать Exel</button>
         </div>
     `;
     categorytable.appendChild(table);
 
-    const buttons = document.querySelector('.time').querySelectorAll("button"); // Получаем все кнопки
-
+    
+    document.querySelector('.ExelDownload').addEventListener('click', function () {
+        const statToken = JSON.parse(localStorage.getItem('statickToken'));
+        Swal.fire({
+            html: `
+            <div class="Enter">
+                <h1>Статистика заказов</h1>
+                <div class="form-floating mb-3">
+                    <input type="date" class="form-control" id="fromExel" placeholder="От" />
+                    <label for="login">От</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="date" class="form-control" id="toExel" placeholder="До" />
+                    <label for="password">До</label>
+                </div>
+            </div>
+            `,
+            showCancelButton: true,
+            confirmButtonColor: "#2F9262",
+            cancelButtonColor: "#3f3f3f",
+            confirmButtonText: "Скачать",
+            cancelButtonText: "Отмена",
+            preConfirm: () => {
+                const fromExel = document.getElementById("fromExel").value;
+                const toExel = document.getElementById("toExel").value;
+    
+                if (!fromExel || !toExel) {
+                    Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                    return false;
+                }
+    
+                const timeExStart = `${fromExel}T00:00:00`;
+                const timeExEnd = `${toExel}T23:59:59`;
+    
+                return fetch(`${host}/api/v1/exportOrders?status=CONFIRMED&from=${timeExStart}&to=${timeExEnd}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${statToken}`
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Ошибка при скачивании файла");
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "orders.xlsx";
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch(error => {
+                        console.error("Ошибка при скачивании:", error);
+                        Swal.fire("Ошибка", "Не удалось скачать таблицу", "error");
+                    });
+            }
+        });
+    });
+    
+    const buttons = document.querySelector('.time').querySelectorAll("li button"); // Получаем все кнопки
     buttons.forEach(button => {
         button.addEventListener("click", async function () {
             // Удаляем 'active' у всех кнопок
