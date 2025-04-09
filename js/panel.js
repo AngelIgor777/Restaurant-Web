@@ -1,6 +1,6 @@
 const host = "http://46.229.212.34:9091";
 // const host = "http://localhost:9091";
-
+localStorage.setItem('statickToken', JSON.stringify(''));
 function checkAdminAccess() {
     const token = localStorage.getItem("accessToken");
   
@@ -35,12 +35,13 @@ const token=JSON.parse(localStorage.getItem('accessToken'));
 let allitems=[];
 async function Statistiktable(start, end) {
     try{
+        const statToken=JSON.parse(localStorage.getItem('statickToken'))
         if (!start) start = '2023-01-01T00:00:00';
         if (!end) end = '2025-01-31T23:59:59';
         const response = await fetch(`${host}/api/v1/statistics?from=${start}&to=${end}`, {
             method: "GET",
             headers: {
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${statToken}`
             }
         });
         
@@ -66,6 +67,7 @@ async function Statistiktable(start, end) {
                       i+=1;
                 }
             }
+        
     }
     catch (error) {
         console.error('Ошибка при запросе данных меню:', error);
@@ -96,6 +98,14 @@ async function Statistik() {
             <li><button data-timestart='${oneDayAgo}' data-timeend='${allTime}'>1д</button></li>
             <li><button data-timestart='${fiveDaysAgo}' data-timeend='${allTime}'>5д</button></li>
             <li><button data-timestart='${oneMonthAgo}' data-timeend='${allTime}'>1мес</button></li>
+            <li class='datain'>
+              <label for="date-from">От:</label>
+              <input type="date" id="date-from" name="date-from">
+
+              <label for="date-to" style="margin-left: 10px;">До:</label>
+              <input type="date" id="date-to" name="date-to">
+              <button class='customStatic'>Посмотреть</button>
+            </li>
         </ul>
         <table class="category-items table">
             <thead>
@@ -124,16 +134,29 @@ async function Statistik() {
     const buttons = document.querySelector('.time').querySelectorAll("button"); // Получаем все кнопки
 
     buttons.forEach(button => {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", async function () {
             // Удаляем 'active' у всех кнопок
             buttons.forEach(btn => btn.classList.remove("active"));
             // Добавляем 'active' только к нажатой кнопке
             this.classList.add("active");
 
-            const timeStart = this.getAttribute('data-timestart');
-            const timeEnd = this.getAttribute('data-timeend');
-            Statistiktable(timeStart, timeEnd); // Вызываем функцию статистики с нужными датами
-            pagcup(document.querySelector('#statpag'));
+            let timeStart = this.getAttribute('data-timestart');
+            let timeEnd = this.getAttribute('data-timeend');
+            if (this.classList.contains('customStatic')){
+                let fromTime=document.querySelector("#date-from").value;
+                let toTime=document.querySelector("#date-to").value;
+                // Преобразуем в объект Date (устанавливаем нужное время, например, текущее)
+                const now = new Date();
+                const StartFullDate = new Date(`${fromTime}T${now.toTimeString().slice(0, 8)}`);
+                const EndFullData = new Date(`${toTime}T${now.toTimeString().slice(0, 8)}`);
+                // Получаем строку в нужном формате (без миллисекунд и Z)
+                timeStart = StartFullDate.toISOString().slice(0, 19);
+                timeEnd = EndFullData.toISOString().slice(0, 19);
+                console.log(timeEnd);
+            }
+            await Statistiktable(timeStart, timeEnd); // Вызываем функцию статистики с нужными датами
+            pagcup(statpag);
+            pagcup(statpag);
         });
     });
 
@@ -1741,38 +1764,92 @@ function ExitButton() {
 
 document.querySelector('.cupon').addEventListener('click', Cupon);
 document.querySelector('.notifay').addEventListener('click', Notifications);
-document.querySelector('.static').addEventListener('click', function(){
+document.querySelector('.static').addEventListener('click', async function () {
+    const uuid = JSON.parse(localStorage.getItem('uuid'));
+    let valid = false;
+
+    await fetch(`${host}/api/v1/auth/isRegistered?userUUID=${uuid}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+    .then(res => {
+        console.log("isRegistered?", res.ok);
+        valid = res.ok;
+    })
+    .catch(err => console.error("Ошибка при проверке регистрации:", err));
+
     Swal.fire({
         html: `
         <div class="Enter">
-           <h1>Войти</h1>
+           <h1>${valid ? "Войти" : "Регистрация"}</h1>
            <div class="form-floating mb-3">
               <input type="text" class="form-control" id="login" placeholder="Логин" />
               <label for="login">Логин</label>
            </div>
            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="password" placeholder="Пароль" />
-              <label for="pasword">Пароль</label>
+              <input type="password" class="form-control" id="password" placeholder="Пароль" />
+              <label for="password">Пароль</label>
            </div>
-           
         </div>
         `,
         showCancelButton: true,
         confirmButtonColor: "#2F9262",
         cancelButtonColor: "#3f3f3f",
-        confirmButtonText: "Войти",
+        confirmButtonText: valid ? "Войти" : "Зарегистрироваться",
         cancelButtonText: "Отмена",
         preConfirm: () => {
             const name = document.getElementById("login").value;
             const pas = document.getElementById("password").value;
-            if(name && pas){
-                // это проверка логина и пороля
-                Statistik();
+            if (!name || !pas) {
+                Swal.showValidationMessage("Пожалуйста, заполните все поля!");
+                return false;
+            }
+
+            const logbod = { login: name, password: pas };
+
+            if (valid) {
+                return fetch(`${host}/api/v1/auth/login`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(logbod)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    localStorage.setItem('statickToken', JSON.stringify(data.disposableToken));
+                    Statistik();
+                })
+                .catch(err => {
+                    console.error("Ошибка регистрации:", err);
+                    Swal.showValidationMessage("Ошибка регистрации!");
+                });
+            } else {
+                return fetch(`${host}/api/v1/auth/register?userUUID=${uuid}`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(logbod)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    localStorage.setItem('statickToken', JSON.stringify(data.disposableToken));
+                    Statistik();
+                })
+                .catch(err => {
+                    console.error("Ошибка регистрации:", err);
+                    Swal.showValidationMessage("Ошибка регистрации!");
+                });
             }
         }
-    })
-
+    });
 });
+
 document.querySelector('.cattaloge').addEventListener('click', Closepagging);
 // Запуск
 Closepagging();
