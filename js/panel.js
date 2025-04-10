@@ -31,8 +31,59 @@ function checkAdminAccess() {
   }
 checkAdminAccess();
 const token=JSON.parse(localStorage.getItem('accessToken'));
-
+let pageEx = 0;
+function resetTable() {
+    pageEx = 0;
+    document.querySelector(`.prebody`).innerHTML = '';
+}
 let allitems=[];
+async function PopStatiktable(start, end) {
+    const statToken = JSON.parse(localStorage.getItem('statickToken'));
+    if (!start) start = '2023-01-01T00:00:00';
+    if (!end) end = '2025-01-31T23:59:59';
+
+    isLoading = true;
+
+    try {
+        const response = await fetch(`${host}/api/v1/statistics/all?from=${start}&to=${end}&status=CONFIRMED&page=${pageEx}&size=10`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${statToken}`
+            }
+        });
+
+        const data = await response.json();
+        console.log(data);
+        const tbody = document.querySelector(`.prebody`);
+
+        if (data && Array.isArray(data) && data.length > 0) {
+            for (const item of data) {
+                const order = item.orderResponseDTO;
+                const listItems = order.products
+                    .map(product => `<li>${product.name}(${product.price})x${product.quantity}</li>`)
+                    .join('');
+
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td style="text-align: center;">${order.id}</td>
+                        <td style="text-align: center;">${order.paymentMethod}</td>
+                        <td style="text-align: center;">${order.totalPrice}</td>
+                        <td style="text-align: center;" class='listOfItems'>
+                            <ul>${listItems}</ul>
+                        </td>
+                    </tr>
+                `);
+            }
+            pageEx++;
+        } else {
+            console.log('Нет больше данных');
+        }
+    } catch (error) {
+        console.error('Ошибка при загрузке статистики:', error);
+    } finally {
+        isLoading = false;
+    }
+}
 async function Statistiktable(start, end) {
     try{
         const statToken=JSON.parse(localStorage.getItem('statickToken'));
@@ -46,6 +97,7 @@ async function Statistiktable(start, end) {
         });
         
             const data = await response.json();
+            
             document.querySelector(".Totalcost").textContent=`Доход: ${data.totalRevenueBasedOrdersDto.totalRevenue}`;
             document.querySelector(".Totalorders").textContent=`Всего заказанно: ${data.totalRevenueBasedOrdersDto.totalOrders}`;
             document.querySelector(".Earning").textContent=`Средняя цена одного заказа: ${data.totalRevenueBasedOrdersDto.avgRevenuePerOrder}`;
@@ -135,25 +187,85 @@ async function Statistik() {
     
     document.querySelector('.ExelDownload').addEventListener('click', function () {
         const statToken = JSON.parse(localStorage.getItem('statickToken'));
+        
         Swal.fire({
             html: `
             <div class="Enter">
                 <h1>Статистика заказов</h1>
                 <div class="form-floating mb-3">
                     <input type="date" class="form-control" id="fromExel" placeholder="От" />
-                    <label for="login">От</label>
+                    <label for="fromExel">От</label>
                 </div>
                 <div class="form-floating mb-3">
                     <input type="date" class="form-control" id="toExel" placeholder="До" />
-                    <label for="password">До</label>
+                    <label for="toExel">До</label>
                 </div>
+                <div class='preOrder' style='display:none'>
+                <table class="preTable table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">id</th>
+                            <th style="text-align: center;">Медот оплаты</th>
+                            <th style="text-align: center;">Общая цена</th>
+                            <th style="text-align: center;">Блюда</th>
+                        </tr>
+                    </thead>
+                    <tbody class="prebody">
+                </tbody>
+                </table>
+                </div>
+
             </div>
             `,
             showCancelButton: true,
             confirmButtonColor: "#2F9262",
             cancelButtonColor: "#3f3f3f",
             confirmButtonText: "Скачать",
+            customClass: {
+                popup: 'ExelPop'
+              },
             cancelButtonText: "Отмена",
+            didOpen: () => {
+                let FromEx;
+                let ToEx;
+                document.querySelector('#fromExel').addEventListener('change', function(){
+                    FromEx=`${document.querySelector('#fromExel').value}T00:00:00`;
+                    console.log('from');
+                    if(FromEx&&ToEx){
+                        resetTable();
+                        PopStatiktable(FromEx, ToEx);
+                        document.querySelector('.ExelPop').style.height = '800px';
+                        document.querySelector('.preOrder').style.display = 'block';
+                        // Бесконечная прокрутка
+                        document.querySelector('.preOrder').addEventListener('scroll', function () {
+                            const container = this;
+                            if (container.scrollTop + container.clientHeight >= container.scrollHeight - 100 && !isLoading) {
+                                PopStatiktable(FromEx, ToEx);
+                                console.log(pageEx);
+                            }
+                        });
+                    }
+                });
+                document.querySelector('#toExel').addEventListener('change', function(){
+                    ToEx=`${document.querySelector('#toExel').value}T23:59:59`;
+                    console.log('to');
+                    if(FromEx&&ToEx){
+                        resetTable();
+                        PopStatiktable(FromEx, ToEx);
+                        document.querySelector('.ExelPop').style.height = '800px';
+                        document.querySelector('.preOrder').style.display = 'block';
+                        // Бесконечная прокрутка
+                        document.querySelector('.preOrder').addEventListener('scroll', function () {
+                            const container = this;
+                            if (container.scrollTop + container.clientHeight >= container.scrollHeight - 100 && !isLoading) {
+                                PopStatiktable(FromEx, ToEx);
+                                console.log(pageEx);
+                            }
+                        });
+                    }
+                });
+                
+            },
             preConfirm: () => {
                 const fromExel = document.getElementById("fromExel").value;
                 const toExel = document.getElementById("toExel").value;
@@ -162,6 +274,7 @@ async function Statistik() {
                     Swal.showValidationMessage("Пожалуйста, заполните все поля!");
                     return false;
                 }
+                
     
                 const timeExStart = `${fromExel}T00:00:00`;
                 const timeExEnd = `${toExel}T23:59:59`;
