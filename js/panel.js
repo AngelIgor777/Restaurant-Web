@@ -1,5 +1,5 @@
-const host = "http://46.229.212.34:9091";
-// const host = "http://localhost:9091";
+const host = CONFIG.host;
+
 localStorage.setItem('statickToken', JSON.stringify(''));
 function checkAdminAccess() {
     const token = localStorage.getItem("accessToken");
@@ -97,7 +97,7 @@ async function Statistiktable(start, end) {
         });
         
             const data = await response.json();
-            
+
             document.querySelector(".Totalcost").textContent=`Доход: ${data.totalRevenueBasedOrdersDto.totalRevenue}`;
             document.querySelector(".Totalorders").textContent=`Всего заказанно: ${data.totalRevenueBasedOrdersDto.totalOrders}`;
             document.querySelector(".Earning").textContent=`Средняя цена одного заказа: ${data.totalRevenueBasedOrdersDto.avgRevenuePerOrder}`;
@@ -187,7 +187,7 @@ async function Statistik() {
     
     document.querySelector('.ExelDownload').addEventListener('click', function () {
         const statToken = JSON.parse(localStorage.getItem('statickToken'));
-        
+
         Swal.fire({
             html: `
             <div class="Enter">
@@ -264,7 +264,7 @@ async function Statistik() {
                         });
                     }
                 });
-                
+
             },
             preConfirm: () => {
                 const fromExel = document.getElementById("fromExel").value;
@@ -274,8 +274,8 @@ async function Statistik() {
                     Swal.showValidationMessage("Пожалуйста, заполните все поля!");
                     return false;
                 }
-                
-    
+
+
                 const timeExStart = `${fromExel}T00:00:00`;
                 const timeExEnd = `${toExel}T23:59:59`;
     
