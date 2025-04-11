@@ -1,5 +1,5 @@
-const host = "http://46.229.212.34:9091";
-// const host = "http://localhost:9091";
+// const host = "http://46.229.212.34:9091";
+const host = "http://localhost:9091";
 
 let allPENDINGOrders = []; // Store all loaded orders
 let allCOMPLETEDOrders = []; // Store all loaded orders
@@ -210,15 +210,13 @@ const renderBody = () => `
 
 let stompClient = null;
 
-function connectWebSocket() {
+function connectWebSocket(retryCount = 0) {
     if (!token) {
         displayMessage("Ошибка: JWT-токен отсутствует");
         return;
     }
-
     const socket = new SockJS(`${host}/ws-orders`); // Подключение к WebSocket
     stompClient = Stomp.over(socket); // Инициализация STOMP клиента
-
     stompClient.connect(
         {Authorization: "Bearer " + token}, // Передача токена в заголовке
         function (frame) {
@@ -227,21 +225,32 @@ function connectWebSocket() {
             stompClient.subscribe('/topic/orders', function (response) {
                 const orderData = JSON.parse(response.body); // Парсим ответ
                 let orderStatus = orderData.orderResponseDTO.status;
-                if (currentOrdersPageStatus === "PENDING") {
-                    displayOrder(orderData, orderStatus, true);
+                if (orderStatus === "PENDING") {
+                    incrementOrderCounterValueByCounterId("pendingCount");
+                    if (currentOrdersPageStatus === "PENDING") {
+                        displayOrder(orderData, orderStatus, true);
+                    }
+                } else if (orderStatus === "COMPLETED") {
+                    incrementOrderCounterValueByCounterId("completedCount");
+                    if (currentOrdersPageStatus === "COMPLETED") {
+                        displayOrder(orderData, orderStatus, true);
+                    }
+                } else if (orderStatus === "CONFIRMED") {
+                    incrementOrderCounterValueByCounterId("confirmedCount");
+                    if (currentOrdersPageStatus === "CONFIRMED") {
+                        displayOrder(orderData, orderStatus, true);
+                    }
                 }
-                incrementOrderCounterValueByCounterId("pendingCount");
-
             });
         }
         ,
-
         function (error) {
             console.error("Ошибка подключения:", error); // Выводим ошибку подключения
-            displayMessage("Ошибка подключения: " + error);
+            if (retryCount < 100) { // Limit retries to avoid infinite loops
+                setTimeout(() => connectWebSocket(retryCount + 1), 5000); // 5 sec delay
+            }
         }
     )
-    ;
 }
 
 // Функция для отображения всех заказов
