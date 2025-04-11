@@ -1,5 +1,6 @@
 const host = CONFIG.host;
 
+
 localStorage.setItem('statickToken', JSON.stringify(''));
 function checkAdminAccess() {
     const token = localStorage.getItem("accessToken");
@@ -1944,7 +1945,7 @@ document.querySelector('.notifay').addEventListener('click', Notifications);
 document.querySelector('.static').addEventListener('click', async function () {
     const uuid = JSON.parse(localStorage.getItem('uuid'));
     let valid = false;
-
+    let changePas = false;
     await fetch(`${host}/api/v1/auth/isRegistered?userUUID=${uuid}`, {
         method: "GET",
         headers: {
@@ -1969,6 +1970,10 @@ document.querySelector('.static').addEventListener('click', async function () {
               <input type="password" class="form-control" id="password" placeholder="Пароль" />
               <label for="password">Пароль</label>
            </div>
+           <div class="form-floating mb-3" id='NewPas' style='display:none'>
+              <input type="password" class="form-control" id="newpassword" placeholder="Новый пароль" />
+              <label for="newpassword">Новый пароль</label>
+           </div>
            <p id='changePas'>Изменить пароль</p>
         </div>
         `,
@@ -1978,7 +1983,40 @@ document.querySelector('.static').addEventListener('click', async function () {
         confirmButtonText: valid ? "Войти" : "Зарегистрироваться",
         cancelButtonText: "Отмена",
         didOpen: () => {
-            document.querySelector('#changePas');
+            document.querySelector('#changePas').addEventListener('click', function(){
+                document.querySelector('#NewPas').style.display='block';
+                changePas=true;
+            });
+            const passwordInput = document.getElementById("newpassword");
+            let timeoutId;
+
+            passwordInput.addEventListener("input", () => {
+              // Сделать видимым ввод
+              passwordInput.type = "text";
+            
+              // Сброс предыдущего таймера
+              clearTimeout(timeoutId);
+            
+              // Через 2 секунды скрыть обратно
+              timeoutId = setTimeout(() => {
+                passwordInput.type = "password";
+              }, 200);
+            });
+            const paswordOld = document.getElementById("password");
+            let timeoutID;
+                    
+            paswordOld.addEventListener("input", () => {
+              // Сделать видимым ввод
+              paswordOld.type = "text";
+            
+              // Сброс предыдущего таймера
+              clearTimeout(timeoutID);
+            
+              // Через 2 секунды скрыть обратно
+              timeoutID = setTimeout(() => {
+                paswordOld.type = "password";
+              }, 200);
+            });
         },
         preConfirm: () => {
             const name = document.getElementById("login").value;
@@ -1990,7 +2028,7 @@ document.querySelector('.static').addEventListener('click', async function () {
 
             const logbod = { login: name, password: pas };
 
-            if (valid) {
+            if (valid && !changePas) {
                 return fetch(`${host}/api/v1/auth/login`, {
                     method: "POST",
                     headers: {
@@ -2008,7 +2046,47 @@ document.querySelector('.static').addEventListener('click', async function () {
                     console.error("Ошибка регистрации:", err);
                     Swal.showValidationMessage(valid ? "Ошибка входа!": "Ошибка регистрации!");
                 });
-            } else {
+            }
+            // если кнопка изменить пароль нажата
+            if(valid && changePas){
+                const pasnew = document.getElementById("newpassword").value;
+                const changeP = { login: name, oldPassword: pas, newPassword: pasnew };
+                console.log(changeP);
+                return fetch(`${host}/api/v1/auth/change-password/${uuid}`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(changeP)
+                })
+                .then(res => res)
+                .then(dat => {
+                    const logbod = { login: name, password: pasnew };
+                    fetch(`${host}/api/v1/auth/login`, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(logbod)
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        localStorage.setItem('statickToken', JSON.stringify(data.disposableToken));
+                        Statistik();
+                    })
+                    .catch(err => {
+                        console.error("Ошибка регистрации:", err);
+                        Swal.showValidationMessage(valid ? "Ошибка входа!": "Ошибка регистрации!");
+                    });
+                })
+                .catch(err => {
+                    console.error("Ошибка регистрации:", err);
+                    Swal.showValidationMessage("Не удалось изменить пароль!");
+                });
+            }
+            else {
                 return fetch(`${host}/api/v1/auth/register?userUUID=${uuid}`, {
                     method: "POST",
                     headers: {

@@ -187,6 +187,15 @@ textarea{
     height: 460px;
     overflow-y: auto;
 }
+#changePas{
+    text-decoration: underline;
+    color: #545454;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+#changePas:hover{
+    color: #1b1b1b;
+}
 .ExelPop{
     width: 80%;
 }
@@ -410,10 +419,10 @@ label::after{
     color: black !important;
 }
 /* если что это для описания товара */
-.categorylist th:nth-child(4),
-.categorylisttd:nth-child(4) {
+/* .categorylist th:nth-child(4),
+.categorylist td:nth-child(4) {
         display: none;
-    }
+    } */
 
 .information{
     display: flex;
