@@ -1969,6 +1969,7 @@ document.querySelector('.static').addEventListener('click', async function () {
               <input type="password" class="form-control" id="password" placeholder="Пароль" />
               <label for="password">Пароль</label>
            </div>
+           <p id='changePas'>Изменить пароль</p>
         </div>
         `,
         showCancelButton: true,
@@ -1976,6 +1977,9 @@ document.querySelector('.static').addEventListener('click', async function () {
         cancelButtonColor: "#3f3f3f",
         confirmButtonText: valid ? "Войти" : "Зарегистрироваться",
         cancelButtonText: "Отмена",
+        didOpen: () => {
+            document.querySelector('#changePas');
+        },
         preConfirm: () => {
             const name = document.getElementById("login").value;
             const pas = document.getElementById("password").value;
@@ -2002,7 +2006,7 @@ document.querySelector('.static').addEventListener('click', async function () {
                 })
                 .catch(err => {
                     console.error("Ошибка регистрации:", err);
-                    Swal.showValidationMessage("Ошибка регистрации!");
+                    Swal.showValidationMessage(valid ? "Ошибка входа!": "Ошибка регистрации!");
                 });
             } else {
                 return fetch(`${host}/api/v1/auth/register?userUUID=${uuid}`, {
