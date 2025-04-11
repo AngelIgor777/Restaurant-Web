@@ -1,5 +1,5 @@
-// const host = "http://46.229.212.34:9091";
-const host = "http://localhost:9091";
+const host = CONFIG.host;
+
 
 let allPENDINGOrders = []; // Store all loaded orders
 let allCOMPLETEDOrders = []; // Store all loaded orders

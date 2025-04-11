@@ -1,5 +1,4 @@
-// const host = "http://46.229.212.34:9091";
-const host = "http://localhost:9091";
+const host = CONFIG.host;
 
 
 function checkAdminAccess() {
@@ -891,6 +890,7 @@ function setCounterValue(counterId, value) {
 
 
 let stompClient = null;
+
 function connectWebSocket(retryCount = 0) {
     const token = JSON.parse(localStorage.getItem("accessToken"));
     if (!token) return;
@@ -904,11 +904,16 @@ function connectWebSocket(retryCount = 0) {
             console.log("Connected to server:", frame);
             stompClient.subscribe('/topic/pending-orders-increment', function (response) {
                 const orderData = JSON.parse(response.body);
+                const element = document.getElementById("pendingCount");
+                const currentCount = parseInt(element.textContent, 10) || 0;
+
                 if (orderData === 1) {
-                    const element = document.getElementById("pendingCount");
                     if (element) {
-                        const currentCount = parseInt(element.textContent, 10) || 0;
                         element.textContent = currentCount + 1;
+                    }
+                } else if (orderData === -1) {
+                    if (element) {
+                        element.textContent = currentCount - 1;
                     }
                 }
             });
@@ -922,7 +927,6 @@ function connectWebSocket(retryCount = 0) {
         }
     )
 }
-
 
 
 // Автоматическое подключение при загрузке страницы
