@@ -180,7 +180,7 @@ async function Statistik() {
         <p class='Totalcost' style="text-align:right;"></p>
         <p class='Totalorders' style="text-align:right;"></p>
         <p class='Earning' style="text-align:right;"></p>
-        <button class="ExelDownload">Скачать Exel</button>
+        <button class="ExelDownload">Статистика заказов</button>
         </div>
     `;
     categorytable.appendChild(table);
@@ -296,7 +296,7 @@ async function Statistik() {
                         const url = window.URL.createObjectURL(blob);
                         const a = document.createElement("a");
                         a.href = url;
-                        a.download = "orders.xlsx";
+                        a.download =`${fromExel}---${toExel}.xlsx`;
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
