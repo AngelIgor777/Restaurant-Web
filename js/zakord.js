@@ -36,10 +36,10 @@ checkAdminAccess();
 
 
 const renderBody = () => `
-<div class="buttonsend">
-          <span className="badge" id="pendingCount">0</span>
-          <a class='addbutton' type="button"  href='order.html'>
-            <i class='bx bx-list-ol'></i>
+        <div class="buttonsend">
+          <span class="pendingCounter" id="pendingCount">0</span>
+          <a class="addbutton" href="order.html">
+            <i class="bx bx-list-ol"></i>
           </a>
         </div>
         <div class="addbody">
