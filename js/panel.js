@@ -180,7 +180,7 @@ async function Statistik() {
         <p class='Totalcost' style="text-align:right;"></p>
         <p class='Totalorders' style="text-align:right;"></p>
         <p class='Earning' style="text-align:right;"></p>
-        <button class="ExelDownload">Скачать Exel</button>
+        <button class="ExelDownload">Статистика заказов</button>
         </div>
     `;
     categorytable.appendChild(table);
