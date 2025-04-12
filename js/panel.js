@@ -296,7 +296,7 @@ async function Statistik() {
                         const url = window.URL.createObjectURL(blob);
                         const a = document.createElement("a");
                         a.href = url;
-                        a.download = "orders.xlsx";
+                        a.download =`${fromExel}---${toExel}.xlsx`;
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
