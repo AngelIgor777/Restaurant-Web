@@ -75,7 +75,7 @@ body {
 }
 
 .buttonsall .close {
-    background-color: rgba(128, 25, 25, 0.9);
+    background-color: #c7303f;
     color: #fff;
 }
 
@@ -853,7 +853,6 @@ summary::-webkit-details-marker {
 
 
 .order-top-buttons {
-    position: fixed;
     display: flex;
     gap: 15px;
     justify-content: flex-end;
