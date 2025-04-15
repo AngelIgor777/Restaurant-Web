@@ -356,7 +356,7 @@ function displayOrder(data, status, fromWebSocket) {
         </details>
         <div class="products">
             <strong>Продукты:</strong>
-            ${formatProducts(order.products)}
+            ${formatProducts(order.products, status)}
         </div>
         <div class="buttonsall">
             ${buttonsHTML}   <!-- вставляем сгенерированные кнопки -->
@@ -394,13 +394,26 @@ function addOrderListeners(orderId) {
             setTimeout(() => {
                 completeButton.innerHTML = "Отправлено";
             }, 100);
-
+            
+            // Создание списков продуктов на печать
+            let products=[];
+            const allproducts=completeButton.closest('.order');
+            const checkedCheckboxes = allproducts.querySelectorAll('.print-check input[type="checkbox"]:checked');
+                checkedCheckboxes.forEach(cb => {
+                    products.push(cb.id);
+            });
+            const listprod={
+                'products':products
+            };
+            console.log(JSON.stringify(listprod));
             try {
                 const response = await fetch(`${host}/api/v1/orders/${id}/print`, {
                     method: "POST",
                     headers: {
                         "Authorization": "Bearer " + token,
-                    }
+                         "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(listprod)
                 });
 
                 if (response.ok) {
@@ -495,6 +508,7 @@ function addOrderListeners(orderId) {
 
 
 function confirmbut() {
+    console.log("Me here");
     document.querySelectorAll('.complete').forEach(el => {
         el.addEventListener('click', async function () {
             const id = el.getAttribute('data-id');
@@ -502,7 +516,7 @@ function confirmbut() {
                 console.log("data-id не найден");
                 return;
             }
-
+            
             console.log(`Подтвержден заказ с ID: ${id}`);
             el.innerHTML = "<i class='bx bx-check'></i>";
             el.disabled = true;
@@ -611,19 +625,30 @@ function handleError(el, message, error = null) {
     el.disabled = false;
 }
 
-function formatProducts(products) {
+function formatProducts(products, stat) {
     if (!Array.isArray(products) || products.length === 0) {
         return '<em>Нет продуктов</em>';
+    }
+    let typ=false;
+    if(stat==='PENDING'){
+        typ=true;   
     }
     return products.map((product, id) =>
         `<div class="product">
         <details class='det'>
         <summary>
-            <p class='prname'><span>${id + 1})</span> <b>${product.name ?? 'Не указано'}</b></p>
+            <p class='prname'>
+                <span>${id + 1})</span>
+                <b>${product.name ?? 'Не указано'}</b>
+            </p>
             <p><span>Цена:</span> <b>${product.price ?? 'Не указано'}</b></p>
             <p><span>Количество:</span> <b>${product.quantity ?? 'Не указано'}</b>
+            ${typ ? `<div class="form-check print-check">
+                <input class="form-check-input" type="checkbox" value="" id="${product.id}" checked>
+                <label class="form-check-label" for="${product.id}">Печатать</label>
+            </div>` : ''}
+                
             </p>
-            
         </summary>
            
             </details>

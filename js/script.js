@@ -1944,26 +1944,29 @@ async function Hachchange() {
                             addressRequestDTO: null
                         }
                         console.log(JSON.stringify(book));
+
+                        // Здесь проверака существует ли на этот стол заказ
+
                         fetch(`${host}/api/v1/order-products/bulk`, {
                             method: 'POST', headers: {
                                 'Content-Type': 'application/json',
                             }, body: JSON.stringify(book),
                         })
-                            .then(response => response.json())
-                            .then(data => {
-                                let titl = 'Успех!';
-                                let tex = `Номер вашего заказа: ${data.otp}!`
-                                if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
-                                    titl = 'Succes!';
-                                    tex = `Numărul dvs. de comandă: ${data.otp}!`
+                        .then(response => response.json())
+                        .then(data => {
+                            let titl = 'Успех!';
+                            let tex = `Номер вашего заказа: ${data.otp}!`
+                            if (JSON.parse(localStorage.getItem('lang')) === 'ro') {
+                                titl = 'Succes!';
+                                tex = `Numărul dvs. de comandă: ${data.otp}!`
+                            }
+                            // Обрабатываем успешный ответ
+                            Swal.fire({
+                                title: `${titl}`, text: `${tex}`, icon: "success", customClass: {
+                                    confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
                                 }
-                                // Обрабатываем успешный ответ
-                                Swal.fire({
-                                    title: `${titl}`, text: `${tex}`, icon: "success", customClass: {
-                                        confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-                                    }
-                                });
-                                // сюда функция для избранного
+                            });
+                            // сюда функция для избранного
                                 ChosenOne();
                             })
                             .catch(error => {
