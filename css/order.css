@@ -154,6 +154,10 @@ b {
 .print-check{
     font-size: 1.2rem;
 }
+.numberCheck{
+    
+    flex-direction: row;
+}
 .order {
     border-radius: 10px;
     border: 2px solid #8b6f47; /* Более тёмная граница */
@@ -207,7 +211,63 @@ b {
     grid-template-rows: repeat(2, 50px);
     gap: 1px;
 }
-
+.TableList{
+    display: grid;
+    grid-template-columns: repeat(5, 50px);
+    grid-template-rows: repeat(2, 50px);
+    gap: 1px;
+}
+.TableDesk{
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin-left: 30px;
+    padding: 40px;
+    height: 200px;
+}
+.CheckButton{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.OpenBut{
+    z-index: 9000;
+    position: relative;
+    margin-top: 10px;
+    width: 140px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    background-color: #2F9262;
+    font-size: clamp(8px, 15px, 18px);;
+    font-family: "Kurale", serif;
+    font-weight: 600;
+    cursor: pointer;
+}
+.ChosenItems{
+    font-size: 20px;
+}
+.ChosenOrders{
+    overflow-y: auto;
+    height: 200px;
+}
+.statusButs{
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+.statusButs li{
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+.statusButs li.active{
+    background-color: #b2b2b2;
+    color: #fff;
+}
 .cell {
     display: flex;
     align-items: center;
@@ -220,7 +280,24 @@ b {
     background-color: white;
     border-radius: 9px;
 }
-
+.cellNum{
+    display: flex;
+    flex-direction: column;
+}
+.cellNum p{
+    margin: 0;
+    font-size: 14px;
+}
+.cellNum .NumberOrder{
+    background-color: #ff4747e6;
+    border-radius: 50%;
+    width: 20px;
+    text-align: center;
+    color: #fff;
+}
+.Checked{
+    background-color: #ffe5e5;
+}
 .selected {
     background-color: lightblue;
 }

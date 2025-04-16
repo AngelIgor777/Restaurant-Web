@@ -5,6 +5,8 @@ let allPENDINGOrders = []; // Store all loaded orders
 let allCOMPLETEDOrders = []; // Store all loaded orders
 let allCONFIRMEDOrders = []; // Store all loaded orders
 
+let chosenTable=''//Выбранный стол
+
 function pushUniqueOrder(orderArray, newOrder) {
     if (!orderArray.some(order => order.orderResponseDTO.id === newOrder.orderResponseDTO.id)) {
         orderArray.push(newOrder);
@@ -62,6 +64,15 @@ const renderBody = () => `
       </button>
     </div>
 
+    <div class='TableDesk'>
+            <div class='TableList'>
+        
+            </div>
+            <div class='CheckButton'>
+
+            </div>
+        </div>
+
     <!-- Search input below the buttons -->
     <form id="searchOrderInput" style="width: 100%;">
       <div class="input-group searchgroup">
@@ -69,9 +80,11 @@ const renderBody = () => `
       </div>
     </form>
 
+
   </div>
     
         <div class='ordertop'>
+        
         <div class='topcont swiper'>
             <div class="card-cont menu-container">
                 <div class="swiper-wrapper" id='messages'>
@@ -215,16 +228,20 @@ function connectWebSocket(retryCount = 0) {
         displayMessage("Ошибка: JWT-токен отсутствует");
         return;
     }
-    const socket = new SockJS(`${host}/ws-orders`); // Подключение к WebSocket
-    stompClient = Stomp.over(socket); // Инициализация STOMP клиента
+
+    const socket = new SockJS(`${host}/ws-orders`);
+    stompClient = Stomp.over(socket);
+
     stompClient.connect(
-        {Authorization: "Bearer " + token}, // Передача токена в заголовке
+        { Authorization: "Bearer " + token },
         function (frame) {
-            console.log("Connected to server:", frame); // Выведем frame, чтобы понять, что возвращает сервер
-            // Подписка на канал
+            console.log("Connected to server:", frame);
+
+            // Подписка на заказы
             stompClient.subscribe('/topic/orders', function (response) {
-                const orderData = JSON.parse(response.body); // Парсим ответ
+                const orderData = JSON.parse(response.body);
                 let orderStatus = orderData.orderResponseDTO.status;
+
                 if (orderStatus === "PENDING") {
                     incrementOrderCounterValueByCounterId("pendingCount");
                     if (currentOrdersPageStatus === "PENDING") {
@@ -242,15 +259,22 @@ function connectWebSocket(retryCount = 0) {
                     }
                 }
             });
-        }
-        ,
+
+            // Подписка на изменения статуса столов
+            stompClient.subscribe('/topic/tables-info', function (message) {
+                const openTables = JSON.parse(message.body);
+                console.log(message);
+                console.log('Received open tables:', openTables);
+                TableLis(); // перерисовать список столов
+            });
+        },
         function (error) {
-            console.error("Ошибка подключения:", error); // Выводим ошибку подключения
-            if (retryCount < 100) { // Limit retries to avoid infinite loops
-                setTimeout(() => connectWebSocket(retryCount + 1), 5000); // 5 sec delay
+            console.error("Ошибка подключения:", error);
+            if (retryCount < 100) {
+                setTimeout(() => connectWebSocket(retryCount + 1), 5000);
             }
         }
-    )
+    );
 }
 
 // Функция для отображения всех заказов
@@ -331,47 +355,91 @@ function displayOrder(data, status, fromWebSocket) {
             <button class="close" data-id="${order.id}">Удалить</button>
         `;
     }
-
-    // Создание блока заказа
-    messageElement.className = `order it-${order.id} swiper-slide`;
-    messageElement.innerHTML = `
-         <h2>${order.id}</h2>
-         <h2>${data.otp ? `Проверочный код: ${data.otp}` : ""}</h2>
-        <details>
-        <summary>
-        <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
-        <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'} lei</p>
-        <p>${formatAddress(data.addressResponseDTO)}</p>
-        <p>${formatphone(data.phoneNumber)}</p>
-        <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
-        <p class='and' style='text-align: right; opacity:0.7;'>Ещё...</p>
-        <p class='andv' style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up'></i></p>
-        </summary>
-        <p><span>Общее время готовки:</span> ${formatTime(order.totalCookingTime)}</p>
-        <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
-        <p><span>Внутри заведения:</span> ${data.orderInRestaurant ? 'Да' : 'Нет'}</p>
-        <p><span>Коды скидки:</span> ${data.existDiscountCodes ? 'Есть' : 'Нет'}</p>
-        <p><span>Код продукта скидки:</span> ${data.productDiscountCode ?? 'Нет'}</p>
-        <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
-        </details>
-        <div class="products">
-            <strong>Продукты:</strong>
-            ${formatProducts(order.products, status)}
-        </div>
-        <div class="buttonsall">
-            ${buttonsHTML}   <!-- вставляем сгенерированные кнопки -->
-        </div>
-    `;
-    if (fromWebSocket === true) {
-        messageDiv.prepend(messageElement); // Добавить в начало
-    } else if (fromWebSocket === false) {
-        messageDiv.appendChild(messageElement);
+    if(chosenTable===''){
+         // Создание блока заказа
+         messageElement.className = `order it-${order.id} swiper-slide`;
+         messageElement.innerHTML = `
+              <h2>${order.id}</h2>
+              <h2>${data.otp ? `Проверочный код: ${data.otp}` : ""}</h2>
+             <details>
+             <summary>
+             <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
+             <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'} lei</p>
+             <p>${formatAddress(data.addressResponseDTO)}</p>
+             <p>${formatphone(data.phoneNumber)}</p>
+             <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
+             <p class='and' style='text-align: right; opacity:0.7;'>Ещё...</p>
+             <p class='andv' style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up'></i></p>
+             </summary>
+             <p><span>Общее время готовки:</span> ${formatTime(order.totalCookingTime)}</p>
+             <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
+             <p><span>Внутри заведения:</span> ${data.orderInRestaurant ? 'Да' : 'Нет'}</p>
+             <p><span>Коды скидки:</span> ${data.existDiscountCodes ? 'Есть' : 'Нет'}</p>
+             <p><span>Код продукта скидки:</span> ${data.productDiscountCode ?? 'Нет'}</p>
+             <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
+             </details>
+             <div class="products">
+                 <strong>Продукты:</strong>
+                 ${formatProducts(order.products, status)}
+             </div>
+             <div class="buttonsall">
+                 ${buttonsHTML}   <!-- вставляем сгенерированные кнопки -->
+             </div>
+         `;
+         if (fromWebSocket === true) {
+             messageDiv.prepend(messageElement); // Добавить в начало
+         } else if (fromWebSocket === false) {
+             messageDiv.appendChild(messageElement);
+         }
+         Swip();
+         // confirmbut();
+         // Автопрокрутка вниз
+         addOrderListeners(order.id)
+         messageDiv.scrollTop = messageDiv.scrollHeight;
     }
-    Swip();
-    // confirmbut();
-    // Автопрокрутка вниз
-    addOrderListeners(order.id)
-    messageDiv.scrollTop = messageDiv.scrollHeight;
+    else if(chosenTable===data.tableResponseDTO.number){
+         // Создание блока заказа
+         messageElement.className = `order it-${order.id} swiper-slide`;
+         messageElement.innerHTML = `
+              <h2>${order.id}</h2>
+              <h2>${data.otp ? `Проверочный код: ${data.otp}` : ""}</h2>
+             <details>
+             <summary>
+             <p><span>Метод оплаты:</span> ${order.paymentMethod ?? 'Не указано'}</p>
+             <p><span>Итоговая цена:</span> ${order.totalPrice ?? 'Не указано'} lei</p>
+             <p>${formatAddress(data.addressResponseDTO)}</p>
+             <p>${formatphone(data.phoneNumber)}</p>
+             <p class='tableNum'> ${formatTable(data.tableResponseDTO)}</p>
+             <p class='and' style='text-align: right; opacity:0.7;'>Ещё...</p>
+             <p class='andv' style='text-align: right; opacity:0.7; margin-left:60%;'><i class='bx bx-chevron-up'></i></p>
+             </summary>
+             <p><span>Общее время готовки:</span> ${formatTime(order.totalCookingTime)}</p>
+             <p><span>Создан:</span> ${formDate(order.createdAt)}</p>
+             <p><span>Внутри заведения:</span> ${data.orderInRestaurant ? 'Да' : 'Нет'}</p>
+             <p><span>Коды скидки:</span> ${data.existDiscountCodes ? 'Есть' : 'Нет'}</p>
+             <p><span>Код продукта скидки:</span> ${data.productDiscountCode ?? 'Нет'}</p>
+             <p><span>Глобальный код скидки:</span> ${data.globalDiscountCode ?? 'Нет'}</p>
+             </details>
+             <div class="products">
+                 <strong>Продукты:</strong>
+                 ${formatProducts(order.products, status)}
+             </div>
+             <div class="buttonsall">
+                 ${buttonsHTML}   <!-- вставляем сгенерированные кнопки -->
+             </div>
+         `;
+         if (fromWebSocket === true) {
+             messageDiv.prepend(messageElement); // Добавить в начало
+         } else if (fromWebSocket === false) {
+             messageDiv.appendChild(messageElement);
+         }
+         Swip();
+         // confirmbut();
+         // Автопрокрутка вниз
+         addOrderListeners(order.id)
+         messageDiv.scrollTop = messageDiv.scrollHeight;
+    }
+   
 }
 
 function addOrderListeners(orderId) {
@@ -806,16 +874,6 @@ function setCounterValue(counterId, value) {
     }
 }
 
-// Автоматическое подключение при загрузке страницы
-window.onload = async function () {
-    document.querySelector('.app').innerHTML = renderBody();
-    initializeButtons();  // 2. Add event listeners to buttons!
-    await connectWebSocket();  // Подключение к WebSocket
-    await loadAllOrders("PENDING", allPENDINGOrders);  // Загрузка всех заказов
-    makeActivePendingButton();
-    Swip();
-    await updateOrderCounters();
-};
 
 function makeActivePendingButton() {
     let orderTypesPENDINGButton = document.getElementById("orderTypesPENDINGButton");
@@ -896,6 +954,8 @@ function initializeButtons() {
 
     if (orderTypesCOMPLETEDButton) {
         orderTypesCOMPLETEDButton.addEventListener("click", () => {
+            // обнуляем столы
+            chosenTable='';
             loadAllOrders("COMPLETED", allCOMPLETEDOrders);
             currentOrdersPageStatus = "COMPLETED";
             setActive(orderTypesCOMPLETEDButton);
@@ -904,6 +964,8 @@ function initializeButtons() {
 
     if (orderTypesCONFIRMEDButton) {
         orderTypesCONFIRMEDButton.addEventListener("click", () => {
+            // обнуляем столы
+            chosenTable='';
             loadAllOrders("CONFIRMED", allCONFIRMEDOrders);
             currentOrdersPageStatus = "CONFIRMED";
             setActive(orderTypesCONFIRMEDButton);
@@ -912,6 +974,8 @@ function initializeButtons() {
 
     if (orderTypesPENDINGButton) {
         orderTypesPENDINGButton.addEventListener("click", () => {
+            // обнуляем столы
+            chosenTable='';
             loadAllOrders("PENDING", allPENDINGOrders);
             currentOrdersPageStatus = "PENDING";
             setActive(orderTypesPENDINGButton);
@@ -954,5 +1018,287 @@ function set0OrderCounterValueByCounterId(id) {
         elementById.textContent = 0;
     }
 }
+function ChangeChoosenTable(spis){
+    const tbody=document.querySelector(`.Chosenlist`);
+    tbody.innerHTML = '';
+    spis.forEach((order, index) => {
+        console.log(`\n🧾 Заказ #${index + 1}, ID: ${order.orderResponseDTO.id}`);
+        order.orderResponseDTO.products.forEach(product => {
+            tbody.insertAdjacentHTML('beforeend', `
+                <tr>
+                  <td style="text-align: center;">${product.name}</td>
+                  <td style="text-align: center;">${product.typeName}</td>
+                  <td style="text-align: center;">${product.quantity}</td>
+                  <td style="text-align: center;">${product.quantity*product.price}</td>
+                  </tr>
+              `);
+        });
+    });
+}
+async function TableCheck(id, status){
+    console.log(status);
+    const desk = document.querySelector(".TableDesk");
+    desk.style.height = '300px';
+    const but = document.querySelector(".CheckButton");
+    const messageDiv = document.getElementById("messages"); // div for all orders
+    if (!status) {
+        but.innerHTML = `<button class='OpenBut'>Открыть счет ${id}</button>`;
+        const openBtn = document.querySelector(".OpenBut");
+        openBtn.onclick = async function () {
+            const result = await fetch(`${host}/api/v1/tables/open/${id}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                }
+            });
+            const data = await result.json();
+            console.log(data);
+            if (data.open) {
+                const cell = document.querySelector(`.cell-${data.id}`);
+                cell.innerHTML = `
+                    <p>${id}</p>
+                    <p class='NumberOrder'>0</p>
+                `;
+                cell.classList.add('Checked');
+                but.innerHTML = ``;
+            }
+        };
+    } else {
+        but.innerHTML = `<button class='OpenBut'>Закрыть счет ${id}</button>`;
+        // Кнопка закрытия
+                    document.querySelector('.OpenBut').addEventListener('click', async function(){
+                        const result = await fetch(`${host}/api/v1/orders/count/${id}`, {
+                            method: "POST",
+                            headers: {
+                                "Authorization": "Bearer " + token,
+                            }
+                        });
+                        const data = await result.json();
+                        console.log(data);
+                        Swal.fire({
+                            title: `Итого: ${data.price}MDL`,
+                            text: ``,
+                            icon: "success",
+                            customClass: {
+                                confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+                            }});
+                    });
+        chosenTable=id;
+        const res = await fetch(`${host}/api/v1/orders/countStats`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+            }
+        });
+        const data = await res.json();
+        const tableIdToFind = id;
+        const tableInfo = data.tableOrderInfos.find(info => info.tableId === tableIdToFind);
+        console.log(tableInfo);
+        if (tableInfo) {
+            // Получаем все заказы по категориям
+            const pendingOrders = tableInfo.pendingOrders.orders;
+            const confirmedOrders = tableInfo.confirmedOrders.orders;
+            const completedOrders = tableInfo.completedOrders.orders;
+            
+            // Объединяем всё в один массив
+            const allOrders = [
+                ...pendingOrders,
+                ...confirmedOrders,
+                ...completedOrders
+            ];
+            let status='';
+            document.querySelectorAll('.order-top-buttons button').forEach(el => {
+                if (el.classList.contains('active')) {
+                    if (el.id === 'orderTypesPENDINGButton') {
+                        status = 'PENDING';
+                        messageDiv.innerHTML = ""; // Clear previous content
+                        console.log(tableInfo.pendingOrders.orders);
+                        tableInfo.pendingOrders.orders.forEach(it=>{
+                            displayOrder(it, status, false);
+                        });
+                    } else if (el.id === 'orderTypesCONFIRMEDButton') {
+                        status = 'CONFIRMED';
+                        messageDiv.innerHTML = ""; // Clear previous content
+                        console.log(tableInfo.confirmedOrders.orders);
+                        tableInfo.confirmedOrders.orders.forEach(it=>{
+                            displayOrder(it, status, false);
+                        });
+                    } else if (el.id === 'orderTypesCOMPLETEDButton') {
+                        status = 'COMPLETED';
+                        messageDiv.innerHTML = ""; // Clear previous content
+                        console.log(tableInfo.completedOrders.orders);
+                        tableInfo.completedOrders.orders.forEach(it=>{
+                            displayOrder(it, status, false);
+                        });
+                    }
+                }
+                
+            });
+            
+        }
+        
+        
+        // Swal.fire({
+        //     title: `Столик номер: ${id}`,
+        //     html: `
+        //       <div class='OrderStat'>
+        //         <ul class='statusButs'>
+        //             <li class='orderPending active'>Текущие: 0</li>
+        //             <li class='orderCompleted'>В процессе: 0</li>
+        //             <li class='confirmedOrders'>Выполненные: 0</li>
+        //         </ul>
+        //             <div class='ChosenOrders'>
+        //             <table class="ChosenItems table">
+        //                  <thead>
+        //                      <tr>
+        //                          <th style="text-align: center;">Название</th>
+        //                          <th style="text-align: center;">Категория</th>
+        //                          <th style="text-align: center;">Количество</th>
+        //                          <th style="text-align: center;">Итог</th>
+        //                      </tr>
+        //                  </thead>
+        //                  <tbody class="Chosenlist">
+        //                  </tbody>
+        //              </table>
+        //             </div>
+        //             <button class='OpenBut'>Закрыть счет ${id}</button>
+        //       </div>
+        //     `,
+        //     showCancelButton: true,
+        //     confirmButtonColor: "#2F9262",
+        //     cancelButtonColor: "#3f3f3f",
+        //     confirmButtonText: "Вернуться",
+        //     cancelButtonText: "Отмена",
+        //     focusConfirm: false,
+        //     didOpen: async () => {
+        //         const res = await fetch(`${host}/api/v1/orders/countStats`, {
+        //             method: "GET",
+        //             headers: {
+        //                 "Authorization": "Bearer " + token,
+        //             }
+        //         });
+        //         const data = await res.json();
+        //         const tableIdToFind = id;
+        //         const tableInfo = data.tableOrderInfos.find(info => info.tableId === tableIdToFind);
+        //         console.log(tableInfo);
+        //         if (tableInfo) {
+        //             // Получаем все заказы по категориям
+        //             const pendingOrders = tableInfo.pendingOrders.orders;
+        //             const confirmedOrders = tableInfo.confirmedOrders.orders;
+        //             const completedOrders = tableInfo.completedOrders.orders;
 
 
+
+        //             // Объединяем всё в один массив
+        //             const allOrders = [
+        //                 ...pendingOrders,
+        //                 ...confirmedOrders,
+        //                 ...completedOrders
+        //             ];
+        //             ChangeChoosenTable(pendingOrders);
+        //             document.querySelector('.orderPending').addEventListener('click', function(){
+        //                 document.querySelectorAll('.statusButs li').forEach(it=>{
+        //                     it.classList.remove('active');
+        //                 });
+        //                 if(!this.classList.contains('active')){
+        //                     this.classList.add('active');
+        //                     ChangeChoosenTable(pendingOrders);
+        //                 }
+        //             });
+        //             document.querySelector('.orderCompleted').addEventListener('click', function(){
+        //                 document.querySelectorAll('.statusButs li').forEach(it=>{
+        //                     it.classList.remove('active');
+        //                 });
+        //                 if(!this.classList.contains('active')){
+        //                     this.classList.add('active');
+        //                     ChangeChoosenTable(confirmedOrders);
+        //                 }
+        //             });
+        //             document.querySelector('.confirmedOrders').addEventListener('click', function(){
+        //                 document.querySelectorAll('.statusButs li').forEach(it=>{
+        //                     it.classList.remove('active');
+        //                 });
+        //                 if(!this.classList.contains('active')){
+        //                     this.classList.add('active');
+        //                     ChangeChoosenTable(completedOrders);
+        //                 }
+        //             });
+        //             // Кнопка закрытия
+        //             document.querySelector('.OpenBut').addEventListener('click', async function(){
+        //                 const result = await fetch(`${host}/api/v1/orders/count/${id}`, {
+        //                     method: "POST",
+        //                     headers: {
+        //                         "Authorization": "Bearer " + token,
+        //                     }
+        //                 });
+        //                 const data = await result.json();
+        //                 console.log(data);
+        //             });
+        //         }
+        //     }
+        // })
+        
+        
+    }
+}
+
+async function TableLis(){
+    const grid = document.querySelector(".TableList");
+    grid.innerHTML='';
+    const result = await fetch(`${host}/api/v1/tables?page=0&size=30`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + token,
+        }
+    });
+    
+    const data = await result.json(); // нужно ждать, пока данные загрузятся
+    const res = await fetch(`${host}/api/v1/orders/countStats`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + token,
+        }
+    });
+    const dat = await res.json();
+    
+    for (let i = 0; i < 10; i++) {
+        console.log(data[i]);
+        const cell = document.createElement("div");
+        cell.className = `cell cell-${data[i].id} cellNum`;
+        cell.textContent = data[i].number;
+
+        const tableIdToFind = data[i].id;
+        const tableInfo = dat.tableOrderInfos.find(info => info.tableId === tableIdToFind);
+
+        let SumOfOrders=0;
+        if (tableInfo) {
+            SumOfOrders=tableInfo.pendingOrders.count+tableInfo.confirmedOrders.count+tableInfo.completedOrders.count;
+        }
+        if(data[i].open){
+            cell.innerHTML=`
+            <p>${data[i].id}</p>
+            <p class='NumberOrder'>${SumOfOrders}</p>
+            `;
+            cell.classList.add('Checked');
+        }
+        // функция при нажатии
+        cell.onclick = () => TableCheck(data[i].id, data[i].open);
+        grid.appendChild(cell);
+    }
+    
+    
+
+}
+
+
+// Автоматическое подключение при загрузке страницы
+window.onload = async function () {
+    document.querySelector('.app').innerHTML = renderBody();
+    initializeButtons();  // 2. Add event listeners to buttons!
+    await connectWebSocket();  // Подключение к WebSocket
+    await loadAllOrders("PENDING", allPENDINGOrders);  // Загрузка всех заказов
+    makeActivePendingButton();
+    Swip();
+    await updateOrderCounters();
+    TableLis();
+};

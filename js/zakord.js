@@ -1,5 +1,5 @@
 const host = CONFIG.host;
-
+const token = JSON.parse(localStorage.getItem('accessToken')); // Получаем токен
 
 function checkAdminAccess() {
     const token = localStorage.getItem("accessToken");
@@ -112,7 +112,9 @@ async function ChosenOne() {
 
 let pagepro = 0; // Начинаем с 0
 let isLoadingpro = false; // Флаг загрузки
+let lastId='';
 async function loadItems(id) {
+    lastId=id;
     if (isLoadingpro) return; // Предотвращаем повторные запросы
     isLoadingpro = true; // Устанавливаем флаг загрузки
     const apiUrl = `${host}/api/v1/products?typeId=${id}&page=${pagepro}&size=20`;
@@ -466,30 +468,67 @@ function handleOrderSubmission(orderData, isAddressForm, orderStatus) {
         quantity: item.quantity
     }));
     console.log(document.getElementById("selected-number").value);
-    let book = {
-        orderProductRequestDTO: orderRequest,
-        paymentMethod: orderData.paymentMethod,
-        orderInRestaurant: !isAddressForm,
-        tableRequestDTO: isAddressForm ? null : {number: document.getElementById("selected-number").textContent},
-        existDiscountCodes: orderData.coupon || orderData.couponit ? true : false,
-        productDiscountCode: orderData.couponit || "",
-        globalDiscountCode: orderData.coupon || "",
-        phoneNumber: orderData.tel,
-        orderStatus: orderStatus,
-        userRegistered: !!user,
-        userUUID: user || "",
-        addressRequestDTO: isAddressForm ? {
-            city: "Copceak",
-            street: orderData.street,
-            homeNumber: orderData.home,
-            apartmentNumber: "1",
-            userUUID: user || ""
-        } : null
-    };
+    let book={};
+    if(orderStatus==='COMPLETED'){
+        // Создание списков продуктов на печать
+        let products=[];
+        const allproducts=document.querySelector('.ordorlist');
+        const checkedCheckboxes = allproducts.querySelectorAll('.print-check input[type="checkbox"]:checked');
+            checkedCheckboxes.forEach(cb => {
+                products.push(cb.id);
+        });
+        book = {
+            orderProductRequestDTO: orderRequest,
+            paymentMethod: orderData.paymentMethod,
+            orderInRestaurant: !isAddressForm,
+            tableRequestDTO: isAddressForm ? null : {number: document.getElementById("selected-number").textContent},
+            existDiscountCodes: orderData.coupon || orderData.couponit ? true : false,
+            productDiscountCode: orderData.couponit || "",
+            globalDiscountCode: orderData.coupon || "",
+            phoneNumber: orderData.tel,
+            orderStatus: orderStatus,
+            userRegistered: !!user,
+            userUUID: user || "",
+            addressRequestDTO: isAddressForm ? {
+                city: "Copceak",
+                street: orderData.street,
+                homeNumber: orderData.home,
+                apartmentNumber: "1",
+                userUUID: user || ""
+            } : null,
+            "productsIdForPrint": {
+                "products": products
+            }
+        };
+    }
+    else{
+        book = {
+            orderProductRequestDTO: orderRequest,
+            paymentMethod: orderData.paymentMethod,
+            orderInRestaurant: !isAddressForm,
+            tableRequestDTO: isAddressForm ? null : {number: document.getElementById("selected-number").textContent},
+            existDiscountCodes: orderData.coupon || orderData.couponit ? true : false,
+            productDiscountCode: orderData.couponit || "",
+            globalDiscountCode: orderData.coupon || "",
+            phoneNumber: orderData.tel,
+            orderStatus: orderStatus,
+            userRegistered: !!user,
+            userUUID: user || "",
+            addressRequestDTO: isAddressForm ? {
+                city: "Copceak",
+                street: orderData.street,
+                homeNumber: orderData.home,
+                apartmentNumber: "1",
+                userUUID: user || ""
+            } : null
+        };
+    }
+    console.log(book);
 
-    fetch(`${host}/api/v1/order-products/bulk`, {
+    fetch(`${host}/api/v1/order-products/bulk/admin`, {
         method: 'POST',
         headers: {
+            "Authorization": "Bearer " + token,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(book),
@@ -547,7 +586,13 @@ async function updateModal(order) {
             }
             tbody.insertAdjacentHTML('beforeend', `
             <tr>
-              <td style="text-align: center;">${i + 1}</td>
+              <td class='numberCheck'style="text-align: center;">
+                    <div class="form-check print-check">
+                        <input class="form-check-input" type="checkbox" value="" id="${order[i].id}" checked>
+                        ${i + 1}
+                    </div>
+                    
+              </td>
               <td style="text-align: center;">${name}</td>
               <td style="text-align: center;">${order[i].price}</td>
               <td style="text-align: center;">${order[i].quantity}</td>
@@ -606,6 +651,7 @@ async function updateModal(order) {
 let page = 0; // Начинаем с 0
 let isLoading = false; // Флаг загрузки
 async function loadProducts(query) {
+    lastId='';
     if (isLoading) return; // Предотвращаем повторные запросы
     isLoading = true; // Устанавливаем флаг загрузки
     const apiUrl = `${host}/api/v1/products/search?page=${page}&size=20&query=${encodeURIComponent(query)}`;
@@ -662,7 +708,13 @@ async function loadProducts(query) {
 function checkScroll(container) {
     if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
         const searchQuery = document.querySelector("#search").value;
-        loadProducts(searchQuery); // Передаём актуальный поисковый запрос
+        if(lastId===''){
+            loadProducts(searchQuery); // Передаём актуальный поисковый запрос
+        }
+        else{
+            loadItems(lastId);
+        }
+        
     }
 }
 
