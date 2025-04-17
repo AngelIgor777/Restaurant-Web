@@ -955,6 +955,7 @@ function initializeButtons() {
     if (orderTypesCOMPLETEDButton) {
         orderTypesCOMPLETEDButton.addEventListener("click", () => {
             // обнуляем столы
+           
             chosenTable='';
             loadAllOrders("COMPLETED", allCOMPLETEDOrders);
             currentOrdersPageStatus = "COMPLETED";
@@ -1035,15 +1036,118 @@ function ChangeChoosenTable(spis){
         });
     });
 }
+function orderCompletclick() {
+    if(isChosentable){
+        const orderTypesCOMPLETEDButton = document.getElementById("orderTypesCOMPLETEDButton");
+        const orderTypesCONFIRMEDButton = document.getElementById("orderTypesCONFIRMEDButton");
+        const orderTypesPENDINGButton = document.getElementById("orderTypesPENDINGButton");
+    
+        const allButtons = [orderTypesCOMPLETEDButton, orderTypesCONFIRMEDButton, orderTypesPENDINGButton];
+    
+        function setActive(button) {
+            allButtons.forEach(btn => btn.classList.remove("active")); // remove active from all
+            button.classList.add("active"); // add active to the clicked button
+        }
+        const messageDiv = document.getElementById("messages"); // div for all orders
+        setTimeout(() => {
+            let status = 'COMPLETED';
+            messageDiv.innerHTML = "";
+            console.log(GlobalTableInfo.completedOrders.orders);
+            GlobalTableInfo.completedOrders.orders.forEach(it => {
+                displayOrder(it, status, false);
+            });
+            setActive(orderTypesCOMPLETEDButton);
+        }, 250);
+    }
+    
+}
+
+function orderConfirmedclick() {
+    if(isChosentable){
+        const orderTypesCOMPLETEDButton = document.getElementById("orderTypesCOMPLETEDButton");
+        const orderTypesCONFIRMEDButton = document.getElementById("orderTypesCONFIRMEDButton");
+        const orderTypesPENDINGButton = document.getElementById("orderTypesPENDINGButton");
+    
+        const allButtons = [orderTypesCOMPLETEDButton, orderTypesCONFIRMEDButton, orderTypesPENDINGButton];
+    
+        function setActive(button) {
+            allButtons.forEach(btn => btn.classList.remove("active")); // remove active from all
+            button.classList.add("active"); // add active to the clicked button
+        }
+        const messageDiv = document.getElementById("messages"); // div for all orders
+        setTimeout(() => {
+            let status = 'CONFIRMED';
+            messageDiv.innerHTML = "";
+            console.log(GlobalTableInfo.confirmedOrders.orders);
+            GlobalTableInfo.confirmedOrders.orders.forEach(it => {
+                displayOrder(it, status, false);
+            });
+            setActive(orderTypesCONFIRMEDButton);
+        }, 150);
+    }
+    
+}
+
+function orderPendingclick() {
+    console.log(isChosentable);
+    if(isChosentable){
+        const orderTypesCOMPLETEDButton = document.getElementById("orderTypesCOMPLETEDButton");
+        const orderTypesCONFIRMEDButton = document.getElementById("orderTypesCONFIRMEDButton");
+        const orderTypesPENDINGButton = document.getElementById("orderTypesPENDINGButton");
+    
+        const allButtons = [orderTypesCOMPLETEDButton, orderTypesCONFIRMEDButton, orderTypesPENDINGButton];
+    
+        function setActive(button) {
+            allButtons.forEach(btn => btn.classList.remove("active")); // remove active from all
+            button.classList.add("active"); // add active to the clicked button
+        }
+        const messageDiv = document.getElementById("messages"); // div for all orders
+        setTimeout(() => {
+            
+            let status = 'PENDING';
+            messageDiv.innerHTML = "";
+            console.log(GlobalTableInfo.pendingOrders.orders);
+            GlobalTableInfo.pendingOrders.orders.forEach(it => {
+                displayOrder(it, status, false);
+            });
+            setActive(orderTypesPENDINGButton);
+        }, 150);
+    }
+    
+}
+
+let GlobalTableInfo;
+let isChosentable=false;
 async function TableCheck(id, status){
     console.log(status);
     const desk = document.querySelector(".TableDesk");
     desk.style.height = '300px';
     const but = document.querySelector(".CheckButton");
     const messageDiv = document.getElementById("messages"); // div for all orders
+    const cell = document.querySelector(`.cell-${id}`);
+    const isAlreadyClicked = cell.classList.contains('clicked');
+    
+    // Снимаем класс clicked со всех ячеек
+    document.querySelectorAll('.cell').forEach(el => {
+        el.classList.remove('clicked');
+    });
+    
+    if (isAlreadyClicked) {
+        // Если ячейка уже была выбрана, то "снимаем" выбор
+        updateOrderCounters();
+        isChosentable = false;
+        but.innerHTML = '';
+        chosenTable = '';
+        loadAllOrders("PENDING", allPENDINGOrders);
+    } else {
+        // Иначе выбираем текущую ячейку
+        isChosentable=true;
+        cell.classList.add('clicked');
+    }
     if (!status) {
         but.innerHTML = `<button class='OpenBut'>Открыть счет ${id}</button>`;
         const openBtn = document.querySelector(".OpenBut");
+        
         openBtn.onclick = async function () {
             const result = await fetch(`${host}/api/v1/tables/open/${id}`, {
                 method: "POST",
@@ -1054,34 +1158,30 @@ async function TableCheck(id, status){
             const data = await result.json();
             console.log(data);
             if (data.open) {
-                const cell = document.querySelector(`.cell-${data.id}`);
-                cell.innerHTML = `
-                    <p>${id}</p>
-                    <p class='NumberOrder'>0</p>
-                `;
-                cell.classList.add('Checked');
-                but.innerHTML = ``;
+                TableLis();
             }
         };
     } else {
-        but.innerHTML = `<button class='OpenBut'>Закрыть счет ${id}</button>`;
+        
+            if(isChosentable){
+                but.innerHTML = `<button class='OpenBut'>Закрыть счет ${id}</button>`;
         // Кнопка закрытия
-                    document.querySelector('.OpenBut').addEventListener('click', async function(){
-                        const result = await fetch(`${host}/api/v1/orders/count/${id}`, {
-                            method: "POST",
-                            headers: {
-                                "Authorization": "Bearer " + token,
-                            }
-                        });
-                        const data = await result.json();
-                        console.log(data);
-                        Swal.fire({
-                            title: `Итого: ${data.price}MDL`,
-                            text: ``,
-                            icon: "success",
-                            customClass: {
-                                confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
-                            }});
+        document.querySelector('.OpenBut').addEventListener('click', async function(){
+         const result = await fetch(`${host}/api/v1/orders/count/${id}`, {
+             method: "POST",
+             headers: {
+                 "Authorization": "Bearer " + token,
+             }
+         });
+         const data = await result.json();
+         console.log(data);
+         Swal.fire({
+             title: `Итого: ${data.price}MDL`,
+             text: ``,
+             icon: "success",
+             customClass: {
+                 confirmButton: 'custom-confirm-button'  // Класс для кнопки подтверждения
+             }});
                     });
         chosenTable=id;
         const res = await fetch(`${host}/api/v1/orders/countStats`, {
@@ -1095,6 +1195,7 @@ async function TableCheck(id, status){
         const tableInfo = data.tableOrderInfos.find(info => info.tableId === tableIdToFind);
         console.log(tableInfo);
         if (tableInfo) {
+            GlobalTableInfo=tableInfo;
             // Получаем все заказы по категориям
             const pendingOrders = tableInfo.pendingOrders.orders;
             const confirmedOrders = tableInfo.confirmedOrders.orders;
@@ -1107,6 +1208,7 @@ async function TableCheck(id, status){
                 ...completedOrders
             ];
             let status='';
+            
             document.querySelectorAll('.order-top-buttons button').forEach(el => {
                 if (el.classList.contains('active')) {
                     if (el.id === 'orderTypesPENDINGButton') {
@@ -1134,7 +1236,36 @@ async function TableCheck(id, status){
                 }
                 
             });
+            const orderTypesCOMPLETEDButton = document.getElementById("orderTypesCOMPLETEDButton");
+            const orderTypesCONFIRMEDButton = document.getElementById("orderTypesCONFIRMEDButton");
+            const orderTypesPENDINGButton = document.getElementById("orderTypesPENDINGButton");
             
+            const allButtons = [orderTypesCOMPLETEDButton, orderTypesCONFIRMEDButton, orderTypesPENDINGButton];
+            
+            function setActive(button) {
+                allButtons.forEach(btn => btn.classList.remove("active")); // remove active from all
+                button.classList.add("active"); // add active to the clicked button
+            }
+            
+                // Назначаем обработчики
+                if (orderTypesCOMPLETEDButton) {
+                    orderTypesCOMPLETEDButton.querySelector('span').textContent = tableInfo.completedOrders.count;
+                    orderTypesCOMPLETEDButton.addEventListener("click", orderCompletclick);
+                }
+
+                if (orderTypesCONFIRMEDButton) {
+                    orderTypesCONFIRMEDButton.querySelector('span').textContent = tableInfo.confirmedOrders.count;
+                    orderTypesCONFIRMEDButton.addEventListener("click", orderConfirmedclick);
+                }
+
+                if (orderTypesPENDINGButton) {
+                    orderTypesPENDINGButton.querySelector('span').textContent = tableInfo.pendingOrders.count;
+                    orderTypesPENDINGButton.addEventListener("click", orderPendingclick);
+                }
+            }
+            
+            
+
         }
         
         
@@ -1281,10 +1412,13 @@ async function TableLis(){
             `;
             cell.classList.add('Checked');
         }
+        
         // функция при нажатии
         cell.onclick = () => TableCheck(data[i].id, data[i].open);
         grid.appendChild(cell);
+        
     }
+    
     
     
 
